@@ -15,37 +15,50 @@ contract Bank {
         calTop3(msg.sender);
     }
 
-    function calTop3(address userAddr) private {
-        uint256 bal = userBlance[userAddr];
-        if (bal == 0) { return; }
-        if (bal > userBlance[blanceTop3User[0]]) {
-            if (userAddr == blanceTop3User[0]) { return; } // same user
-            blanceTop3User[2] = blanceTop3User[1];
-            blanceTop3User[1] = blanceTop3User[0];
-            blanceTop3User[0] = userAddr;
-        } else if (bal > userBlance[blanceTop3User[1]]) {
-            if (userAddr == blanceTop3User[1]) { return; }
-            blanceTop3User[2] = blanceTop3User[1];
-            blanceTop3User[1] = userAddr;
-        } else if (bal > userBlance[blanceTop3User[2]]) {
-            if (userAddr == blanceTop3User[2]) { return; }
-            blanceTop3User[2] = userAddr;
-        }
-    }
-
     function withDraw(uint256 value) public {
         if ((msg.sender == admin) && (address(this).balance >= value)) {
             payable(msg.sender).transfer(value);
         } 
     }
 
-    function getTop3Balance() external view returns(uint256[3] memory) {
-        uint256[3] memory top3Balance;
+    function calTop3(address userAddr) private {
+        if (userBlance[userAddr] == 0) return;
 
+        // 1. Check if user is already in the list
         for (uint i = 0; i < 3; i++) {
-            top3Balance[i] = userBlance[blanceTop3User[i]];
+            if (blanceTop3User[i] == userAddr) {
+                _bubbleUp(i);
+                return;
+            }
         }
-        return top3Balance;
+
+        // 2. If not in list, check if eligible to enter
+        if (userBlance[userAddr] > userBlance[blanceTop3User[2]]) {
+            blanceTop3User[2] = userAddr;
+            _bubbleUp(2);
+        }
     }
+
+    function _bubbleUp(uint256 index) private {
+        while (index > 0) {
+            if (userBlance[blanceTop3User[index]] > userBlance[blanceTop3User[index - 1]]) {
+                address temp = blanceTop3User[index];
+                blanceTop3User[index] = blanceTop3User[index - 1];
+                blanceTop3User[index - 1] = temp;
+                index--;
+            } else {
+                break;
+            }
+        }
+    }
+
+    // function getTop3Balance() external view returns(uint256[3] memory) {
+    //     uint256[3] memory top3Balance;
+
+    //     for (uint i = 0; i < 3; i++) {
+    //         top3Balance[i] = userBlance[blanceTop3User[i]];
+    //     }
+    //     return top3Balance;
+    // }
 
 }
