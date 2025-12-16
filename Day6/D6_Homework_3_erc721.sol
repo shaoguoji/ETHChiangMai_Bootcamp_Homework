@@ -383,6 +383,7 @@ contract BaseERC721 {
         _owners[tokenId] = to;
         _balances[from]--;
         _balances[to]++;
+        _tokenApprovals[tokenId] = address(0);
 
         emit Transfer(from, to, tokenId);
     }
@@ -395,7 +396,6 @@ contract BaseERC721 {
     function _approve(address to, uint256 tokenId) internal virtual {
         /**code*/
         require(_exists(tokenId), "approve for nonexistent token");
-        require(msg.sender == _owners[tokenId], "transfer caller is not owner for this token");
         require(to != address(0), "approve to the zero address");
         _tokenApprovals[tokenId] = to;
 
