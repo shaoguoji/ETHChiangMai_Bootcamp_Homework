@@ -14,36 +14,11 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-contract HookERC20 {
-    string public name; 
-    string public symbol; 
-    uint8 public decimals; 
+import { BaseERC20 } from "../Day5/D5_homework_3_erc20.sol";
 
-    uint256 public totalSupply; 
+contract HookERC20 is BaseERC20{
 
-    mapping (address => uint256) balances; 
-
-    mapping (address => mapping (address => uint256)) allowances; 
-
-    event Transfer(address indexed from, address indexed to, uint256 value);
-    event Approval(address indexed owner, address indexed spender, uint256 value);
-
-    constructor() {
-        // write your code here
-        // set name,symbol,decimals,totalSupply
-        name = "BaseERC20";
-        symbol = "BERC20";
-        decimals = 18;
-        totalSupply = 1e8*1e18;
-
-        balances[msg.sender] = totalSupply;  
-    }
-
-    function balanceOf(address _owner) public view returns (uint256 balance) {
-        // write your code here
-        require(_owner != address(0), "zero adress");
-        return balances[_owner];
-    }
+    constructor() BaseERC20() { }
 
     function transferWithCallback(address _to, uint256 _value) public returns (bool success) {
         require (transfer(_to, _value), "transfer failed");
@@ -52,51 +27,5 @@ contract HookERC20 {
             require(ok, "hook callback failed");
         }
         return true;
-    }
-
-    function transfer(address _to, uint256 _value) public returns (bool success) {
-        // write your code here
-        require(_to != address(0), "zero address");
-        require(balances[msg.sender] > 0, "no money");
-        require(balances[msg.sender] >= _value, "ERC20: transfer amount exceeds balance");
-
-        balances[msg.sender] -= _value;
-        balances[_to] += _value;
-
-        emit Transfer(msg.sender, _to, _value);  
-        return true;   
-    }
-
-    function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-        // write your code here
-        require(_from != address(0));
-        require(_to != address(0));
-        require(balances[_from] >= _value, "ERC20: transfer amount exceeds balance");
-        require(allowances[_from][msg.sender] >= _value, "ERC20: transfer amount exceeds allowance");
-
-        allowances[_from][msg.sender] -= _value;
-        balances[_from] -= _value;
-        balances[_to] += _value;
-
-        emit Transfer(_from, _to, _value); 
-        return true; 
-    }
-
-    function approve(address _spender, uint256 _value) public returns (bool success) {
-        // write your code here
-        require(_spender != address(0), "zero address");
-
-        allowances[msg.sender][_spender] = _value;
-
-        emit Approval(msg.sender, _spender, _value); 
-        return true; 
-    }
-
-    function allowance(address _owner, address _spender) public view returns (uint256 remaining) {   
-        // write your code here
-        require(_owner != address(0));
-        require(_spender != address(0));
-        
-        return allowances[_owner][_spender];
     }
 }
