@@ -1,1 +1,24 @@
 .DS_Store
+# ===== Remix IDE =====
+.deps/
+.states/
+
+# ===== Hardhat / Foundry / Solidity build artifacts =====
+artifacts/
+cache/
+out/
+
+# ===== Local environment =====
+node_modules/
+.env
+
+# ===== OS =====
+.DS_Store
+Thumbs.db
+
+# ===== Editor =====
+.vscode/
+.idea/
+
+# ===== Logs =====
+*.log
