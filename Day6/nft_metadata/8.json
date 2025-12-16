@@ -1,0 +1,9 @@
+{
+  "name": "K-Girls #8",
+  "description": "A young Korean K-pop idol woman in a dimly lit, low-quality iPhone photograph.",
+  "image": "ipfs://QmRuf6thTCxvjv1QhYSUB89WyQXGw5V3K22GefTHF7Q6Qz",
+  "attributes": [
+    { "trait_type": "Name", "value": "Nayeon" },
+    { "trait_type": "Age", "value": 22 }
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "name": "K-Girls #6",
+  "description": "A young Korean K-pop idol woman in a dimly lit, low-quality iPhone photograph.",
+  "image": "ipfs://QmSj3JcRA55XembNKtWWq3FeLr7Rnz4MQ7sd2YrEt1NxGQ",
+  "attributes": [
+    { "trait_type": "Name", "value": "Sana" },
+    { "trait_type": "Age", "value": 20 }
+  ]
+}

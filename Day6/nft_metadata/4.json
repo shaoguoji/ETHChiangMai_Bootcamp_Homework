@@ -1,0 +1,9 @@
+{
+  "name": "K-Girls #4",
+  "description": "A young Korean K-pop idol woman in a dimly lit, low-quality iPhone photograph.",
+  "image": "ipfs://QmXwyL2cVbaWqHinw25bT8ptW2qSfookvi2TSjRwZrB9jB",
+  "attributes": [
+    { "trait_type": "Name", "value": "Jisoo" },
+    { "trait_type": "Age", "value": 21 }
+  ]
+}

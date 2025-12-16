@@ -1,0 +1,9 @@
+{
+  "name": "K-Girls #10",
+  "description": "A young Korean K-pop idol woman in a dimly lit, low-quality iPhone photograph.",
+  "image": "ipfs://QmWQW1dgKTDWFcZ7pLENUbUMTX1AEC9iWgLmvcC7Rk4cdb",
+  "attributes": [
+    { "trait_type": "Name", "value": "Dahyun" },
+    { "trait_type": "Age", "value": 18 }
+  ]
+}

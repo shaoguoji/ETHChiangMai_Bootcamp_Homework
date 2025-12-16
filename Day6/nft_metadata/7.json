@@ -1,0 +1,9 @@
+{
+  "name": "K-Girls #7",
+  "description": "A young Korean K-pop idol woman in a dimly lit, low-quality iPhone photograph.",
+  "image": "ipfs://QmUR2MYvDEXdVqtb2CyGUM5yJXuLJwL2HNYt7pqWLJUQHJ",
+  "attributes": [
+    { "trait_type": "Name", "value": "Momo" },
+    { "trait_type": "Age", "value": 18 }
+  ]
+}

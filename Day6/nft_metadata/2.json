@@ -1,0 +1,9 @@
+{
+  "name": "K-Girls #2",
+  "description": "A young Korean K-pop idol woman in a dimly lit, low-quality iPhone photograph.",
+  "image": "ipfs://QmfCCBezwH3a48Af3TN3DVbTohEJEZkFVZVGGbejwUFqzN",
+  "attributes": [
+    { "trait_type": "Name", "value": "Jennie" },
+    { "trait_type": "Age", "value": 19 }
+  ]
+}

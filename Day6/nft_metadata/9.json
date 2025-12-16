@@ -1,0 +1,9 @@
+{
+  "name": "K-Girls #9",
+  "description": "A young Korean K-pop idol woman in a dimly lit, low-quality iPhone photograph.",
+  "image": "ipfs://QmP8WLKysLuoScJnFXPYGxr2osXtzA9m7AJbFmuJcsQtU7",
+  "attributes": [
+    { "trait_type": "Name", "value": "Chaeyoung" },
+    { "trait_type": "Age", "value": 21 }
+  ]
+}

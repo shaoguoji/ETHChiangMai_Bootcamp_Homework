@@ -1,0 +1,9 @@
+{
+  "name": "K-Girls #1",
+  "description": "A young Korean K-pop idol woman in a dimly lit, low-quality iPhone photograph.",
+  "image": "ipfs://QmYqADgT9TjFcCaqWGPKMLuUv34wvKCZCEXuKJwU7eQUA1",
+  "attributes": [
+    { "trait_type": "Name", "value": "Lisa" },
+    { "trait_type": "Age", "value": 18 }
+  ]
+}

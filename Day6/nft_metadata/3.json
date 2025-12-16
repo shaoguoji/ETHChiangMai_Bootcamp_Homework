@@ -1,0 +1,9 @@
+{
+  "name": "K-Girls #3",
+  "description": "A young Korean K-pop idol woman in a dimly lit, low-quality iPhone photograph.",
+  "image": "ipfs://Qmc6qUjrM2bXdRmTRuzuJVDmVJzmahNrjowLa9GxyoPxWb",
+  "attributes": [
+    { "trait_type": "Name", "value": "Rose" },
+    { "trait_type": "Age", "value": 20 }
+  ]
+}

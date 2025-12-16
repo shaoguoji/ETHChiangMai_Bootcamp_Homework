@@ -1,0 +1,9 @@
+{
+  "name": "K-Girls #5",
+  "description": "A young Korean K-pop idol woman in a dimly lit, low-quality iPhone photograph.",
+  "image": "ipfs://QmW7PdDCyoLx3CXtKBJvQ6nzTGYPG1RXvEEvNXqpfwHUh1",
+  "attributes": [
+    { "trait_type": "Name", "value": "Mina" },
+    { "trait_type": "Age", "value": 19 }
+  ]
+}
