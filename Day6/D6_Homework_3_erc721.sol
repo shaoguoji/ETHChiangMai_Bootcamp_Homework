@@ -136,7 +136,7 @@ contract BaseERC721 {
 
         // should return baseURI
         /**code*/
-        return _baseURI;
+        return string(abi.encodePacked(_baseURI,tokenId.toString()));
     }
 
     /**
@@ -154,7 +154,7 @@ contract BaseERC721 {
         // require(/**code*/ , "ERC721: mint to the zero address");
         // require(/**code*/, "ERC721: token already minted");
         require(to != address(0) , "ERC721: mint to the zero address");
-        require(_owners[tokenId] != address(0), "ERC721: token already minted");
+        require(_owners[tokenId] == address(0), "ERC721: token already minted");
 
         /**code*/
         _owners[tokenId] = to;
@@ -193,7 +193,7 @@ contract BaseERC721 {
         //     "ERC721: approve caller is not owner nor approved for all"
         // );
         require(
-            msg.sender == _owners[tokenId],
+            (msg.sender == _owners[tokenId]) || (isApprovedForAll(_owners[tokenId], msg.sender)),
             "ERC721: approve caller is not owner nor approved for all"
         );
 
@@ -350,7 +350,8 @@ contract BaseERC721 {
         );
 
         /**code*/
-        return ((_owners[tokenId] != msg.sender) || (_tokenApprovals[tokenId] == spender));
+        address owner = ownerOf(tokenId);
+        return (spender == owner || getApproved(tokenId) == spender || isApprovedForAll(owner, spender));
     }
 
     /**
@@ -394,7 +395,7 @@ contract BaseERC721 {
     function _approve(address to, uint256 tokenId) internal virtual {
         /**code*/
         require(_exists(tokenId), "approve for nonexistent token");
-        require(msg.sender != _owners[tokenId], "transfer caller is not owner for this token");
+        require(msg.sender == _owners[tokenId], "transfer caller is not owner for this token");
         require(to != address(0), "approve to the zero address");
         _tokenApprovals[tokenId] = to;
 
