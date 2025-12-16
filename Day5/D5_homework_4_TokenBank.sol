@@ -26,6 +26,7 @@ contract TokenBank {
 
     function deposit(uint256 _value) public {
         require(_value > 0, "zero");
+        require(erc20Token.balanceOf(msg.sender) >= _value, "insufficient user token");
         bool success = erc20Token.transferFrom(msg.sender, address(this), _value);
         require(success, "deposit failed!");
         amount[msg.sender] += _value;
