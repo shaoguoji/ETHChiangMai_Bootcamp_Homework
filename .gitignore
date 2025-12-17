@@ -8,6 +8,9 @@ artifacts/
 cache/
 out/
 
+# ===== Foundry broadcast logs (ignore all) =====
+broadcast/
+
 # ===== Local environment =====
 node_modules/
 .env
@@ -20,30 +23,5 @@ Thumbs.db
 .vscode/
 .idea/
 
-# ===== Logs =====
+# Logs
 *.log
-
-# ==============================
-# Foundry build artifacts (all levels)
-# ==============================
-cache/
-out/
-
-# ==============================
-# Foundry broadcast logs
-# ==============================
-
-# Ignores development broadcast logs
-!**/broadcast/
-**/broadcast/*/31337/
-**/broadcast/**/dry-run/
-
-# ==============================
-# Docs
-# ==============================
-docs/
-
-# ==============================
-# Environment files
-# ==============================
-.env
