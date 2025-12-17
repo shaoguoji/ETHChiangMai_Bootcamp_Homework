@@ -16,15 +16,23 @@ pragma solidity ^0.8.0;
 
 import { BaseERC20 } from "../Day5/D5_homework_3_erc20.sol";
 
+interface ITokensReceivedCallback {
+    function tokensReceived(address from, uint256 value, bytes memory data) external;
+}
+
 contract HookERC20 is BaseERC20{
 
-    constructor() BaseERC20() { }
+    constructor() {
+        name = "HookERC20";
+        symbol = "HERC20";
+        decimals = 18;
+        totalSupply = 1e8*1e18;
+    }
 
-    function transferWithCallback(address _to, uint256 _value) public returns (bool success) {
+    function transferWithCallback(address _to, uint256 _value, bytes memory data) public returns (bool success) {
         require (transfer(_to, _value), "transfer failed");
         if (_to.code.length > 0) {
-            (bool ok,) = _to.call(abi.encodeWithSignature("tokensReceived(address,uint256)", msg.sender, _value));
-            require(ok, "hook callback failed");
+            ITokensReceivedCallback(_to).tokensReceived(msg.sender, _value, data);
         }
         return true;
     }
