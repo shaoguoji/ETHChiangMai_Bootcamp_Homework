@@ -12,7 +12,7 @@ foundry.toml
 [rpc_endpoints] 
 local = "http://127.0.0.1:8545"
 sepolia = "https://0xrpc.io/sep"
-``
+```
 
 # key config
 

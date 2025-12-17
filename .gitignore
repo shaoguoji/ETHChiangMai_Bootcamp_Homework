@@ -22,3 +22,28 @@ Thumbs.db
 
 # ===== Logs =====
 *.log
+
+# ==============================
+# Foundry build artifacts (all levels)
+# ==============================
+cache/
+out/
+
+# ==============================
+# Foundry broadcast logs
+# ==============================
+
+# Ignores development broadcast logs
+!**/broadcast/
+**/broadcast/*/31337/
+**/broadcast/**/dry-run/
+
+# ==============================
+# Docs
+# ==============================
+docs/
+
+# ==============================
+# Environment files
+# ==============================
+.env
