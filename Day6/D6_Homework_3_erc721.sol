@@ -418,7 +418,7 @@ contract BaseERC721 {
         uint256 tokenId,
         bytes memory _data
     ) private returns (bool) {
-        if (to.isContract()) {
+        if (to.code.length > 0) {
             try
                 IERC721Receiver(to).onERC721Received(
                     msg.sender,
