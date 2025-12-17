@@ -28,7 +28,7 @@ cast wallet import --private-key <PRIVATE_KEY> <ACCOUNT_NAME>
 forge script ./script/DeployMyToken.s.sol --rpc-url sepolia --account <ACCOUNT_NAME> --broadcast
 ```
 
-# Log
+## Log
 
 ```sh
 ➜  MyToken git:(main) ✗ forge script ./script/DeployMyToken.s.sol --rpc-url sepolia --account shaoguoji --broadcast
@@ -70,4 +70,39 @@ ONCHAIN EXECUTION COMPLETE & SUCCESSFUL.
 Transactions saved to: /Users/shaoguoji/ETHChiangMai_Bootcamp/Homework/Day7/MyToken/broadcast/DeployMyToken.s.sol/11155111/run-latest.json
 
 Sensitive values saved to: /Users/shaoguoji/ETHChiangMai_Bootcamp/Homework/Day7/MyToken/cache/DeployMyToken.s.sol/11155111/run-latest.json
+```
+
+# Verify
+
+```sh
+forge verify-contract 0x73388147c0759Ac1C69C130Bf3d9cC994629496F src/BaseERC721.sol:BaseERC721 \
+--watch --chain sepolia --compiler-version v0.8.25 \
+--verifier etherscan --etherscan-api-key $ETHERSCAN_API_KEY
+```
+
+## Log
+
+```sh
+Submitting verification for [src/BaseERC721.sol:BaseERC721] 0x73388147c0759Ac1C69C130Bf3d9cC994629496F.
+Submitted contract for verification:
+        Response: `OK`
+        GUID: `mihk6ypu3wh7jxxyn2mki1ej34nvgny5pqsawrcazetf1kuuls`
+        URL: https://sepolia.etherscan.io/address/0x73388147c0759ac1c69c130bf3d9cc994629496f
+Contract verification status:
+Response: `NOTOK`
+Details: `Pending in queue`
+Warning: Verification is still pending...; waiting 15 seconds before trying again (7 tries remaining)
+Contract verification status:
+Response: `OK`
+Details: `Pass - Verified`
+Contract successfully verified
+```
+
+```sh
+➜  MyToken git:(main) ✗ forge verify-check mihk6ypu3wh7jxxyn2mki1ej34nvgny5pqsawrcazetf1kuuls
+Checking verification status on mainnet
+Contract verification status:
+Response: `OK`
+Details: `Pass - Verified`
+Contract successfully verified
 ```

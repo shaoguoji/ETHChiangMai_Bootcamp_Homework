@@ -4,7 +4,7 @@ pragma solidity ^0.8.13;
 import {Script} from "forge-std/Script.sol";
 import {MyToken} from "../src/MyToken.sol";
 
-contract CounterScript is Script {
+contract DeployMyToken is Script {
     MyToken public myToken;
 
     function setUp() public {}
