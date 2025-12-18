@@ -2,8 +2,8 @@
 pragma solidity ^0.8.30;
 
 contract Bank {
-    mapping (address => uint256) userBlance;
-    address[3] blanceTop3User;
+    mapping (address => uint256) public userBlance;
+    address[3] public blanceTop3User;
     address private admin;
 
     constructor() {

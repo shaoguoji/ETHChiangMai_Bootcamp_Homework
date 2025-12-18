@@ -14,8 +14,8 @@ buyNFT() : 普通的购买 NFT 功能，用户转入所定价的 token 数量，
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
-import { HookERC20 } from "./D6_Homework_1_1_HookERC20.sol";
-import { BaseERC721 } from "./D6_Homework_3_erc721.sol";
+import { HookERC20 } from "./HookERC20.sol";
+import { BaseERC721 } from "./BaseERC721.sol";
 
 contract NFTMarket {
     mapping (uint256 => uint256) priceOfNft; // selling price, nftTokenId => price
@@ -43,7 +43,7 @@ contract NFTMarket {
         require(hookErc20.transferFrom(msg.sender, erc721Token.ownerOf(_tokenId), _price), "erc20 transferFrom failed");
         
         erc721Token.transferFrom(erc721Token.ownerOf(_tokenId), msg.sender, _tokenId);
-        priceOfNft[tokenId] = 0; // clear selling price
+        priceOfNft[_tokenId] = 0; // clear selling price
     }
 
     function tokensReceived(address from, uint256 value, bytes memory data) public {

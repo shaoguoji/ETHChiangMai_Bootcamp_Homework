@@ -43,7 +43,7 @@ contract NFTMarket {
         require(hookErc20.transferFrom(msg.sender, erc721Token.ownerOf(_tokenId), _price), "erc20 transferFrom failed");
         
         erc721Token.transferFrom(erc721Token.ownerOf(_tokenId), msg.sender, _tokenId);
-        priceOfNft[tokenId] = 0; // clear selling price
+        priceOfNft[_tokenId] = 0; // clear selling price
     }
 
     function tokensReceived(address from, uint256 value, bytes memory data) public {

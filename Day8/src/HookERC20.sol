@@ -14,7 +14,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import { BaseERC20 } from "../Day5/D5_homework_3_erc20.sol";
+import { BaseERC20 } from "./BaseERC20.sol";
 
 interface ITokensReceivedCallback {
     function tokensReceived(address from, uint256 value, bytes memory data) external;
