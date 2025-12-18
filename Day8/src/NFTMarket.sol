@@ -23,6 +23,9 @@ contract NFTMarket {
     HookERC20 private hookErc20;
     BaseERC721 private erc721Token;
 
+    event logList(address saler, uint256 tokenId, uint256 price);
+    event logBuy(address buyer, uint256 tokenId, uint256 price);
+
     constructor(address erc20Addr, address erc721Addr) {
         hookErc20 = HookERC20(erc20Addr);
         erc721Token = BaseERC721(erc721Addr);
@@ -34,6 +37,7 @@ contract NFTMarket {
         require(erc721Token.isApprovedForAll(msg.sender, address(this)), "owner must ApprovedForAll to market first");
 
         priceOfNft[_tokenId] = _price;
+        emit logList(msg.sender, _tokenId, _price);
     }
 
     function buyNFT(uint256 _tokenId, uint256 _price) public {
@@ -44,6 +48,7 @@ contract NFTMarket {
         
         erc721Token.transferFrom(erc721Token.ownerOf(_tokenId), msg.sender, _tokenId);
         priceOfNft[_tokenId] = 0; // clear selling price
+        emit logBuy(msg.sender, _tokenId, _price);
     }
 
     function tokensReceived(address from, uint256 value, bytes memory data) public {
@@ -61,6 +66,7 @@ contract NFTMarket {
                 hookErc20.transfer(from, refund); // refund to buyer
             }
             priceOfNft[tokenId] = 0; // clear selling price
+            emit logBuy(from, tokenId, value);
         }
     }
 }
