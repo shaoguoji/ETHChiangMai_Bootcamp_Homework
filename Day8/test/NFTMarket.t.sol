@@ -115,26 +115,31 @@ contract NFTMarketTest is Test {
     }
 
     function testFuzz_ListAndBuy(address fuzz_saler, address fuzz_buyer, uint256 fuzz_nftId, uint256 fuzz_price) public {
-        vm.prank(fuzz_saler);
-        baseERC721.setApprovalForAll(address(nftMarket), true);
-        
-        deal(address(hookERC20), fuzz_buyer, 1e6);
-        vm.prank(fuzz_buyer);
-        hookERC20.approve(address(nftMarket), 1e6);
+        vm.assume(fuzz_saler != address(0));
+        vm.assume(fuzz_saler != address(this));
+        vm.assume(fuzz_buyer != address(0));
 
-        fuzz_price = bound(fuzz_nftId, 1, 4); // bound price to 0.01-10000
+        fuzz_nftId = bound(fuzz_nftId, 5, 10000); // bound fuzz_nftId to 1-10000
         fuzz_price = bound(fuzz_price, 100, 1e6); // bound price to 0.01-10000
 
         vm.startPrank(fuzz_saler);
+
+        baseERC721.mint(fuzz_saler, fuzz_nftId);
+        baseERC721.setApprovalForAll(address(nftMarket), true);
+        
         vm.expectEmit(true, true, true, false); 
         emit logList(fuzz_saler, fuzz_nftId, fuzz_price);
         nftMarket.list(fuzz_nftId, fuzz_price);
         vm.stopPrank();
 
+        deal(address(hookERC20), fuzz_buyer, 1e6);
+        
         vm.startPrank(fuzz_buyer);
+        hookERC20.approve(address(nftMarket), 1e6);
 
         uint256 buyerBalanceBefore = hookERC20.balanceOf(fuzz_buyer);
         uint256 salerBalanceBefore = hookERC20.balanceOf(fuzz_saler);
+
         vm.expectEmit(true, true, true, false); 
         emit logBuy(fuzz_buyer, fuzz_nftId, fuzz_price);
         nftMarket.buyNFT(fuzz_nftId, fuzz_price);
@@ -145,5 +150,9 @@ contract NFTMarketTest is Test {
 
         vm.stopPrank();
     }
+
+    // function invariant_MarketHaneNothing() public {
+    //     assertEq(baseERC721.balanceOf(address(this), 0));
+    // }
 
 }
