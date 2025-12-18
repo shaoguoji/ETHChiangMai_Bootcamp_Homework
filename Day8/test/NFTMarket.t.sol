@@ -117,7 +117,10 @@ contract NFTMarketTest is Test {
     function testFuzz_ListAndBuy(address fuzz_saler, address fuzz_buyer, uint256 fuzz_nftId, uint256 fuzz_price) public {
         vm.assume(fuzz_saler != address(0));
         vm.assume(fuzz_saler != address(this));
+        vm.assume(fuzz_saler != address(nftMarket));
         vm.assume(fuzz_buyer != address(0));
+        vm.assume(fuzz_buyer != address(this));
+        vm.assume(fuzz_buyer != address(nftMarket));
 
         fuzz_nftId = bound(fuzz_nftId, 5, 10000); // bound fuzz_nftId to 1-10000
         fuzz_price = bound(fuzz_price, 100, 1e6); // bound price to 0.01-10000

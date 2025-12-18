@@ -1,0 +1,52 @@
+No files changed, compilation skipped
+
+Ran 4 tests for test/NFTMarket.t.sol:NFTMarketTest
+[PASS] invariant_MarketHoldsNothing() (runs: 256, calls: 128000, reverts: 98510)
+
+╭------------+----------------------+-------+---------+----------╮
+| Contract   | Selector             | Calls | Reverts | Discards |
++================================================================+
+| BaseERC721 | approve              | 9854  | 9854    | 0        |
+|------------+----------------------+-------+---------+----------|
+| BaseERC721 | mint                 | 10039 | 425     | 0        |
+|------------+----------------------+-------+---------+----------|
+| BaseERC721 | safeTransferFrom     | 19487 | 19487   | 0        |
+|------------+----------------------+-------+---------+----------|
+| BaseERC721 | setApprovalForAll    | 9900  | 2       | 0        |
+|------------+----------------------+-------+---------+----------|
+| BaseERC721 | transferFrom         | 9842  | 9842    | 0        |
+|------------+----------------------+-------+---------+----------|
+| HookERC20  | approve              | 9835  | 12      | 0        |
+|------------+----------------------+-------+---------+----------|
+| HookERC20  | transfer             | 9759  | 9758    | 0        |
+|------------+----------------------+-------+---------+----------|
+| HookERC20  | transferFrom         | 9940  | 9787    | 0        |
+|------------+----------------------+-------+---------+----------|
+| HookERC20  | transferWithCallback | 9948  | 9947    | 0        |
+|------------+----------------------+-------+---------+----------|
+| NFTMarket  | buyNFT               | 9706  | 9706    | 0        |
+|------------+----------------------+-------+---------+----------|
+| NFTMarket  | list                 | 9871  | 9871    | 0        |
+|------------+----------------------+-------+---------+----------|
+| NFTMarket  | tokensReceived       | 9819  | 9819    | 0        |
+╰------------+----------------------+-------+---------+----------╯
+
+[PASS] testFuzz_ListAndBuy(address,address,uint256,uint256) (runs: 256, μ: 405061, ~: 405438)
+[PASS] test_NFTMarketBuy() (gas: 275714)
+Logs:
+  success buy test...
+  repeat buy test...
+  selft buy test...
+  more token buy test...
+  less token buy test...
+
+[PASS] test_NFTMarketList() (gas: 115416)
+Logs:
+  test failed zero price...
+  test failed list not approved for all
+  test failed list not owner
+  test success list
+
+Suite result: ok. 4 passed; 0 failed; 0 skipped; finished in 5.00s (5.33s CPU time)
+
+Ran 1 test suite in 5.01s (5.00s CPU time): 4 tests passed, 0 failed, 0 skipped (4 total tests)

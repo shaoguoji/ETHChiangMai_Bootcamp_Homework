@@ -67,78 +67,44 @@ Ran 1 test suite in 145.76ms (6.05ms CPU time): 3 tests passed, 0 failed, 0 skip
 ## Log
 
 ```sh
-➜  Day8 git:(main) ✗ forge test -vv                                    
+➜  Day8 git:(main) ✗ forge test --mc NFTMarketTest -vvv
 [⠊] Compiling...
 [⠃] Compiling 1 files with Solc 0.8.30
-[⠊] Solc 0.8.30 finished in 903.67ms
-Compiler run successful with warnings:
-Warning (2018): Function state mutability can be restricted to view
-   --> test/NFTMarket.t.sol:158:5:
-    |
-158 |     function invariant_MarketHoldsNothing() public {
-    |     ^ (Relevant source part starts here and spans across multiple lines).
-
-
-Ran 3 tests for test/Bank.t.sol:BankTest
-[PASS] test_Deposit() (gas: 93861)
-Logs:
-  account send 10 to bank
-
-[PASS] test_balanceTop3() (gas: 290662)
-Logs:
-  test 1 account...
-  account1 send 30 to bank
-  ✅ 1 account test success!
-  test 2 account...
-  account2 send 10 to bank
-  ✅ 2 account test success!
-  test 3 account...
-  account3 send 50 to bank
-  ✅ 3 account test success!
-  test 4 account...
-  account3 send 40 to bank
-  ✅ 4 account test success!
-  test repeat deposit...
-  account2 send 30 to bank
-
-[PASS] test_withdraw() (gas: 28955)
-Logs:
-  ✅ withdraw test success!
-
-Suite result: ok. 3 passed; 0 failed; 0 skipped; finished in 6.21ms (7.63ms CPU time)
+[⠊] Solc 0.8.30 finished in 822.49ms
+Compiler run successful!
 
 Ran 4 tests for test/NFTMarket.t.sol:NFTMarketTest
-[PASS] invariant_MarketHoldsNothing() (runs: 256, calls: 128000, reverts: 98745)
+[PASS] invariant_MarketHoldsNothing() (runs: 256, calls: 128000, reverts: 98728)
 
 ╭------------+----------------------+-------+---------+----------╮
 | Contract   | Selector             | Calls | Reverts | Discards |
 +================================================================+
-| BaseERC721 | approve              | 9720  | 9720    | 0        |
+| BaseERC721 | approve              | 9732  | 9732    | 0        |
 |------------+----------------------+-------+---------+----------|
-| BaseERC721 | mint                 | 9955  | 404     | 0        |
+| BaseERC721 | mint                 | 9931  | 422     | 0        |
 |------------+----------------------+-------+---------+----------|
-| BaseERC721 | safeTransferFrom     | 19857 | 19857   | 0        |
+| BaseERC721 | safeTransferFrom     | 19709 | 19709   | 0        |
 |------------+----------------------+-------+---------+----------|
-| BaseERC721 | setApprovalForAll    | 9790  | 0       | 0        |
+| BaseERC721 | setApprovalForAll    | 9856  | 0       | 0        |
 |------------+----------------------+-------+---------+----------|
-| BaseERC721 | transferFrom         | 9815  | 9815    | 0        |
+| BaseERC721 | transferFrom         | 9870  | 9870    | 0        |
 |------------+----------------------+-------+---------+----------|
-| HookERC20  | approve              | 9785  | 10      | 0        |
+| HookERC20  | approve              | 9814  | 12      | 0        |
 |------------+----------------------+-------+---------+----------|
-| HookERC20  | transfer             | 9885  | 9885    | 0        |
+| HookERC20  | transfer             | 9937  | 9937    | 0        |
 |------------+----------------------+-------+---------+----------|
-| HookERC20  | transferFrom         | 9742  | 9603    | 0        |
+| HookERC20  | transferFrom         | 9888  | 9784    | 0        |
 |------------+----------------------+-------+---------+----------|
-| HookERC20  | transferWithCallback | 9853  | 9853    | 0        |
+| HookERC20  | transferWithCallback | 9810  | 9809    | 0        |
 |------------+----------------------+-------+---------+----------|
-| NFTMarket  | buyNFT               | 9758  | 9758    | 0        |
+| NFTMarket  | buyNFT               | 9926  | 9926    | 0        |
 |------------+----------------------+-------+---------+----------|
-| NFTMarket  | list                 | 10048 | 10048   | 0        |
+| NFTMarket  | list                 | 9819  | 9819    | 0        |
 |------------+----------------------+-------+---------+----------|
-| NFTMarket  | tokensReceived       | 9792  | 9792    | 0        |
+| NFTMarket  | tokensReceived       | 9708  | 9708    | 0        |
 ╰------------+----------------------+-------+---------+----------╯
 
-[PASS] testFuzz_ListAndBuy(address,address,uint256,uint256) (runs: 256, μ: 403491, ~: 403898)
+[PASS] testFuzz_ListAndBuy(address,address,uint256,uint256) (runs: 256, μ: 404891, ~: 404985)
 [PASS] test_NFTMarketBuy() (gas: 275714)
 Logs:
   success buy test...
@@ -154,7 +120,7 @@ Logs:
   test failed list not owner
   test success list
 
-Suite result: ok. 4 passed; 0 failed; 0 skipped; finished in 4.72s (5.14s CPU time)
+Suite result: ok. 4 passed; 0 failed; 0 skipped; finished in 4.79s (5.10s CPU time)
 
-Ran 2 test suites in 4.73s (4.73s CPU time): 7 tests passed, 0 failed, 0 skipped (7 total tests)
+Ran 1 test suite in 4.80s (4.79s CPU time): 4 tests passed, 0 failed, 0 skipped (4 total tests)
 ```
