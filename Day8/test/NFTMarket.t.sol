@@ -151,8 +151,8 @@ contract NFTMarketTest is Test {
         vm.stopPrank();
     }
 
-    // function invariant_MarketHaneNothing() public {
-    //     assertEq(baseERC721.balanceOf(address(this), 0));
-    // }
-
+    function invariant_MarketHoldsNothing() public view {
+        assertEq(baseERC721.balanceOf(address(nftMarket)), 0, "market should never hold NFTs");
+        assertEq(hookERC20.balanceOf(address(nftMarket)), 0, "market should never hold ERC20");
+    }
 }
