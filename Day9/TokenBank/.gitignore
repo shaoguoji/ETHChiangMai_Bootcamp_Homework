@@ -1,0 +1,25 @@
+# System, etc.
+.DS_Store
+*.log
+
+# Node (Frontend)
+node_modules
+dist
+dist-ssr
+*.local
+.npmrc
+
+# Vite
+.vite/
+
+# Foundry (Contract)
+lib/
+out/
+broadcast/
+cache/
+forge-cache/
+
+# Environment
+.env
+.env.*
+!.env.example
