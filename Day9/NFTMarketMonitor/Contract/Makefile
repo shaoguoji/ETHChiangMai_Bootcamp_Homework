@@ -37,7 +37,7 @@ remove :; rm -rf .gitmodules && rm -rf .git/modules/* && rm -rf lib && touch .gi
 install :; forge install cyfrin/foundry-devops@0.0.11 --no-commit && forge install smartcontractkit/chainlink-brownie-contracts@0.6.1 --no-commit && forge install foundry-rs/forge-std@v1.5.3 --no-commit
 update:; forge update
 build:; forge build
-test :; forge test 
+test :; forge test --fork-url http://127.0.0.1:8545
 snapshot :; forge snapshot
 format :; forge fmt
 

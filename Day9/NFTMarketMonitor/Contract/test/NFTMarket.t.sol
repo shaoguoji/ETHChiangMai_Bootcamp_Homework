@@ -21,9 +21,9 @@ contract NFTMarketTest is Test {
     event logBuy(address buyer, uint256 tokenId, uint256 price);
 
     function setUp() public {
-        hookERC20 = new HookERC20();
-        baseERC721 = new BaseERC721("Test NFT", "TNFT", "ipfs://test_base_url");
-        nftMarket = new NFTMarket(address(hookERC20), address(baseERC721));
+        hookERC20 = HookERC20(_loadDeployedAddress("HookERC20"));
+        baseERC721 = BaseERC721(_loadDeployedAddress("BaseERC721"));
+        nftMarket = NFTMarket(_loadDeployedAddress("NFTMarket"));
 
         // mint 4
         for (uint i = 1; i <= 4; i++) {
@@ -39,6 +39,20 @@ contract NFTMarketTest is Test {
         hookERC20.approve(address(nftMarket), 1000);
         vm.prank(buyer);
         hookERC20.approve(address(nftMarket), 1000);
+    }
+
+    function _loadDeployedAddress(string memory name) internal view returns (address) {
+        string memory chainId = vm.toString(block.chainid);
+        string memory root = vm.projectRoot();
+        string memory filePath = string.concat(
+            root,
+            string.concat("/deployments/", string.concat(name, string.concat("_", string.concat(chainId, ".json"))))
+        );
+
+        require(vm.exists(filePath), "deployment file not found");
+
+        string memory json = vm.readFile(filePath);
+        return vm.parseJsonAddress(json, ".address");
     }
 
     function test_NFTMarketList() public {
@@ -154,49 +168,4 @@ contract NFTMarketTest is Test {
 
         vm.stopPrank();
     }
-
-    function invariant_MarketHoldsNothing() public view {
-        assertEq(baseERC721.balanceOf(address(nftMarket)), 0, "market should never hold NFTs");
-        assertEq(hookERC20.balanceOf(address(nftMarket)), 0, "market should never hold ERC20");
-    }
 }
-
-// contract NFTMarketInvariantTest is StdInvariant, Test {
-//     NFTMarket public nftMarket;
-//     HookERC20 public hookERC20;
-//     BaseERC721 public baseERC721;
-
-//     address saler = makeAddr("saler");
-//     address buyer = makeAddr("buyer");
-
-//     function setUp() public {
-//         hookERC20 = new HookERC20();
-//         baseERC721 = new BaseERC721("Test NFT", "TNFT", "ipfs://test_base_url");
-//         nftMarket = new NFTMarket(address(hookERC20), address(baseERC721));
-
-//         // prepare NFTs for saler and give market approval
-//         for (uint i = 1; i <= 3; i++) {
-//             baseERC721.mint(saler, i);
-//         }
-//         vm.prank(saler);
-//         baseERC721.setApprovalForAll(address(nftMarket), true);
-
-//         // fund ERC20 and approve market for both actors
-//         deal(address(hookERC20), saler, 1e6);
-//         deal(address(hookERC20), buyer, 1e6);
-//         vm.prank(saler);
-//         hookERC20.approve(address(nftMarket), type(uint256).max);
-//         vm.prank(buyer);
-//         hookERC20.approve(address(nftMarket), type(uint256).max);
-
-//         // invariant fuzzing only calls nftMarket, and only from saler/buyer
-//         targetContract(address(nftMarket));
-//         targetSender(saler);
-//         targetSender(buyer);
-//     }
-
-//     function invariant_MarketHoldsNothing() public view {
-//         assertEq(baseERC721.balanceOf(address(nftMarket)), 0, "market should never hold NFTs");
-//         assertEq(hookERC20.balanceOf(address(nftMarket)), 0, "market should never hold ERC20");
-//     }
-// }

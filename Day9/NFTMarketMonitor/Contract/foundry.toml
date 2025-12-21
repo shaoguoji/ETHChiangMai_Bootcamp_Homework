@@ -5,7 +5,8 @@ libs = ["lib"]
 remappings = ["@openzeppelin/contracts/=lib/openzeppelin-contracts/contracts/"]
 
 fs_permissions = [
-    { access = "write", path = "./deployments" }
+    { access = "write", path = "./deployments" },
+    { access = "read", path = "./deployments" },
 ]
 
 [rpc_endpoints]
