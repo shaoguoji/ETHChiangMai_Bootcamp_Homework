@@ -1,39 +1,23 @@
-import { useState } from 'react'
 import { ConnectButton } from '@rainbow-me/rainbowkit';
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import TokenBankV2 from './components/TokenBankV2';
 
-function App() {
-  const [count, setCount] = useState(0)
-
+export default function App() {
   return (
-    <>
-      <div style={{ display: 'flex', justifyContent: 'flex-end', padding: 12 }}>
-        <ConnectButton />
-      </div>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
-}
+    <div className="min-h-screen bg-slate-50 text-slate-900">
+      <div className="mx-auto flex min-h-screen max-w-5xl flex-col px-4 py-6 sm:px-6 lg:px-8">
+        <header className="flex flex-col gap-4 rounded-xl border border-slate-200 bg-white/80 px-6 py-5 shadow-sm backdrop-blur sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">TokenBank</p>
+            <h1 className="text-2xl font-semibold text-slate-900">TokenBank V2 Dashboard</h1>
+            <p className="mt-1 text-sm text-slate-600">Manage deposits, approvals, and withdrawals in one place.</p>
+          </div>
+          <ConnectButton />
+        </header>
 
-export default App
+        <main className="mt-8 flex-1">
+          <TokenBankV2 />
+        </main>
+      </div>
+    </div>
+  );
+}
