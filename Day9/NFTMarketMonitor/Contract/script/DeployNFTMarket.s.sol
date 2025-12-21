@@ -4,9 +4,9 @@ pragma solidity ^0.8.13;
 import {Script} from "forge-std/Script.sol";
 import {console} from "forge-std/console.sol";
 
-import { NFTMarket } from "../src/NFTMarket.sol";
-import { HookERC20 } from "../src/HookERC20.sol";
-import { BaseERC721 } from "../src/BaseERC721.sol";
+import {NFTMarket} from "../src/NFTMarket.sol";
+import {HookERC20} from "../src/HookERC20.sol";
+import {BaseERC721} from "../src/BaseERC721.sol";
 
 contract DeployNFTMarket is Script {
     NFTMarket public nftMarket;
@@ -29,5 +29,29 @@ contract DeployNFTMarket is Script {
         console.log("HookERC20:", address(hookERC20));
         console.log("BaseERC721:", address(baseERC721));
         console.log("NFTMarket:", address(nftMarket));
+
+        saveContract("HookERC20", address(hookERC20));
+        saveContract("BaseERC721", address(baseERC721));
+        saveContract("NFTMarket", address(nftMarket));
+
+    }
+
+    function saveContract(string memory name, address addr) public {
+        string memory chainId = vm.toString(block.chainid);
+
+        string memory json1 = "key";
+        string memory finalJson = vm.serializeAddress(json1, "address", addr);
+        string memory root = vm.projectRoot();
+        string memory deploymentsDir = string.concat(root, "/deployments");
+        vm.createDir(deploymentsDir, true);
+
+        string memory dirPath = string.concat(
+            string.concat(deploymentsDir, string.concat("/", name)),
+            "_"
+        );
+        vm.writeJson(
+            finalJson,
+            string.concat(dirPath, string.concat(chainId, ".json"))
+        );
     }
 }
