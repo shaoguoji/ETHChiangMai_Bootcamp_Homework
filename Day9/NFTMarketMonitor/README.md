@@ -1,9 +1,33 @@
-# Mono Repo for web3 development
+# NFTMarket Monitor
 
-## Contract
+![monitor](Img/monitor.png)
 
-a foundry project that remove .git/.github folder.
+## Usage
 
-## Frontend
+1) Run Anvil
+```bash
+anvil
+```
 
-a react project that create by `pnpm create vite@latest my-dapp -- --template react-ts` command.
+2) Deploy contracts (from the contract directory)
+
+(keysore config require)
+
+```bash
+make deploy local
+```
+
+3) Update the frontend `.env` file with the NFTMarket contract address
+
+4) Run the frontend (from the frontend directory)
+```bash
+pnpm dev
+```
+
+5) Run tests (from the contract directory)
+
+parse your test address to Makefile --sender <YOUR_ADDRESS>
+
+```bash
+make test
+```
