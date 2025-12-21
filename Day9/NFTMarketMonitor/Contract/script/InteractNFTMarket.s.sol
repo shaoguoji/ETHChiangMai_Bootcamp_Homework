@@ -30,7 +30,7 @@ contract InteractNFTMarket is Script {
         console.log("Interacting with account:", deployer);
 
         // 1. Mint NFT
-        uint256 tokenId = 1001; // Arbitrary ID
+        uint256 tokenId = vm.unixTime(); // Use timestamp as ID to avoid collision
         console.log("Minting NFT", tokenId);
         // Check if already minted to avoid error, or just try mint
         try baseERC721.mint(deployer, tokenId) {
@@ -62,8 +62,21 @@ contract InteractNFTMarket is Script {
         console.log("Approving Market for ERC20...");
         hookERC20.approve(address(nftMarket), price);
 
-        console.log("Buying NFT...");
+        console.log("Buying NFT (via buyNFT)...");
         nftMarket.buyNFT(tokenId, price);
+
+        // 5. Test tokensReceived Flow
+        uint256 tokenId2 = vm.unixTime();
+        console.log("Minting second NFT", tokenId2);
+        try baseERC721.mint(deployer, tokenId2) {
+             console.log("Minted OK");
+        } catch { console.log("Mint skipped"); }
+        baseERC721.approve(address(nftMarket), tokenId2);
+        nftMarket.list(tokenId2, price);
+        
+        console.log("Buying NFT (via transferWithCallback)...");
+        bytes memory data = abi.encode(tokenId2);
+        hookERC20.transferWithCallback(address(nftMarket), price, data);
 
         vm.stopBroadcast();
         

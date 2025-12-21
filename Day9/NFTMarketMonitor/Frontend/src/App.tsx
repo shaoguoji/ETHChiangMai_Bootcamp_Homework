@@ -7,7 +7,7 @@ import './App.css'
 const NFT_MARKET_ADDRESS = import.meta.env.VITE_NFT_MARKET_ADDRESS as `0x${string}`;
 
 type LogEntry = {
-  type: 'List' | 'Buy';
+  type: 'List' | 'Buy' | 'TokensReceived';
   message: string;
   timestamp: string;
   hash?: string;
@@ -30,7 +30,7 @@ function App() {
           type: 'List',
           message: `New Listing! Seller: ${saler}, TokenID: ${tokenId?.toString()}, Price: ${price?.toString()}`,
           timestamp: new Date().toLocaleTimeString(),
-          hash: event.transactionHash
+          hash: event.transactionHash || undefined
         };
         setLogs(prev => [newLog, ...prev]);
       });
@@ -52,7 +52,29 @@ function App() {
           type: 'Buy',
           message: `NFT Sold! Buyer: ${buyer}, TokenID: ${tokenId?.toString()}, Price: ${price?.toString()}`,
           timestamp: new Date().toLocaleTimeString(),
-          hash: event.transactionHash
+          hash: event.transactionHash || undefined
+        };
+        setLogs(prev => [newLog, ...prev]);
+      });
+    },
+    poll: true,
+  });
+
+  // Listen for TokensReceived events
+  useWatchContractEvent({
+    address: NFT_MARKET_ADDRESS,
+    abi: ABI,
+    eventName: 'logTokensReceived',
+    onLogs(events) {
+      console.log('TokensReceived events:', events);
+      events.forEach(event => {
+        // @ts-ignore
+        const { from, value, data } = event.args;
+        const newLog: LogEntry = {
+          type: 'TokensReceived',
+          message: `Tokens Received! From: ${from}, Value: ${value?.toString()}, Data: ${data}`,
+          timestamp: new Date().toLocaleTimeString(),
+          hash: event.transactionHash || undefined
         };
         setLogs(prev => [newLog, ...prev]);
       });
@@ -82,12 +104,12 @@ function App() {
                 <li key={index} style={{
                   padding: '1rem',
                   margin: '0.5rem 0',
-                  backgroundColor: log.type === 'List' ? '#e3f2fd' : '#e8f5e9',
+                  backgroundColor: log.type === 'List' ? '#e3f2fd' : log.type === 'Buy' ? '#e8f5e9' : '#fff3e0',
                   borderRadius: '8px',
                   border: '1px solid #ccc'
                 }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
-                    <span style={{ fontWeight: 'bold', color: log.type === 'List' ? '#1976d2' : '#2e7d32' }}>
+                    <span style={{ fontWeight: 'bold', color: log.type === 'List' ? '#1976d2' : log.type === 'Buy' ? '#2e7d32' : '#e65100' }}>
                       {log.type.toUpperCase()}
                     </span>
                     <span style={{ color: '#666' }}>{log.timestamp}</span>
