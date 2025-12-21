@@ -1,2 +1,2 @@
 export { HOOKERC20_ABI, TOKEN_BANK_V2_ABI} from './abis';
-export { CONTRACTS, CONTRACTS_V1, CONTRACTS_V2, CONTRACTS_PERMIT, CONTRACTS_PERMIT2 } from './addresses';
+export { CONTRACTS_V2 } from './addresses';

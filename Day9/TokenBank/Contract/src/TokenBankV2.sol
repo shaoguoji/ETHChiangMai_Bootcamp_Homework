@@ -20,16 +20,16 @@ import {HookERC20} from "./HookERC20.sol";
 contract TokenBankV2 is TokenBank {
     HookERC20 private erc20Token;
 
-    event logHookReceived(address indexed _from, uint256 value);
+    event logHookReceived(address indexed _from, uint256 indexed value, bytes data);
 
     constructor(address tokenAddr) TokenBank(tokenAddr) {
         erc20Token = HookERC20(tokenAddr);
     }
 
-    function tokensReceived(address _from, uint256 _value) public {
+    function tokensReceived(address _from, uint256 _value, bytes memory _data) public {
         require(msg.sender == address(erc20Token), "only be called by token contract");
         amount[_from] += _value;
-        emit logHookReceived(_from, _value);
+        emit logHookReceived(_from, _value, _data);
     }
 
     function amountsOf(address _user) public view returns(uint256) {

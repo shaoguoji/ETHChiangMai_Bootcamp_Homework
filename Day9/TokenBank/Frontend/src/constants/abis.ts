@@ -316,6 +316,11 @@ export const TOKEN_BANK_V2_ABI = [
         "name": "_value",
         "type": "uint256",
         "internalType": "uint256"
+      },
+      {
+        "name": "_data",
+        "type": "bytes",
+        "internalType": "bytes"
       }
     ],
     "outputs": [],
