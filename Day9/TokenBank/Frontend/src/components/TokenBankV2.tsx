@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useAccount, useReadContract, useWriteContract, useWaitForTransactionReceipt } from 'wagmi';
 import { formatEther, parseEther } from 'viem';
 import { CONTRACTS_V2 } from '../constants/addresses';
-import { TOKEN_BANK_V2_ABI, TOKEN_V2_ABI } from '../constants/abis';
+import { TOKEN_BANK_V2_ABI, HOOKERC20_ABI } from '../constants/abis';
 
 const EXPLORER_URL = 'https://sepolia.etherscan.io/tx/';
 
@@ -17,7 +17,7 @@ export default function TokenBankV2() {
   // Read token balance
   const { data: tokenBalance, refetch: refetchTokenBalance } = useReadContract({
     address: CONTRACTS_V2.MyTokenV2 as AddressType,
-    abi: TOKEN_V2_ABI,
+    abi: HOOKERC20_ABI,
     functionName: 'balanceOf',
     args: address ? [address] : undefined,
   });
@@ -26,14 +26,14 @@ export default function TokenBankV2() {
   const { data: bankBalance, refetch: refetchBankBalance } = useReadContract({
     address: CONTRACTS_V2.TokenBankV2 as AddressType,
     abi: TOKEN_BANK_V2_ABI,
-    functionName: 'balanceOf',
+    functionName: 'amountsOf',
     args: address ? [address] : undefined,
   });
 
   // Read allowance
   const { data: allowance, refetch: refetchAllowance } = useReadContract({
     address: CONTRACTS_V2.MyTokenV2 as AddressType,
-    abi: TOKEN_V2_ABI,
+    abi: HOOKERC20_ABI,
     functionName: 'allowance',
     args: address ? [address, CONTRACTS_V2.TokenBankV2 as AddressType] : undefined,
   });
@@ -41,7 +41,7 @@ export default function TokenBankV2() {
   // Read token symbol
   const { data: tokenSymbol } = useReadContract({
     address: CONTRACTS_V2.MyTokenV2 as AddressType,
-    abi: TOKEN_V2_ABI,
+    abi: HOOKERC20_ABI,
     functionName: 'symbol',
     args: [],
   });
@@ -99,7 +99,7 @@ export default function TokenBankV2() {
     if (!depositAmount) return;
     approve({
       address: CONTRACTS_V2.MyTokenV2 as AddressType,
-      abi: TOKEN_V2_ABI,
+      abi: HOOKERC20_ABI,
       functionName: 'approve',
       args: [CONTRACTS_V2.TokenBankV2 as AddressType, parseEther(depositAmount)],
     });
@@ -119,9 +119,9 @@ export default function TokenBankV2() {
     if (!directDepositAmount) return;
     directDeposit({
       address: CONTRACTS_V2.MyTokenV2 as AddressType,
-      abi: TOKEN_V2_ABI,
+      abi: HOOKERC20_ABI,
       functionName: 'transferWithCallback',
-      args: [CONTRACTS_V2.TokenBankV2 as AddressType, parseEther(directDepositAmount)],
+      args: [CONTRACTS_V2.TokenBankV2 as AddressType, parseEther(directDepositAmount), '0x'],
     });
   };
 

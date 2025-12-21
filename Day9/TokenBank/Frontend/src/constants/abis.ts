@@ -1,416 +1,356 @@
 // MyToken (ERC20) ABI - 从Sepolia部署的合约生成
-export const TOKEN_ABI = [
+export const HOOKERC20_ABI = [
   {
-    type: "constructor",
-    inputs: [{ name: "initialSupply", type: "uint256" }],
-    stateMutability: "nonpayable",
+    "type": "constructor",
+    "inputs": [],
+    "stateMutability": "nonpayable"
   },
   {
-    type: "function",
-    name: "allowance",
-    inputs: [
-      { name: "owner", type: "address" },
-      { name: "spender", type: "address" },
+    "type": "function",
+    "name": "allowance",
+    "inputs": [
+      {
+        "name": "_owner",
+        "type": "address",
+        "internalType": "address"
+      },
+      {
+        "name": "_spender",
+        "type": "address",
+        "internalType": "address"
+      }
     ],
-    outputs: [{ name: "", type: "uint256" }],
-    stateMutability: "view",
-  },
-  {
-    type: "function",
-    name: "approve",
-    inputs: [
-      { name: "spender", type: "address" },
-      { name: "value", type: "uint256" },
+    "outputs": [
+      {
+        "name": "remaining",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
     ],
-    outputs: [{ name: "", type: "bool" }],
-    stateMutability: "nonpayable",
+    "stateMutability": "view"
   },
   {
-    type: "function",
-    name: "balanceOf",
-    inputs: [{ name: "account", type: "address" }],
-    outputs: [{ name: "", type: "uint256" }],
-    stateMutability: "view",
-  },
-  {
-    type: "function",
-    name: "decimals",
-    inputs: [],
-    outputs: [{ name: "", type: "uint8" }],
-    stateMutability: "view",
-  },
-  {
-    type: "function",
-    name: "mint",
-    inputs: [
-      { name: "to", type: "address" },
-      { name: "amount", type: "uint256" },
+    "type": "function",
+    "name": "approve",
+    "inputs": [
+      {
+        "name": "_spender",
+        "type": "address",
+        "internalType": "address"
+      },
+      {
+        "name": "_value",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
     ],
-    outputs: [],
-    stateMutability: "nonpayable",
-  },
-  {
-    type: "function",
-    name: "name",
-    inputs: [],
-    outputs: [{ name: "", type: "string" }],
-    stateMutability: "view",
-  },
-  {
-    type: "function",
-    name: "symbol",
-    inputs: [],
-    outputs: [{ name: "", type: "string" }],
-    stateMutability: "view",
-  },
-  {
-    type: "function",
-    name: "totalSupply",
-    inputs: [],
-    outputs: [{ name: "", type: "uint256" }],
-    stateMutability: "view",
-  },
-  {
-    type: "function",
-    name: "transfer",
-    inputs: [
-      { name: "to", type: "address" },
-      { name: "value", type: "uint256" },
+    "outputs": [
+      {
+        "name": "success",
+        "type": "bool",
+        "internalType": "bool"
+      }
     ],
-    outputs: [{ name: "", type: "bool" }],
-    stateMutability: "nonpayable",
+    "stateMutability": "nonpayable"
   },
   {
-    type: "function",
-    name: "transferFrom",
-    inputs: [
-      { name: "from", type: "address" },
-      { name: "to", type: "address" },
-      { name: "value", type: "uint256" },
+    "type": "function",
+    "name": "balanceOf",
+    "inputs": [
+      {
+        "name": "_owner",
+        "type": "address",
+        "internalType": "address"
+      }
     ],
-    outputs: [{ name: "", type: "bool" }],
-    stateMutability: "nonpayable",
-  },
-  {
-    type: "function",
-    name: "permit",
-    inputs: [
-      { name: "owner", type: "address" },
-      { name: "spender", type: "address" },
-      { name: "value", type: "uint256" },
-      { name: "deadline", type: "uint256" },
-      { name: "v", type: "uint8" },
-      { name: "r", type: "bytes32" },
-      { name: "s", type: "bytes32" },
+    "outputs": [
+      {
+        "name": "balance",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
     ],
-    outputs: [],
-    stateMutability: "nonpayable",
+    "stateMutability": "view"
   },
   {
-    type: "function",
-    name: "nonces",
-    inputs: [{ name: "owner", type: "address" }],
-    outputs: [{ name: "", type: "uint256" }],
-    stateMutability: "view",
-  },
-  {
-    type: "function",
-    name: "DOMAIN_SEPARATOR",
-    inputs: [],
-    outputs: [{ name: "", type: "bytes32" }],
-    stateMutability: "view",
-  },
-  {
-    type: "event",
-    name: "Transfer",
-    inputs: [
-      { indexed: true, name: "from", type: "address" },
-      { indexed: true, name: "to", type: "address" },
-      { indexed: false, name: "value", type: "uint256" },
+    "type": "function",
+    "name": "decimals",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint8",
+        "internalType": "uint8"
+      }
     ],
+    "stateMutability": "view"
   },
   {
-    type: "event",
-    name: "Approval",
-    inputs: [
-      { indexed: true, name: "owner", type: "address" },
-      { indexed: true, name: "spender", type: "address" },
-      { indexed: false, name: "value", type: "uint256" },
+    "type": "function",
+    "name": "name",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "string",
+        "internalType": "string"
+      }
     ],
-  },
-] as const;
-
-// TokenBank ABI - 从Sepolia部署的合约生成
-export const TOKEN_BANK_ABI = [
-  {
-    type: "constructor",
-    inputs: [{ name: "_token", type: "address" }],
-    stateMutability: "nonpayable",
+    "stateMutability": "view"
   },
   {
-    type: "function",
-    name: "balanceOf",
-    inputs: [{ name: "account", type: "address" }],
-    outputs: [{ name: "", type: "uint256" }],
-    stateMutability: "view",
-  },
-  {
-    type: "function",
-    name: "balances",
-    inputs: [{ name: "", type: "address" }],
-    outputs: [{ name: "", type: "uint256" }],
-    stateMutability: "view",
-  },
-  {
-    type: "function",
-    name: "deposit",
-    inputs: [{ name: "amount", type: "uint256" }],
-    outputs: [],
-    stateMutability: "nonpayable",
-  },
-  {
-    type: "function",
-    name: "token",
-    inputs: [],
-    outputs: [{ name: "", type: "address" }],
-    stateMutability: "view",
-  },
-  {
-    type: "function",
-    name: "totalDeposits",
-    inputs: [],
-    outputs: [{ name: "", type: "uint256" }],
-    stateMutability: "view",
-  },
-  {
-    type: "function",
-    name: "withdraw",
-    inputs: [{ name: "amount", type: "uint256" }],
-    outputs: [],
-    stateMutability: "nonpayable",
-  },
-  {
-    type: "event",
-    name: "Deposit",
-    inputs: [
-      { indexed: true, name: "user", type: "address" },
-      { indexed: false, name: "amount", type: "uint256" },
+    "type": "function",
+    "name": "symbol",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "string",
+        "internalType": "string"
+      }
     ],
+    "stateMutability": "view"
   },
   {
-    type: "event",
-    name: "Withdraw",
-    inputs: [
-      { indexed: true, name: "user", type: "address" },
-      { indexed: false, name: "amount", type: "uint256" },
+    "type": "function",
+    "name": "totalSupply",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
     ],
+    "stateMutability": "view"
   },
   {
-    type: "error",
-    name: "InsufficientBalance",
-    inputs: [],
-  },
-  {
-    type: "error",
-    name: "ZeroAmount",
-    inputs: [],
-  },
-] as const;
-
-// MyTokenV2 ABI - 继承MyToken，添加transferWithCallback
-export const TOKEN_V2_ABI = [
-  ...TOKEN_ABI,
-  {
-    type: "function",
-    name: "transferWithCallback",
-    inputs: [
-      { name: "to", type: "address" },
-      { name: "amount", type: "uint256" },
+    "type": "function",
+    "name": "transfer",
+    "inputs": [
+      {
+        "name": "_to",
+        "type": "address",
+        "internalType": "address"
+      },
+      {
+        "name": "_value",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
     ],
-    outputs: [{ name: "", type: "bool" }],
-    stateMutability: "nonpayable",
+    "outputs": [
+      {
+        "name": "success",
+        "type": "bool",
+        "internalType": "bool"
+      }
+    ],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "transferFrom",
+    "inputs": [
+      {
+        "name": "_from",
+        "type": "address",
+        "internalType": "address"
+      },
+      {
+        "name": "_to",
+        "type": "address",
+        "internalType": "address"
+      },
+      {
+        "name": "_value",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "success",
+        "type": "bool",
+        "internalType": "bool"
+      }
+    ],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "transferWithCallback",
+    "inputs": [
+      {
+        "name": "_to",
+        "type": "address",
+        "internalType": "address"
+      },
+      {
+        "name": "_value",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "data",
+        "type": "bytes",
+        "internalType": "bytes"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "success",
+        "type": "bool",
+        "internalType": "bool"
+      }
+    ],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "event",
+    "name": "Approval",
+    "inputs": [
+      {
+        "name": "owner",
+        "type": "address",
+        "indexed": true,
+        "internalType": "address"
+      },
+      {
+        "name": "spender",
+        "type": "address",
+        "indexed": true,
+        "internalType": "address"
+      },
+      {
+        "name": "value",
+        "type": "uint256",
+        "indexed": false,
+        "internalType": "uint256"
+      }
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "event",
+    "name": "Transfer",
+    "inputs": [
+      {
+        "name": "from",
+        "type": "address",
+        "indexed": true,
+        "internalType": "address"
+      },
+      {
+        "name": "to",
+        "type": "address",
+        "indexed": true,
+        "internalType": "address"
+      },
+      {
+        "name": "value",
+        "type": "uint256",
+        "indexed": false,
+        "internalType": "uint256"
+      }
+    ],
+    "anonymous": false
   },
 ] as const;
 
 // TokenBankV2 ABI - 继承TokenBank，添加tokensReceived
 export const TOKEN_BANK_V2_ABI = [
-  ...TOKEN_BANK_ABI,
   {
-    type: "function",
-    name: "tokensReceived",
-    inputs: [
-      { name: "from", type: "address" },
-      { name: "amount", type: "uint256" },
-    ],
-    outputs: [{ name: "", type: "bytes4" }],
-    stateMutability: "nonpayable",
-  },
-  {
-    type: "event",
-    name: "DepositWithCallback",
-    inputs: [
-      { indexed: true, name: "user", type: "address" },
-      { indexed: false, name: "amount", type: "uint256" },
-    ],
-  },
-] as const;
-
-// MyTokenPermit (ERC20 with EIP-2612 Permit) ABI
-export const TOKEN_PERMIT_ABI = [
-  ...TOKEN_ABI,
-  {
-    type: "function",
-    name: "permit",
-    inputs: [
-      { name: "owner", type: "address" },
-      { name: "spender", type: "address" },
-      { name: "value", type: "uint256" },
-      { name: "deadline", type: "uint256" },
-      { name: "v", type: "uint8" },
-      { name: "r", type: "bytes32" },
-      { name: "s", type: "bytes32" },
-    ],
-    outputs: [],
-    stateMutability: "nonpayable",
-  },
-  {
-    type: "function",
-    name: "nonces",
-    inputs: [{ name: "owner", type: "address" }],
-    outputs: [{ name: "", type: "uint256" }],
-    stateMutability: "view",
-  },
-  {
-    type: "function",
-    name: "DOMAIN_SEPARATOR",
-    inputs: [],
-    outputs: [{ name: "", type: "bytes32" }],
-    stateMutability: "view",
-  },
-] as const;
-
-// TokenBankPermit ABI
-export const TOKEN_BANK_PERMIT_ABI = [
-  ...TOKEN_BANK_ABI,
-  {
-    type: "function",
-    name: "permitDeposit",
-    inputs: [
-      { name: "amount", type: "uint256" },
-      { name: "deadline", type: "uint256" },
-      { name: "v", type: "uint8" },
-      { name: "r", type: "bytes32" },
-      { name: "s", type: "bytes32" },
-    ],
-    outputs: [],
-    stateMutability: "nonpayable",
-  },
-  {
-    type: "event",
-    name: "PermitDeposit",
-    inputs: [
-      { indexed: true, name: "user", type: "address" },
-      { indexed: false, name: "amount", type: "uint256" },
-    ],
-  },
-  {
-    type: "error",
-    name: "PermitFailed",
-    inputs: [],
-  },
-] as const;
-
-// Permit2 ABI
-export const PERMIT2_ABI = [
-  {
-    type: "function",
-    name: "permitTransferFrom",
-    inputs: [
+    "type": "constructor",
+    "inputs": [
       {
-        name: "permit",
-        type: "tuple",
-        components: [
-          {
-            name: "permitted",
-            type: "tuple",
-            components: [
-              { name: "token", type: "address" },
-              { name: "amount", type: "uint256" },
-            ],
-          },
-          { name: "nonce", type: "uint256" },
-          { name: "deadline", type: "uint256" },
-        ],
+        "name": "tokenAddr",
+        "type": "address",
+        "internalType": "address"
+      }
+    ],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "amountsOf",
+    "inputs": [
+      {
+        "name": "_user",
+        "type": "address",
+        "internalType": "address"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "deposit",
+    "inputs": [
+      {
+        "name": "_value",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "tokensReceived",
+    "inputs": [
+      {
+        "name": "_from",
+        "type": "address",
+        "internalType": "address"
       },
       {
-        name: "transferDetails",
-        type: "tuple",
-        components: [
-          { name: "to", type: "address" },
-          { name: "requestedAmount", type: "uint256" },
-        ],
-      },
-      { name: "owner", type: "address" },
-      { name: "signature", type: "bytes" },
+        "name": "_value",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
     ],
-    outputs: [],
-    stateMutability: "nonpayable",
+    "outputs": [],
+    "stateMutability": "nonpayable"
   },
   {
-    type: "function",
-    name: "nonceBitmap",
-    inputs: [
-      { name: "owner", type: "address" },
-      { name: "wordPos", type: "uint256" },
-    ],
-    outputs: [{ name: "", type: "uint256" }],
-    stateMutability: "view",
-  },
-  {
-    type: "function",
-    name: "DOMAIN_SEPARATOR",
-    inputs: [],
-    outputs: [{ name: "", type: "bytes32" }],
-    stateMutability: "view",
-  },
-] as const;
-
-// TokenBankPermit2 ABI
-export const TOKEN_BANK_PERMIT2_ABI = [
-  ...TOKEN_BANK_ABI,
-  {
-    type: "function",
-    name: "depositWithPermit2",
-    inputs: [
+    "type": "function",
+    "name": "withdraw",
+    "inputs": [
       {
-        name: "permitTransfer",
-        type: "tuple",
-        components: [
-          {
-            name: "permitted",
-            type: "tuple",
-            components: [
-              { name: "token", type: "address" },
-              { name: "amount", type: "uint256" },
-            ],
-          },
-          { name: "nonce", type: "uint256" },
-          { name: "deadline", type: "uint256" },
-        ],
-      },
-      { name: "owner", type: "address" },
-      { name: "signature", type: "bytes" },
+        "name": "_value",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
     ],
-    outputs: [],
-    stateMutability: "nonpayable",
+    "outputs": [],
+    "stateMutability": "nonpayable"
   },
   {
-    type: "event",
-    name: "Permit2Deposit",
-    inputs: [
-      { indexed: true, name: "user", type: "address" },
-      { indexed: false, name: "amount", type: "uint256" },
+    "type": "event",
+    "name": "logHookReceived",
+    "inputs": [
+      {
+        "name": "_from",
+        "type": "address",
+        "indexed": true,
+        "internalType": "address"
+      },
+      {
+        "name": "value",
+        "type": "uint256",
+        "indexed": false,
+        "internalType": "uint256"
+      }
     ],
+    "anonymous": false
   },
 ] as const;
-
