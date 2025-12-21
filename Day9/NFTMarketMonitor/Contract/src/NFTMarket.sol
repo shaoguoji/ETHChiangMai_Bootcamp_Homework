@@ -25,6 +25,7 @@ contract NFTMarket {
 
     event logList(address saler, uint256 tokenId, uint256 price);
     event logBuy(address buyer, uint256 tokenId, uint256 price);
+    event logTokensReceived(address from, uint256 value, bytes data);
 
     constructor(address erc20Addr, address erc721Addr) {
         hookErc20 = HookERC20(erc20Addr);
@@ -66,6 +67,7 @@ contract NFTMarket {
                 hookErc20.transfer(from, refund); // refund to buyer
             }
             priceOfNft[tokenId] = 0; // clear selling price
+            emit logTokensReceived(from, value, data);
             emit logBuy(from, tokenId, value);
         }
     }
