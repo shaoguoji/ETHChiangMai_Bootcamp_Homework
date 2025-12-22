@@ -18,8 +18,8 @@ export function Header() {
                         NFT Market
                     </Link>
                     <nav className="hidden md:flex gap-8 text-sm">
-                        <Link to="/" className={`py-5 ${isActive('/')}`}>Market</Link>
-                        <Link to="/profile" className={`py-5 ${isActive('/profile')}`}>My Collection</Link>
+                        <Link to="/market" className={`py-5 ${isActive('/market')}`}>Market</Link>
+                        <Link to="/" className={`py-5 ${isActive('/')}`}>My Collection</Link>
                         <Link to="/history" className={`py-5 ${isActive('/history')}`}>Activity</Link>
                     </nav>
                 </div>
