@@ -18,7 +18,7 @@ import { HookERC20 } from "./HookERC20.sol";
 import { BaseERC721 } from "./BaseERC721.sol";
 
 contract NFTMarket {
-    mapping (uint256 => uint256) priceOfNft; // selling price, nftTokenId => price
+    mapping (uint256 => uint256) public priceOfNft; // selling price, nftTokenId => price
 
     HookERC20 private hookErc20;
     BaseERC721 private erc721Token;

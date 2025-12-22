@@ -1,6 +1,5 @@
-
 import { CONTRACTS } from '../config/contracts';
-import { useAccount, useWriteContract, useWaitForTransactionReceipt } from 'wagmi';
+import { useAccount, useWriteContract, useWaitForTransactionReceipt, useReadContract } from 'wagmi';
 import { parseEther } from 'viem';
 
 interface NFTCardProps {
@@ -18,6 +17,25 @@ export function NFTCard({ tokenId, price, owner, isOwner, refetch }: NFTCardProp
 
     if (isSuccess) {
         setTimeout(() => refetch(), 1000);
+    }
+
+    const { data: isApproved } = useReadContract({
+        address: CONTRACTS.BaseERC721.address,
+        abi: CONTRACTS.BaseERC721.abi,
+        functionName: 'isApprovedForAll',
+        args: address && isOwner ? [address, CONTRACTS.NFTMarket.address] : undefined,
+        query: { enabled: !!address && isOwner }
+    });
+
+    const { writeContract: writeApprove, isPending: isApproving } = useWriteContract();
+
+    const handleApproveMarket = () => {
+        writeApprove({
+            address: CONTRACTS.BaseERC721.address,
+            abi: CONTRACTS.BaseERC721.abi,
+            functionName: 'setApprovalForAll',
+            args: [CONTRACTS.NFTMarket.address, true]
+        });
     }
 
     const handleList = () => {
@@ -107,13 +125,23 @@ export function NFTCard({ tokenId, price, owner, isOwner, refetch }: NFTCardProp
                             </>
                         )}
                         {isOwner && price === 0n && (
-                            <button
-                                onClick={handleList}
-                                disabled={isPending || isConfirming}
-                                className="px-4 py-2 text-xs font-semibold text-white bg-gray-900 rounded-lg hover:bg-gray-800 transition-all disabled:opacity-50"
-                            >
-                                {isPending || isConfirming ? 'Listing...' : 'List for Sale'}
-                            </button>
+                            !isApproved ? (
+                                <button
+                                    onClick={handleApproveMarket}
+                                    disabled={isApproving}
+                                    className="px-4 py-2 text-xs font-semibold text-indigo-600 border border-indigo-200 rounded-lg hover:bg-indigo-50 transition-all disabled:opacity-50"
+                                >
+                                    {isApproving ? 'Approving...' : 'Approve Market'}
+                                </button>
+                            ) : (
+                                <button
+                                    onClick={handleList}
+                                    disabled={isPending || isConfirming}
+                                    className="px-4 py-2 text-xs font-semibold text-white bg-gray-900 rounded-lg hover:bg-gray-800 transition-all disabled:opacity-50"
+                                >
+                                    {isPending || isConfirming ? 'Listing...' : 'List for Sale'}
+                                </button>
+                            )
                         )}
                     </div>
                 </div>

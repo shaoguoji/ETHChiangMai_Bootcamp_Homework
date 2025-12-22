@@ -164,52 +164,14 @@ function ProfileItem({ tokenId, ownerAddress }: { tokenId: bigint, ownerAddress?
     if (owner !== ownerAddress) return null;
 
     return (
-        <div>
-            <NFTCard
-                tokenId={tokenId}
-                price={price as bigint || 0n}
-                owner={owner as string}
-                isOwner={true}
-                refetch={() => { }}
-            />
-            <ApprovalCheck owner={ownerAddress} />
-        </div>
+        <NFTCard
+            tokenId={tokenId}
+            price={price as bigint || 0n}
+            owner={owner as string}
+            isOwner={true}
+            refetch={() => { }}
+        />
+
     );
 }
 
-function ApprovalCheck({ owner }: { owner?: `0x${string}` }) {
-    const { data: isApproved } = useReadContract({
-        address: CONTRACTS.BaseERC721.address,
-        abi: CONTRACTS.BaseERC721.abi,
-        functionName: 'isApprovedForAll',
-        args: owner ? [owner, CONTRACTS.NFTMarket.address] : undefined,
-        query: {
-            enabled: !!owner,
-        }
-    });
-
-    const { writeContract, isPending } = useWriteContract();
-
-    if (isApproved) return (
-        <div className="mt-2 text-center">
-            <span className="text-xs font-medium text-green-600 bg-green-50 px-2 py-1 rounded-full border border-green-100">
-                ✓ Market Approved
-            </span>
-        </div>
-    );
-
-    return (
-        <button
-            onClick={() => writeContract({
-                address: CONTRACTS.BaseERC721.address,
-                abi: CONTRACTS.BaseERC721.abi,
-                functionName: 'setApprovalForAll',
-                args: [CONTRACTS.NFTMarket.address, true]
-            })}
-            disabled={isPending}
-            className="w-full mt-3 text-xs font-semibold text-indigo-600 border border-indigo-200 py-2 rounded-lg hover:bg-indigo-50 transition-colors"
-        >
-            {isPending ? 'Approving...' : 'Approve Market Access'}
-        </button>
-    )
-}
