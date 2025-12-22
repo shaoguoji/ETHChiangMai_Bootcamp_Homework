@@ -16,12 +16,15 @@ export function Profile() {
 
         const fetchUserTokens = async () => {
             try {
+                const currentBlock = await publicClient.getBlockNumber();
+                const fromBlock = currentBlock - 50000n > 0n ? currentBlock - 50000n : 0n;
+
                 // Fetch all Transfer events to the user
                 const logs = await publicClient.getLogs({
                     address: CONTRACTS.BaseERC721.address,
                     event: parseAbiItem('event Transfer(address indexed from, address indexed to, uint256 indexed tokenId)'),
                     args: { to: address },
-                    fromBlock: 'earliest'
+                    fromBlock: fromBlock
                 });
 
                 // Extract unique Token IDs

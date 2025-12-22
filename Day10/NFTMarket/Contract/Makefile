@@ -46,4 +46,4 @@ anvil :; anvil -m 'test test test test test test test test test test test junk' 
 
 deploy:
 	@echo "Deploying $(script) to $(NETWORK) with account $(ACCOUNT)..."
-	forge script $(DEPLOY_SCRIPT_PATH) --rpc-url $(NETWORK) --account $(ACCOUNT) --broadcast
+	forge script $(DEPLOY_SCRIPT_PATH) --rpc-url $(NETWORK) --account $(ACCOUNT) --broadcast $(if $(IS_SEPOLIA),--verify,)

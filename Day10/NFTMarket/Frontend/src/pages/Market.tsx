@@ -15,11 +15,14 @@ export function Market() {
 
         const fetchListedTokens = async () => {
             try {
+                const currentBlock = await publicClient.getBlockNumber();
+                const fromBlock = currentBlock - 50000n > 0n ? currentBlock - 50000n : 0n;
+
                 // Fetch all logList events to find any token that has ever been listed
                 const logs = await publicClient.getLogs({
                     address: CONTRACTS.NFTMarket.address,
                     event: parseAbiItem('event logList(address saler, uint256 tokenId, uint256 price)'),
-                    fromBlock: 'earliest'
+                    fromBlock: fromBlock
                 });
 
                 // Extract unique Token IDs

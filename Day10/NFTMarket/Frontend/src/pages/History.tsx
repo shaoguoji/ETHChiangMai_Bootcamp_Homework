@@ -14,16 +14,19 @@ export function History() {
 
         const fetchLogs = async () => {
             try {
+                const currentBlock = await publicClient.getBlockNumber();
+                const fromBlock = currentBlock - 50000n > 0n ? currentBlock - 50000n : 0n;
+
                 const listLogs = await publicClient.getLogs({
                     address: CONTRACTS.NFTMarket.address,
                     event: parseAbiItem('event logList(address saler, uint256 tokenId, uint256 price)'),
-                    fromBlock: 'earliest'
+                    fromBlock: fromBlock
                 });
 
                 const buyLogs = await publicClient.getLogs({
                     address: CONTRACTS.NFTMarket.address,
                     event: parseAbiItem('event logBuy(address buyer, uint256 tokenId, uint256 price)'),
-                    fromBlock: 'earliest'
+                    fromBlock: fromBlock
                 });
 
                 const allLogs = [
@@ -63,8 +66,8 @@ export function History() {
                                     <tr key={log.transactionHash + log.logIndex} className="hover:bg-gray-50/50 transition-colors">
                                         <td className="p-5">
                                             <span className={`px-3 py-1 rounded-full text-xs font-bold ${log.type === 'Buy'
-                                                    ? 'bg-green-100 text-green-700'
-                                                    : 'bg-blue-100 text-blue-700'
+                                                ? 'bg-green-100 text-green-700'
+                                                : 'bg-blue-100 text-blue-700'
                                                 }`}>
                                                 {log.type.toUpperCase()}
                                             </span>

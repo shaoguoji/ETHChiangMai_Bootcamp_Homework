@@ -21,7 +21,7 @@ const anvil: AppKitNetwork = {
     caipNetworkId: 'eip155:31337',
 }
 
-export const networks: [AppKitNetwork, ...AppKitNetwork[]] = [anvil, sepolia]
+export const networks: [AppKitNetwork, ...AppKitNetwork[]] = [sepolia, anvil]
 
 
 export const projectId = import.meta.env.VITE_PROJECT_ID
