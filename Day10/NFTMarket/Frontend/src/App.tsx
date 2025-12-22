@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Market } from './pages/Market';
 import { Profile } from './pages/Profile';
 import { History } from './pages/History';
+import { TokenTransfer } from './pages/TokenTransfer';
 
 function App() {
   return (
@@ -10,6 +11,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Profile />} />
         <Route path="/market" element={<Market />} />
+        <Route path="/transfer" element={<TokenTransfer />} />
         <Route path="/history" element={<History />} />
       </Routes>
     </Router>

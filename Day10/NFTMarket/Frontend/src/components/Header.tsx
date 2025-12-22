@@ -20,6 +20,7 @@ export function Header() {
                     <nav className="hidden md:flex gap-8 text-sm">
                         <Link to="/market" className={`py-5 ${isActive('/market')}`}>Market</Link>
                         <Link to="/" className={`py-5 ${isActive('/')}`}>My Collection</Link>
+                        <Link to="/transfer" className={`py-5 ${isActive('/transfer')}`}>ERC20 Transfer</Link>
                         <Link to="/history" className={`py-5 ${isActive('/history')}`}>Activity</Link>
                     </nav>
                 </div>
