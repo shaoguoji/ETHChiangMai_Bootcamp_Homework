@@ -41,6 +41,12 @@ createAppKit({
     adapters: [wagmiAdapter],
     networks: networks,
     projectId,
+    metadata: {
+        name: 'NFT Market',
+        description: 'NFT Marketplace with ERC20 integration',
+        url: 'https://example.com', // origin must match your domain & subdomain
+        icons: ['https://avatars.githubusercontent.com/u/37784886']
+    },
     features: {
         analytics: true
     }
