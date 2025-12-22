@@ -15,17 +15,29 @@ export function NFTCard({ tokenId, price, owner, isOwner, refetch }: NFTCardProp
     const { writeContract, data: hash, isPending } = useWriteContract();
     const { isLoading: isConfirming, isSuccess } = useWaitForTransactionReceipt({ hash });
 
-    if (isSuccess) {
-        setTimeout(() => refetch(), 1000);
-    }
-
-    const { data: isApproved } = useReadContract({
+    const { data: isApproved, refetch: refetchApproval } = useReadContract({
         address: CONTRACTS.BaseERC721.address,
         abi: CONTRACTS.BaseERC721.abi,
         functionName: 'isApprovedForAll',
         args: address && isOwner ? [address, CONTRACTS.NFTMarket.address] : undefined,
         query: { enabled: !!address && isOwner }
     });
+
+    const { data: allowance, refetch: refetchAllowance } = useReadContract({
+        address: CONTRACTS.HookERC20.address,
+        abi: CONTRACTS.HookERC20.abi,
+        functionName: 'allowance',
+        args: address ? [address, CONTRACTS.NFTMarket.address] : undefined,
+        query: { enabled: !!address && !isOwner && price > 0n }
+    });
+
+    if (isSuccess) {
+        setTimeout(() => {
+            refetch();
+            refetchAllowance();
+            refetchApproval();
+        }, 1000);
+    }
 
     const { writeContract: writeApprove, isPending: isApproving } = useWriteContract();
 
@@ -105,16 +117,18 @@ export function NFTCard({ tokenId, price, owner, isOwner, refetch }: NFTCardProp
                         <span className="text-sm text-gray-400 font-medium">Not Listed</span>
                     )}
 
-                    <div className="flex gap-2">
-                        {price > 0n && !isOwner && (
-                            <>
+                    {/* Buyer Controls */}
+                    {price > 0n && !isOwner && (
+                        <>
+                            {allowance !== undefined && allowance < price ? (
                                 <button
                                     onClick={handleApproveToken}
                                     disabled={isPending || isConfirming}
-                                    className="px-3 py-2 text-xs font-semibold text-indigo-600 bg-indigo-50 rounded-lg hover:bg-indigo-100 transition-colors disabled:opacity-50"
+                                    className="px-4 py-2 text-xs font-semibold text-indigo-600 border border-indigo-200 rounded-lg hover:bg-indigo-50 transition-colors disabled:opacity-50"
                                 >
-                                    Approve
+                                    {isPending || isConfirming ? 'Approving...' : 'Approve To Buy'}
                                 </button>
+                            ) : (
                                 <button
                                     onClick={handleBuy}
                                     disabled={isPending || isConfirming}
@@ -122,30 +136,33 @@ export function NFTCard({ tokenId, price, owner, isOwner, refetch }: NFTCardProp
                                 >
                                     {isPending || isConfirming ? 'Processing...' : 'Buy Now'}
                                 </button>
-                            </>
-                        )}
-                        {isOwner && price === 0n && (
-                            !isApproved ? (
-                                <button
-                                    onClick={handleApproveMarket}
-                                    disabled={isApproving}
-                                    className="px-4 py-2 text-xs font-semibold text-indigo-600 border border-indigo-200 rounded-lg hover:bg-indigo-50 transition-all disabled:opacity-50"
-                                >
-                                    {isApproving ? 'Approving...' : 'Approve Market'}
-                                </button>
-                            ) : (
-                                <button
-                                    onClick={handleList}
-                                    disabled={isPending || isConfirming}
-                                    className="px-4 py-2 text-xs font-semibold text-white bg-gray-900 rounded-lg hover:bg-gray-800 transition-all disabled:opacity-50"
-                                >
-                                    {isPending || isConfirming ? 'Listing...' : 'List for Sale'}
-                                </button>
-                            )
-                        )}
-                    </div>
+                            )}
+                        </>
+                    )}
+
+                    {/* Seller Controls */}
+                    {isOwner && price === 0n && (
+                        !isApproved ? (
+                            <button
+                                onClick={handleApproveMarket}
+                                disabled={isApproving}
+                                className="px-4 py-2 text-xs font-semibold text-indigo-600 border border-indigo-200 rounded-lg hover:bg-indigo-50 transition-all disabled:opacity-50"
+                            >
+                                {isApproving ? 'Approving...' : 'Approve Market'}
+                            </button>
+                        ) : (
+                            <button
+                                onClick={handleList}
+                                disabled={isPending || isConfirming}
+                                className="px-4 py-2 text-xs font-semibold text-white bg-gray-900 rounded-lg hover:bg-gray-800 transition-all disabled:opacity-50"
+                            >
+                                {isPending || isConfirming ? 'Listing...' : 'List for Sale'}
+                            </button>
+                        )
+                    )}
                 </div>
             </div>
         </div>
+
     );
 }

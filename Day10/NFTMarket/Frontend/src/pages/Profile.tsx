@@ -150,7 +150,7 @@ function ProfileItem({ tokenId, ownerAddress }: { tokenId: bigint, ownerAddress?
         args: [tokenId],
     });
 
-    const { data: price } = useReadContract({
+    const { data: price, refetch: refetchPrice } = useReadContract({
         address: CONTRACTS.NFTMarket.address,
         abi: CONTRACTS.NFTMarket.abi,
         functionName: 'priceOfNft',
@@ -169,7 +169,7 @@ function ProfileItem({ tokenId, ownerAddress }: { tokenId: bigint, ownerAddress?
             price={price as bigint || 0n}
             owner={owner as string}
             isOwner={true}
-            refetch={() => { }}
+            refetch={() => { refetchPrice() }}
         />
 
     );
