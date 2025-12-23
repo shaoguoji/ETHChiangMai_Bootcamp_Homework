@@ -10,7 +10,9 @@ const client = createPublicClient({
     transport: http(process.env.RPC_URL || 'https://1rpc.io/sepolia'), // Fallback to public RPC
 });
 
-const CONTRACT_ADDRESS = '0xb8119Af65964BF83b0c44E8DD07e4bEbD3432d5c';
+// const CONTRACT_ADDRESS = '0xb8119Af65964BF83b0c44E8DD07e4bEbD3432d5c';
+// const CONTRACT_ADDRESS = '0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984';  // ERC-20: Uniswap (UNI)
+const CONTRACT_ADDRESS = '0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238';  // ERC-20: USDC (USDC)
 const TRANSFER_EVENT = parseAbiItem('event Transfer(address indexed from, address indexed to, uint256 value)');
 
 export async function indexTransfers() {
@@ -39,7 +41,7 @@ export async function indexTransfers() {
                 value: value.toString(),
                 blockNumber: log.blockNumber,
             });
-            console.log(`Indexed transfer: ${log.transactionHash}`);
+            console.log(`Indexed transfer: ${log.transactionHash}, amount: ${Number(value) / 1e6} USDC`);
         }
     }
 }
@@ -63,7 +65,7 @@ export function startIndexer() {
                         value: value.toString(),
                         blockNumber: log.blockNumber,
                     });
-                    console.log(`Indexed NEW transfer: ${log.transactionHash}`);
+                    console.log(`Indexed NEW transfer: ${log.transactionHash}, amount: ${Number(value) / 1e6} USDC`);
                 }
             }
         }
