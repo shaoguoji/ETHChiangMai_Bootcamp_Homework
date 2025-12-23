@@ -1,4 +1,4 @@
-import { createPublicClient, http, parseAbiItem } from 'viem';
+import { createPublicClient, http, parseAbiItem, webSocket, decodeFunctionData, parseAbi } from 'viem';
 import { sepolia } from 'viem/chains';
 import { saveTransfer } from './db';
 import dotenv from 'dotenv';
@@ -7,7 +7,7 @@ dotenv.config();
 
 const client = createPublicClient({
     chain: sepolia,
-    transport: http(process.env.RPC_URL || 'https://1rpc.io/sepolia'), // Fallback to public RPC
+    transport: webSocket(process.env.RPC_URL || 'wss://ethereum-sepolia-rpc.publicnode.com'), // Fallback to public RPC
 });
 
 // const CONTRACT_ADDRESS = '0xb8119Af65964BF83b0c44E8DD07e4bEbD3432d5c';
@@ -46,28 +46,52 @@ export async function indexTransfers() {
     }
 }
 
-export function startIndexer() {
-    // Run once on startup
-    indexTransfers().catch(console.error);
 
-    // Watch for new events
-    client.watchEvent({
-        address: CONTRACT_ADDRESS,
-        event: TRANSFER_EVENT,
-        onLogs: logs => {
-            for (const log of logs) {
-                const { from, to, value } = log.args;
-                if (from && to && value) {
-                    saveTransfer({
-                        hash: log.transactionHash,
-                        from: from,
-                        to: to,
-                        value: value.toString(),
-                        blockNumber: log.blockNumber,
-                    });
-                    console.log(`Indexed NEW transfer: ${log.transactionHash}, amount: ${Number(value) / 1e6} USDC`);
+export function startIndexer() {
+    // Run once on startup (historical data)
+    // indexTransfers().catch(console.error);
+
+    const TRANSFER_ABI = parseAbi(['function transfer(address to, uint256 value)']);
+
+    // Watch for new pending transactions
+    client.watchPendingTransactions({
+        onTransactions: async (hashes) => {
+            for (const hash of hashes) {
+                try {
+                    const tx = await client.getTransaction({ hash });
+
+                    // Check if interaction is with our target contract
+                    if (tx.to && tx.to.toLowerCase() === CONTRACT_ADDRESS.toLowerCase()) {
+
+                        // Decode input data to see if it is a transfer
+                        try {
+                            const { args } = decodeFunctionData({
+                                abi: TRANSFER_ABI,
+                                data: tx.input,
+                            });
+
+                            const [to, value] = args;
+
+                            console.log(`Pending Transfer found: ${hash}`);
+                            console.log(`From: ${tx.from}, To: ${to}, Value: ${Number(value) / 1e6} USDC`);
+
+                            saveTransfer({
+                                hash: hash,
+                                from: tx.from,
+                                to: to,
+                                value: value.toString(),
+                                blockNumber: 0n, // Pending transactions have no block number
+                            });
+
+                        } catch (err) {
+                            // Not a transfer function call, ignore
+                        }
+                    }
+                } catch (error) {
+                    // Transaction might disappear or fail to fetch
+                    // console.debug(`Failed to fetch tx ${hash}`, error);
                 }
             }
-        }
+        },
     });
 }
