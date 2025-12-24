@@ -2,6 +2,7 @@ import { createPublicClient, createWalletClient, http } from 'viem';
 import { sepolia } from 'viem/chains';
 import dotenv from 'dotenv';
 import fs from 'fs';
+import chalk from 'chalk';
 import path from 'path';
 
 dotenv.config();
@@ -57,7 +58,18 @@ export function loadPrivateKey(): string | undefined {
 export function saveTokenAddress(address: string) {
     updateEnv('TOKEN_ADDRESS', address);
 }
-
+export async function waitForKeypress() {
+    console.log(chalk.dim('\nPress any key to return to menu...'));
+    process.stdin.setRawMode(true);
+    process.stdin.resume();
+    return new Promise<void>(resolve => {
+        process.stdin.once('data', () => {
+            process.stdin.setRawMode(false);
+            process.stdin.pause();
+            resolve();
+        });
+    });
+}
 export function loadTokenAddress(): string | undefined {
     return process.env.TOKEN_ADDRESS;
 }

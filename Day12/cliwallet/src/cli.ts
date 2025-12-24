@@ -4,7 +4,7 @@ import { Command } from 'commander';
 import inquirer from 'inquirer';
 import chalk from 'chalk';
 import { generateWallet, getBalance, transferERC20, setTokenAddress } from './actions';
-import { loadPrivateKey, loadTokenAddress } from './utils';
+import { loadPrivateKey, loadTokenAddress, waitForKeypress } from './utils';
 import { privateKeyToAccount } from 'viem/accounts';
 
 const program = new Command();
@@ -44,6 +44,7 @@ program
 
 // Interactive Mode (Default)
 async function interact() {
+    console.clear();
     console.log(chalk.magenta.bold('\nWelcome to CLI Wallet! 🚀\n'));
 
     // Check if wallet is loaded
@@ -124,8 +125,8 @@ async function interact() {
             process.exit(0);
     }
 
-    // Loop back to menu
-    setTimeout(interact, 1000);
+    await waitForKeypress();
+    interact();
 }
 
 // Handle execution
