@@ -4,6 +4,7 @@ import dotenv from 'dotenv';
 import fs from 'fs';
 import chalk from 'chalk';
 import path from 'path';
+import inquirer, { QuestionCollection } from 'inquirer';
 
 dotenv.config();
 
@@ -72,4 +73,32 @@ export async function waitForKeypress() {
 }
 export function loadTokenAddress(): string | undefined {
     return process.env.TOKEN_ADDRESS;
+}
+
+export class CancelError extends Error {
+    constructor() {
+        super('Cancelled');
+        this.name = 'CancelError';
+    }
+}
+
+export function cancellablePrompt<T = any>(questions: QuestionCollection): Promise<T> {
+    const promptPromise = inquirer.prompt(questions);
+    const ui = (promptPromise as any).ui;
+
+    return new Promise((resolve, reject) => {
+        // Handle standard completion
+        promptPromise.then((answers) => resolve(answers as any)).catch(reject);
+
+        // Handle ESC
+        if (ui && ui.rl) {
+            ui.rl.input.on('keypress', (_: any, key: any) => {
+                if (key && key.name === 'escape') {
+                    // Close the prompt prompt UI
+                    try { ui.close(); } catch { }
+                    reject(new CancelError());
+                }
+            });
+        }
+    });
 }

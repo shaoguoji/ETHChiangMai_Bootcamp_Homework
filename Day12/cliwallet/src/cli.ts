@@ -1,12 +1,11 @@
 #!/usr/bin/env node
 
 import { Command } from 'commander';
-import inquirer from 'inquirer';
 import chalk from 'chalk';
 import fs from 'fs';
 import path from 'path';
 import { getBalance, transferERC20, transferETH, setTokenAddress } from './actions';
-import { loadStore } from './store';
+import { loadStore, isStoreEncrypted, isStoreInitialized, unlockStore } from './store';
 import {
     createHDWallet,
     importMnemonic,
@@ -17,9 +16,7 @@ import {
     getActiveWallet,
     getActiveAccount
 } from './walletManager';
-import { waitForKeypress } from './utils';
-import { english } from 'viem/accounts';
-import { loadTokenAddress } from './utils';
+import { waitForKeypress, cancellablePrompt, CancelError, loadTokenAddress } from './utils';
 
 const program = new Command();
 
@@ -28,12 +25,122 @@ program
     .description('A simple CLI wallet for Sepolia')
     .version('2.0.0');
 
+// Helper to ignore cancel error
+async function safeRun(fn: () => Promise<void>) {
+    try {
+        await fn();
+    } catch (error) {
+        if (error instanceof CancelError) {
+            console.log(chalk.gray('\nOperation cancelled.'));
+            return;
+        }
+        throw error; // Re-throw real errors
+    }
+}
+
+// Startup Flow
+async function startup() {
+    console.clear();
+    console.log(chalk.magenta.bold('\nWelcome to CLI Wallet! 🚀\n'));
+
+    try {
+        if (!isStoreInitialized()) {
+            console.log(chalk.yellow('No existing wallet found. Initializing secure storage...'));
+            try {
+                const { password } = await cancellablePrompt([{
+                    type: 'password',
+                    name: 'password',
+                    message: 'Create a password for your wallet:',
+                    mask: '*'
+                }]);
+
+                const { confirm } = await cancellablePrompt([{
+                    type: 'password',
+                    name: 'confirm',
+                    message: 'Confirm password:',
+                    mask: '*'
+                }]);
+
+                if (password !== confirm) {
+                    console.log(chalk.red('Passwords do not match. Exiting.'));
+                    process.exit(1);
+                }
+
+                unlockStore(password);
+                console.log(chalk.green('Wallet initialized securely.'));
+                await waitForKeypress();
+            } catch (e) {
+                if (e instanceof CancelError) process.exit(0);
+                throw e;
+            }
+
+        } else if (isStoreEncrypted()) {
+            let unlocked = false;
+            while (!unlocked) {
+                try {
+                    const { password } = await cancellablePrompt([{
+                        type: 'password',
+                        name: 'password',
+                        message: 'Enter your wallet password:',
+                        mask: '*'
+                    }]);
+
+                    try {
+                        unlockStore(password);
+                        unlocked = true;
+                        console.log(chalk.green('Unlocked successfully.'));
+                    } catch (e) {
+                        console.log(chalk.red('Incorrect password. Try again.'));
+                    }
+                } catch (e) {
+                    if (e instanceof CancelError) process.exit(0);
+                    throw e;
+                }
+            }
+        } else {
+            console.log(chalk.red.bold('WARNING: Unsecured plaintext wallet found!'));
+            console.log(chalk.yellow('You must set a password to encrypt your data now.'));
+
+            try {
+                const { password } = await cancellablePrompt([{
+                    type: 'password',
+                    name: 'password',
+                    message: 'Create a password to encrypt your wallet:',
+                    mask: '*'
+                }]);
+                const { confirm } = await cancellablePrompt([{
+                    type: 'password',
+                    name: 'confirm',
+                    message: 'Confirm password:',
+                    mask: '*'
+                }]);
+                if (password !== confirm) {
+                    console.log(chalk.red('Passwords do not match. Exiting.'));
+                    process.exit(1);
+                }
+
+                unlockStore(password);
+                console.log(chalk.green('Wallet encrypted and upgraded!.'));
+                await waitForKeypress();
+            } catch (e) {
+                if (e instanceof CancelError) process.exit(0);
+                throw e;
+            }
+        }
+
+        mainMenu();
+
+    } catch (error) {
+        console.error(chalk.red('Startup failed:'), error);
+        process.exit(1);
+    }
+}
+
 // Main Menu
 async function mainMenu() {
     console.clear();
     console.log(chalk.magenta.bold('\nWelcome to CLI Wallet! 🚀\n'));
 
-    // Status Display
     const wallet = getActiveWallet();
     const account = getActiveAccount();
 
@@ -44,196 +151,231 @@ async function mainMenu() {
         console.log(chalk.yellow('No active wallet. Please create or import one.\n'));
     }
 
-    const { action } = await inquirer.prompt([
-        {
-            type: 'list',
-            name: 'action',
-            message: 'What would you like to do?',
-            choices: [
-                'Wallet And Account',
-                'Check Balance',
-                'Transfer ETH',
-                'Transfer ERC20',
-                'Set ERC20 Contract Address',
-                'Exit'
-            ]
-        }
-    ]);
+    try {
+        const { action } = await cancellablePrompt([
+            {
+                type: 'list',
+                name: 'action',
+                message: 'What would you like to do?',
+                choices: [
+                    'Wallet And Account',
+                    'Check Balance',
+                    'Transfer ETH',
+                    'Transfer ERC20',
+                    'Set ERC20 Contract Address',
+                    'Exit'
+                ]
+            }
+        ]);
 
-    switch (action) {
-        case 'Wallet And Account':
-            await walletMenu();
-            break;
-        case 'Check Balance':
-            await getBalance();
-            await waitForKeypress();
-            break;
-        case 'Transfer ETH':
-            await handleTransferETH();
-            await waitForKeypress();
-            break;
-        case 'Transfer ERC20':
-            await handleTransfer();
-            await waitForKeypress();
-            break;
-        case 'Set ERC20 Contract Address':
-            await handleSetToken();
-            break;
-        case 'Exit':
-            console.log('Bye!');
+        switch (action) {
+            case 'Wallet And Account':
+                await walletMenu();
+                break;
+            case 'Check Balance':
+                await safeRun(async () => { await getBalance(); await waitForKeypress(); });
+                break;
+            case 'Transfer ETH':
+                await safeRun(async () => { await handleTransferETH(); await waitForKeypress(); });
+                break;
+            case 'Transfer ERC20':
+                await safeRun(async () => { await handleTransfer(); await waitForKeypress(); });
+                break;
+            case 'Set ERC20 Contract Address':
+                await safeRun(async () => { await handleSetToken(); });
+                break;
+            case 'Exit':
+                console.log('Bye!');
+                process.exit(0);
+        }
+    } catch (error) {
+        if (error instanceof CancelError) {
+            console.log(chalk.gray('\nExiting...'));
             process.exit(0);
+        }
+        else console.error(chalk.red('Error:'), error);
     }
 
     mainMenu();
 }
 
-// Wallet Submenu
 async function walletMenu() {
     console.clear();
     console.log(chalk.bold('❯ Wallet And Account\n'));
 
-    const { action } = await inquirer.prompt([
-        {
-            type: 'list',
-            name: 'action',
-            message: 'Select Option:',
-            choices: [
-                'Generate New Wallet',
-                'Generate New Account',
-                'Switch Wallet',
-                'Switch Account',
-                'Import',
-                'Export Account',
-                'Export Wallet',
-                'Back'
-            ]
+    try {
+        const { action } = await cancellablePrompt([
+            {
+                type: 'list',
+                name: 'action',
+                message: 'Select Option:',
+                choices: [
+                    'Generate New Wallet',
+                    'Generate New Account',
+                    'Switch Wallet',
+                    'Switch Account',
+                    'Import',
+                    'Export Account',
+                    'Export Wallet',
+                    'Back'
+                ]
+            }
+        ]);
+
+        switch (action) {
+            case 'Generate New Wallet':
+                await safeRun(handleGenerateWallet);
+                break;
+            case 'Generate New Account':
+                await safeRun(handleGenerateAccount);
+                break;
+            case 'Switch Wallet':
+                await safeRun(handleSwitchWallet);
+                break;
+            case 'Switch Account':
+                await safeRun(handleSwitchAccount);
+                break;
+            case 'Import':
+                await importMenu();
+                break;
+            case 'Export Account':
+                await exportAccountMenu();
+                break;
+            case 'Export Wallet':
+                await exportWalletMenu();
+                break;
+            case 'Back':
+                return;
         }
-    ]);
 
-    switch (action) {
-        case 'Generate New Wallet':
-            await handleGenerateWallet();
-            break;
-        case 'Generate New Account':
-            await handleGenerateAccount();
-            break;
-        case 'Switch Wallet':
-            await handleSwitchWallet();
-            break;
-        case 'Switch Account':
-            await handleSwitchAccount();
-            break;
-        case 'Import':
-            await importMenu();
-            break;
-        case 'Export Account':
-            await exportAccountMenu();
-            break;
-        case 'Export Wallet':
-            await exportWalletMenu();
-            break;
-        case 'Back':
-            return;
-    }
+        if (action !== 'Back') {
+            // Submenus usually handle their own wait or return logic.
+            // If safeRun caught cancel, we just loop.
+            // If action completed, we also loop.
+            // We generally want to stay in walletMenu unless 'Back' is pressed.
+            if (action !== 'Import' && action !== 'Export Account' && action !== 'Export Wallet') {
+                // The handlers above (Switch, Gen) finish quickly.
+                await waitForKeypress();
+            }
+            await walletMenu();
+        }
 
-    if (action !== 'Back') {
-        await waitForKeypress();
-        await walletMenu();
+    } catch (error) {
+        if (error instanceof CancelError) return; // Go back to Main Menu
+        throw error;
     }
 }
 
-// Import Submenu
 async function importMenu() {
     console.clear();
     console.log(chalk.bold('❯ Import\n'));
-    const { action } = await inquirer.prompt([{
-        type: 'list',
-        name: 'action',
-        message: 'Import Type:',
-        choices: [
-            'Account Private Key',
-            'Account Keystore File',
-            'Wallet Seed phrase',
-            'Back'
-        ]
-    }]);
+    try {
+        const { action } = await cancellablePrompt([{
+            type: 'list',
+            name: 'action',
+            message: 'Import Type:',
+            choices: [
+                'Account Private Key',
+                'Account Keystore File',
+                'Wallet Seed phrase',
+                'Back'
+            ]
+        }]);
 
-    switch (action) {
-        case 'Account Private Key':
-            await handleImportPrivateKey();
-            break;
-        case 'Account Keystore File':
-            await handleImportKeystore();
-            break;
-        case 'Wallet Seed phrase':
-            await handleImportMnemonic();
-            break;
-        case 'Back':
-            return;
+        switch (action) {
+            case 'Account Private Key':
+                await safeRun(handleImportPrivateKey);
+                break;
+            case 'Account Keystore File':
+                await safeRun(handleImportKeystore);
+                break;
+            case 'Wallet Seed phrase':
+                await safeRun(handleImportMnemonic);
+                break;
+            case 'Back':
+                return;
+        }
+        if (action !== 'Back') await waitForKeypress();
+        await importMenu(); // Loop
+
+    } catch (e) {
+        if (e instanceof CancelError) return;
+        throw e;
     }
-    if (action !== 'Back') await waitForKeypress();
 }
 
-// Export Account Submenu
 async function exportAccountMenu() {
     console.clear();
     console.log(chalk.bold('❯ Export Account\n'));
-    const { action } = await inquirer.prompt([{
-        type: 'list',
-        name: 'action',
-        message: 'Export Type:',
-        choices: [
-            'Export Private Key',
-            'Export Public Key',
-            'Export Address',
-            'Back'
-        ]
-    }]);
+    try {
+        const { action } = await cancellablePrompt([{
+            type: 'list',
+            name: 'action',
+            message: 'Export Type:',
+            choices: [
+                'Export Private Key',
+                'Export Public Key',
+                'Export Address',
+                'Back'
+            ]
+        }]);
 
-    switch (action) {
-        case 'Export Private Key':
-            await handleExportPK();
-            break;
-        case 'Export Public Key':
-            console.log(chalk.yellow('Feature not implemented yet (requires derive)'));
-            break;
-        case 'Export Address':
-            const acc = getActiveAccount();
-            if (acc) console.log(chalk.green(acc.address));
-            break;
+        switch (action) {
+            case 'Export Private Key':
+                await safeRun(handleExportPK);
+                break;
+            case 'Export Public Key':
+                console.log(chalk.yellow('Feature not implemented yet (requires derive)'));
+                break;
+            case 'Export Address':
+                const acc = getActiveAccount();
+                if (acc) console.log(chalk.green(acc.address));
+                break;
+        }
+        if (action !== 'Back') await waitForKeypress();
+        await exportAccountMenu();
+
+    } catch (e) {
+        if (e instanceof CancelError) return;
+        throw e;
     }
-    if (action !== 'Back') await waitForKeypress();
 }
 
-// Export Wallet Submenu
 async function exportWalletMenu() {
     console.clear();
     console.log(chalk.bold('❯ Export Wallet\n'));
-    const { action } = await inquirer.prompt([{
-        type: 'list',
-        name: 'action',
-        message: 'Option:',
-        choices: [
-            'Seed phrase',
-            'Back'
-        ]
-    }]);
+    try {
+        const { action } = await cancellablePrompt([{
+            type: 'list',
+            name: 'action',
+            message: 'Option:',
+            choices: [
+                'Seed phrase',
+                'Back'
+            ]
+        }]);
 
-    if (action === 'Seed phrase') {
-        const wallet = getActiveWallet();
-        if (wallet?.mnemonic) {
-            console.log(chalk.green('Seed Phrase:'), wallet.mnemonic);
-        } else {
-            console.log(chalk.red('Current wallet is not an HD wallet or has no seed.'));
+        if (action === 'Seed phrase') {
+            const wallet = getActiveWallet();
+            if (wallet?.mnemonic) {
+                console.log(chalk.green('Seed Phrase:'), wallet.mnemonic);
+            } else {
+                console.log(chalk.red('Current wallet is not an HD wallet or has no seed.'));
+            }
+            await waitForKeypress();
         }
-        await waitForKeypress();
+        await exportWalletMenu(); // Loop
+
+    } catch (e) {
+        if (e instanceof CancelError) return;
+        throw e;
     }
 }
 
-// --- Handlers ---
+// --- Handlers (Unwrapped, they propagate CancelError usually) ---
 
 async function handleGenerateWallet() {
-    const { name } = await inquirer.prompt([{ type: 'input', name: 'name', message: 'Wallet Name:' }]);
+    const { name } = await cancellablePrompt([{ type: 'input', name: 'name', message: 'Wallet Name:' }]);
     const { mnemonic, address } = await createHDWallet(name);
     console.log(chalk.green('Wallet Created!'));
     console.log('Mnemonic:', mnemonic);
@@ -257,7 +399,7 @@ async function handleSwitchWallet() {
     const choices = store.wallets.map(w => ({ name: `${w.name} (${w.accounts.length} accs)`, value: w.id }));
     if (choices.length === 0) return console.log(chalk.yellow('No wallets found.'));
 
-    const { id } = await inquirer.prompt([{
+    const { id } = await cancellablePrompt([{
         type: 'list',
         name: 'id',
         message: 'Select Wallet:',
@@ -277,8 +419,11 @@ async function handleSwitchAccount() {
     const wallet = getActiveWallet();
     if (!wallet) return console.log(chalk.red('No active wallet.'));
 
+    // This prompt needs cancel too.
+    if (wallet.accounts.length === 0) return console.log(chalk.red('No accounts in wallet.'));
+
     const choices = wallet.accounts.map(a => ({ name: `${a.name} - ${a.address}`, value: a.address }));
-    const { address } = await inquirer.prompt([{
+    const { address } = await cancellablePrompt([{
         type: 'list',
         name: 'address',
         message: 'Select Account:',
@@ -293,7 +438,7 @@ async function handleSwitchAccount() {
 }
 
 async function handleImportMnemonic() {
-    const { name, mnemonic } = await inquirer.prompt([
+    const { name, mnemonic } = await cancellablePrompt([
         { type: 'input', name: 'name', message: 'Wallet Name:' },
         { type: 'input', name: 'mnemonic', message: 'Seed Phrase:' }
     ]);
@@ -309,7 +454,7 @@ async function handleImportPrivateKey() {
     const wallet = getActiveWallet();
     if (!wallet) return console.log(chalk.red('Create a wallet container first (or we can auto-create one).'));
 
-    const { name, key } = await inquirer.prompt([
+    const { name, key } = await cancellablePrompt([
         { type: 'input', name: 'name', message: 'Account Name:' },
         { type: 'input', name: 'key', message: 'Private Key:' }
     ]);
@@ -326,7 +471,7 @@ async function handleImportKeystore() {
     const wallet = getActiveWallet();
     if (!wallet) return console.log(chalk.red('Create a wallet container first.'));
 
-    const { path: fpath, pass } = await inquirer.prompt([
+    const { path: fpath, pass } = await cancellablePrompt([
         { type: 'input', name: 'path', message: 'Keystore File Path:' },
         { type: 'password', name: 'pass', message: 'Password:' }
     ]);
@@ -352,7 +497,7 @@ async function handleExportPK() {
 }
 
 async function handleTransfer() {
-    const answers = await inquirer.prompt([
+    const answers = await cancellablePrompt([
         {
             type: 'input',
             name: 'token',
@@ -380,11 +525,13 @@ async function handleTransfer() {
             message: 'Max Priority Fee Per Gas (Gwei) [Optional]:',
         }
     ]);
+    // If we are here, we finished prompt. 
+    // If user cancelled in prompt, it threw, and safeRun catches it.
     await transferERC20(answers.token, answers.to, answers.amount, answers.maxFeePerGas, answers.maxPriorityFeePerGas);
 }
 
 async function handleTransferETH() {
-    const answers = await inquirer.prompt([
+    const answers = await cancellablePrompt([
         {
             type: 'input',
             name: 'to',
@@ -410,7 +557,7 @@ async function handleTransferETH() {
 }
 
 async function handleSetToken() {
-    const { tokenAddress } = await inquirer.prompt([{
+    const { tokenAddress } = await cancellablePrompt([{
         type: 'input',
         name: 'tokenAddress',
         message: 'Enter ERC20 Token Contract Address:',
@@ -421,7 +568,7 @@ async function handleSetToken() {
 
 // Start
 if (!process.argv.slice(2).length) {
-    mainMenu();
+    startup();
 } else {
     program.parse(process.argv);
 }
