@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 import { Command } from 'commander';
+import inquirer from 'inquirer';
 import chalk from 'chalk';
 import fs from 'fs';
 import path from 'path';
@@ -16,9 +17,45 @@ import {
     getActiveWallet,
     getActiveAccount
 } from './walletManager';
+// ... imports
+// ... imports
 import { waitForKeypress, cancellablePrompt, CancelError, loadTokenAddress } from './utils';
 
 const program = new Command();
+const ui = new inquirer.ui.BottomBar();
+
+function updateStatus() {
+
+
+    let wInfo = chalk.red('No Wallet');
+    let aInfo = chalk.red('No Account');
+    let net = chalk.green('Sepolia');
+
+    try {
+        const wallet = getActiveWallet();
+        const account = getActiveAccount();
+
+        if (wallet) wInfo = chalk.cyan(wallet.name) + chalk.gray(` (${wallet.type})`);
+        if (account) {
+            const addrShort = `${account.address.substring(0, 6)}...${account.address.substring(account.address.length - 4)}`;
+            aInfo = chalk.cyan(account.name) + chalk.gray(` (${addrShort})`);
+        }
+    } catch (e: any) {
+        if (e.message && e.message.includes('locked')) {
+            wInfo = chalk.yellow('🔒 Locked');
+            aInfo = chalk.yellow('🔒 Locked');
+        } else {
+            wInfo = chalk.gray('Initializing...');
+            aInfo = chalk.gray('...');
+        }
+    }
+    const hints = chalk.gray('[ESC] Back/Cancel  [⬆/⬇] Navigate  [Enter] Select');
+
+    const line = ` 💼 ${wInfo}  👤 ${aInfo}  🌐 ${net}  |  ${hints} `;
+
+    // Force write to bottom bar
+    ui.updateBottomBar(line);
+}
 
 program
     .name('cliwallet')
@@ -42,6 +79,7 @@ async function safeRun(fn: () => Promise<void>) {
 async function startup() {
     console.clear();
     console.log(chalk.magenta.bold('\nWelcome to CLI Wallet! 🚀\n'));
+    updateStatus();
 
     try {
         if (!isStoreInitialized()) {
@@ -141,15 +179,8 @@ async function mainMenu() {
     console.clear();
     console.log(chalk.magenta.bold('\nWelcome to CLI Wallet! 🚀\n'));
 
-    const wallet = getActiveWallet();
-    const account = getActiveAccount();
-
-    if (wallet && account) {
-        console.log(chalk.cyan(`Active Wallet: ${wallet.name} (${wallet.type})`));
-        console.log(chalk.cyan(`Active Account: ${account.name} (${account.address})\n`));
-    } else {
-        console.log(chalk.yellow('No active wallet. Please create or import one.\n'));
-    }
+    // Status moved to bottom bar
+    updateStatus();
 
     try {
         const { action } = await cancellablePrompt([
@@ -202,6 +233,7 @@ async function mainMenu() {
 async function walletMenu() {
     console.clear();
     console.log(chalk.bold('❯ Wallet And Account\n'));
+    updateStatus();
 
     try {
         const { action } = await cancellablePrompt([
@@ -413,6 +445,7 @@ async function handleSwitchWallet() {
     const { saveStore } = require('./store');
     saveStore(store);
     console.log(chalk.green('Switched Wallet.'));
+    updateStatus();
 }
 
 async function handleSwitchAccount() {
@@ -435,6 +468,7 @@ async function handleSwitchAccount() {
     const { saveStore } = require('./store');
     saveStore(store);
     console.log(chalk.green('Switched Account.'));
+    updateStatus();
 }
 
 async function handleImportMnemonic() {
@@ -568,7 +602,7 @@ async function handleSetToken() {
 
 // Start
 if (!process.argv.slice(2).length) {
-    startup();
+    startup().catch(e => { console.error('Unhandled Rejection:', e); process.exit(1); });
 } else {
     program.parse(process.argv);
 }
