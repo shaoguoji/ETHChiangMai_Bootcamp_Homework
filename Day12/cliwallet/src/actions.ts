@@ -1,6 +1,7 @@
 import { generatePrivateKey, privateKeyToAccount } from 'viem/accounts';
 import { publicClient, savePrivateKey, loadPrivateKey, saveTokenAddress, loadTokenAddress } from './utils';
-import { createWalletClient, http, parseEther, parseAbi, formatEther } from 'viem';
+import { getActiveViemAccount } from './walletManager';
+import { createWalletClient, http, parseEther, parseAbi, formatEther, parseGwei } from 'viem';
 import { sepolia } from 'viem/chains';
 import chalk from 'chalk';
 import ora from 'ora';
@@ -30,13 +31,11 @@ export async function generateWallet() {
 // 2. Get Balance
 export async function getBalance(address?: string) {
     if (!address) {
-        // Try to load from env if no address provided
-        const pk = loadPrivateKey();
-        if (pk) {
-            const account = privateKeyToAccount(pk as `0x${string}`);
+        try {
+            const account = getActiveViemAccount();
             address = account.address;
-        } else {
-            console.error(chalk.red('No address provided and no private key found in .env'));
+        } catch (e) {
+            console.error(chalk.red('No active account found. Please create or select a wallet.'));
             return;
         }
     }
@@ -98,14 +97,15 @@ export async function getBalance(address?: string) {
 }
 
 // 3. Transfer ERC20
-export async function transferERC20(tokenAddress: string, toAddress: string, amount: string) {
-    const pk = loadPrivateKey();
-    if (!pk) {
-        console.error(chalk.red('No private key found. Please generate or import a wallet first.'));
+export async function transferERC20(tokenAddress: string, toAddress: string, amount: string, maxFeePerGasGwei?: string, maxPriorityFeePerGasGwei?: string) {
+    let account;
+    try {
+        account = getActiveViemAccount();
+    } catch (e) {
+        console.error(chalk.red('No active account found. Please create or select a wallet.'));
         return;
     }
 
-    const account = privateKeyToAccount(pk as `0x${string}`);
     const walletClient = createWalletClient({
         account,
         chain: sepolia,
@@ -126,6 +126,8 @@ export async function transferERC20(tokenAddress: string, toAddress: string, amo
         }) as number;
 
         const value = BigInt(parseFloat(amount) * (10 ** decimals));
+        const maxFeePerGas = maxFeePerGasGwei ? parseGwei(maxFeePerGasGwei) : undefined;
+        const maxPriorityFeePerGas = maxPriorityFeePerGasGwei ? parseGwei(maxPriorityFeePerGasGwei) : undefined;
 
         spinner.text = 'Sending transaction...';
 
@@ -135,10 +137,54 @@ export async function transferERC20(tokenAddress: string, toAddress: string, amo
             functionName: 'transfer',
             args: [toAddress as `0x${string}`, value],
             chain: sepolia,
-            // EIP-1559 is default in viem for chains that support it
+            maxFeePerGas,
+            maxPriorityFeePerGas,
         });
 
         spinner.succeed(chalk.green('Transaction sent!'));
+        console.log(chalk.yellow('Tx Hash:'), hash);
+        console.log(chalk.blue(`Explorer: https://sepolia.etherscan.io/tx/${hash}`));
+
+    } catch (error) {
+        spinner.fail('Transfer failed');
+        console.error(error);
+    }
+}
+
+// 3.5 Transfer ETH
+export async function transferETH(toAddress: string, amount: string, maxFeePerGasGwei?: string, maxPriorityFeePerGasGwei?: string) {
+    let account;
+    try {
+        account = getActiveViemAccount();
+    } catch (e) {
+        console.error(chalk.red('No active account found. Please create or select a wallet.'));
+        return;
+    }
+
+    const walletClient = createWalletClient({
+        account,
+        chain: sepolia,
+        transport: http(process.env.RPC_URL || 'https://ethereum-sepolia-rpc.publicnode.com'),
+    });
+
+    const spinner = ora('Preparing ETH transaction...').start();
+
+    try {
+        const value = parseEther(amount);
+        const maxFeePerGas = maxFeePerGasGwei ? parseGwei(maxFeePerGasGwei) : undefined;
+        const maxPriorityFeePerGas = maxPriorityFeePerGasGwei ? parseGwei(maxPriorityFeePerGasGwei) : undefined;
+
+        spinner.text = 'Sending ETH...';
+
+        const hash = await walletClient.sendTransaction({
+            to: toAddress as `0x${string}`,
+            value,
+            maxFeePerGas,
+            maxPriorityFeePerGas,
+            chain: sepolia,
+        });
+
+        spinner.succeed(chalk.green('ETH Transaction sent!'));
         console.log(chalk.yellow('Tx Hash:'), hash);
         console.log(chalk.blue(`Explorer: https://sepolia.etherscan.io/tx/${hash}`));
 

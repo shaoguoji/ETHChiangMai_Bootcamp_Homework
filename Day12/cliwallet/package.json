@@ -10,11 +10,14 @@
     "author": "",
     "license": "ISC",
     "dependencies": {
+        "@types/uuid": "^10.0.0",
         "chalk": "^4.1.2",
         "commander": "^11.1.0",
         "dotenv": "^16.4.1",
+        "ethers": "^6.16.0",
         "inquirer": "^8.2.6",
         "ora": "^5.4.1",
+        "uuid": "^13.0.0",
         "viem": "^2.7.1"
     },
     "devDependencies": {
