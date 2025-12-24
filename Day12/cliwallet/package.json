@@ -1,0 +1,26 @@
+{
+    "name": "cli-wallet",
+    "version": "1.0.0",
+    "description": "A simple CLI wallet using Viem",
+    "main": "src/cli.ts",
+    "scripts": {
+        "start": "ts-node src/cli.ts",
+        "build": "tsc"
+    },
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+        "chalk": "^4.1.2",
+        "commander": "^11.1.0",
+        "dotenv": "^16.4.1",
+        "inquirer": "^8.2.6",
+        "ora": "^5.4.1",
+        "viem": "^2.7.1"
+    },
+    "devDependencies": {
+        "@types/inquirer": "^9.0.7",
+        "@types/node": "^20.11.16",
+        "ts-node": "^10.9.2",
+        "typescript": "^5.3.3"
+    }
+}
