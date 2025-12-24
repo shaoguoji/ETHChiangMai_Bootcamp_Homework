@@ -51,15 +51,21 @@ function updateStatus() {
     }
     const hints = chalk.gray('[ESC] Back/Cancel  [⬆/⬇] Navigate  [Enter] Select');
 
-    const line = ` 💼 ${wInfo}  👤 ${aInfo}  🌐 ${net}  |  ${hints} `;
+    const line = ` 💼 ${wInfo}  👤 ${aInfo}  🌐 ${net}\n ${hints}`;
 
-    // Force write to bottom bar
-    ui.updateBottomBar(line);
+    // Force write to bottom bar with newline to prevent overlap with prompt
+    ui.updateBottomBar(line + '\n');
+}
+
+function printHeader() {
+    console.clear();
+    ui.log.write(chalk.magenta.bold('\nWelcome to CEW! A simple CLI Ethereum Wallet using Viem 🚀\n'));
+    updateStatus();
 }
 
 program
-    .name('cliwallet')
-    .description('A simple CLI wallet for Sepolia')
+    .name('cew')
+    .description('A simple CLI Ethereum Wallet using Viem')
     .version('2.0.0');
 
 // Helper to ignore cancel error
@@ -76,10 +82,9 @@ async function safeRun(fn: () => Promise<void>) {
 }
 
 // Startup Flow
+// Startup Flow
 async function startup() {
-    console.clear();
-    console.log(chalk.magenta.bold('\nWelcome to CLI Wallet! 🚀\n'));
-    updateStatus();
+    printHeader();
 
     try {
         if (!isStoreInitialized()) {
@@ -176,11 +181,7 @@ async function startup() {
 
 // Main Menu
 async function mainMenu() {
-    console.clear();
-    console.log(chalk.magenta.bold('\nWelcome to CLI Wallet! 🚀\n'));
-
-    // Status moved to bottom bar
-    updateStatus();
+    printHeader();
 
     try {
         const { action } = await cancellablePrompt([
@@ -231,9 +232,8 @@ async function mainMenu() {
 }
 
 async function walletMenu() {
-    console.clear();
+    printHeader();
     console.log(chalk.bold('❯ Wallet And Account\n'));
-    updateStatus();
 
     try {
         const { action } = await cancellablePrompt([
@@ -299,7 +299,7 @@ async function walletMenu() {
 }
 
 async function importMenu() {
-    console.clear();
+    printHeader();
     console.log(chalk.bold('❯ Import\n'));
     try {
         const { action } = await cancellablePrompt([{
@@ -337,7 +337,7 @@ async function importMenu() {
 }
 
 async function exportAccountMenu() {
-    console.clear();
+    printHeader();
     console.log(chalk.bold('❯ Export Account\n'));
     try {
         const { action } = await cancellablePrompt([{
@@ -374,7 +374,7 @@ async function exportAccountMenu() {
 }
 
 async function exportWalletMenu() {
-    console.clear();
+    printHeader();
     console.log(chalk.bold('❯ Export Wallet\n'));
     try {
         const { action } = await cancellablePrompt([{

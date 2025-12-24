@@ -40,13 +40,18 @@ function updateStatus() {
         }
     }
     const hints = chalk_1.default.gray('[ESC] Back/Cancel  [⬆/⬇] Navigate  [Enter] Select');
-    const line = ` 💼 ${wInfo}  👤 ${aInfo}  🌐 ${net}  |  ${hints} `;
-    // Force write to bottom bar
-    ui.updateBottomBar(line);
+    const line = ` 💼 ${wInfo}  👤 ${aInfo}  🌐 ${net}\n ${hints}`;
+    // Force write to bottom bar with newline to prevent overlap with prompt
+    ui.updateBottomBar(line + '\n');
+}
+function printHeader() {
+    console.clear();
+    ui.log.write(chalk_1.default.magenta.bold('\nWelcome to CEW! A simple CLI Ethereum Wallet using Viem 🚀\n'));
+    updateStatus();
 }
 program
-    .name('cliwallet')
-    .description('A simple CLI wallet for Sepolia')
+    .name('cew')
+    .description('A simple CLI Ethereum Wallet using Viem')
     .version('2.0.0');
 // Helper to ignore cancel error
 async function safeRun(fn) {
@@ -62,10 +67,9 @@ async function safeRun(fn) {
     }
 }
 // Startup Flow
+// Startup Flow
 async function startup() {
-    console.clear();
-    console.log(chalk_1.default.magenta.bold('\nWelcome to CLI Wallet! 🚀\n'));
-    updateStatus();
+    printHeader();
     try {
         if (!(0, store_1.isStoreInitialized)()) {
             console.log(chalk_1.default.yellow('No existing wallet found. Initializing secure storage...'));
@@ -161,10 +165,7 @@ async function startup() {
 }
 // Main Menu
 async function mainMenu() {
-    console.clear();
-    console.log(chalk_1.default.magenta.bold('\nWelcome to CLI Wallet! 🚀\n'));
-    // Status moved to bottom bar
-    updateStatus();
+    printHeader();
     try {
         const { action } = await (0, utils_1.cancellablePrompt)([
             {
@@ -213,9 +214,8 @@ async function mainMenu() {
     mainMenu();
 }
 async function walletMenu() {
-    console.clear();
+    printHeader();
     console.log(chalk_1.default.bold('❯ Wallet And Account\n'));
-    updateStatus();
     try {
         const { action } = await (0, utils_1.cancellablePrompt)([
             {
@@ -278,7 +278,7 @@ async function walletMenu() {
     }
 }
 async function importMenu() {
-    console.clear();
+    printHeader();
     console.log(chalk_1.default.bold('❯ Import\n'));
     try {
         const { action } = await (0, utils_1.cancellablePrompt)([{
@@ -316,7 +316,7 @@ async function importMenu() {
     }
 }
 async function exportAccountMenu() {
-    console.clear();
+    printHeader();
     console.log(chalk_1.default.bold('❯ Export Account\n'));
     try {
         const { action } = await (0, utils_1.cancellablePrompt)([{
@@ -354,7 +354,7 @@ async function exportAccountMenu() {
     }
 }
 async function exportWalletMenu() {
-    console.clear();
+    printHeader();
     console.log(chalk_1.default.bold('❯ Export Wallet\n'));
     try {
         const { action } = await (0, utils_1.cancellablePrompt)([{

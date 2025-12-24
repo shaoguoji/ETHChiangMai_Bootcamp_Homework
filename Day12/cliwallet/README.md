@@ -1,18 +1,19 @@
-# CLI Wallet
+# CEW - A simple CLI Ethereum Wallet using Viem
 
 A command-line interface wallet for the Sepolia Testnet, built with TypeScript and Viem.
+It features secure encrypted storage for managing multiple wallets and accounts.
 
 ![menu](./img/menu.png)
 
-![genwallet](./img/genwallet.png)
-
-![transfer](./img/erc20trans.png)
-
 ## Features
-- 🔑 **Key Generation**: Generate random private keys securely.
-- 💰 **Balance Check**: Query Native ETH balance on Sepolia.
-- 💸 **ERC20 Transfers**: Send tokens using EIP-1559 transactions.
-- 🖥️ **Interactive Mode**: User-friendly menu for easy navigation.
+- 🔒 **Encrypted Storage**: Your keys are AES-256 encrypted using your password. No more plain text `.env` storage!
+- 🔑 **Wallet Management**:
+    - **HD Wallets**: Generate BIP-39 seed phrases and derived accounts.
+    - **Import**: Import existing Seed Phrases, Private Keys, or Keystore Files.
+    - **Switching**: Easily toggle between different wallets and accounts.
+- 💰 **Assets**: Check ETH balances and transfer ERC-20 tokens.
+- 💨 **EIP-1559**: Supports modern gas fee transactions.
+- 🧰 **Standalone Executable**: Build a binary that runs without Node.js.
 
 ## Prerequisites
 - Node.js (v18 or higher)
@@ -27,63 +28,52 @@ A command-line interface wallet for the Sepolia Testnet, built with TypeScript a
 
 2. Install dependencies:
    ```bash
-   npm install
+   pnpm install
    ```
-
-## Configuration
-
-The wallet uses a `.env` file to store your credentials. This file is automatically created when you generate a new wallet, or you can create it manually:
-
-```bash
-PRIVATE_KEY=0x...
-RPC_URL=https://ethereum-sepolia-rpc.publicnode.com
-```
 
 ## Usage
 
-### 1. Interactive Mode (Recommended)
+### Interactive Mode (Recommended)
 Simply run the start command to enter the interactive menu:
 ```bash
-npm start
+pnpm start
 ```
-Follow the on-screen prompts to generate a wallet, check balances, or transfer tokens.
+On first run, you will be prompted to **create a password** to secure your wallet storage.
 
-### 2. Command Line Arguments
-You can also use the tool directly with arguments for automation.
+**Main Menu Options:**
+- **Wallet And Account**: Manage your identities.
+    - *Generate New Wallet*: Create a new HD Wallet.
+    - *Import*: Bring in existing keys/seeds.
+    - *Switch*: Change active wallet/account.
+    - *Export*: View seed phrases or private keys (requires password).
+- **Check Balance**: View native ETH balance.
+- **Transfer ETH**: Send native currency.
+- **Transfer ERC20**: Send tokens (e.g., USDC, UNI).
+- **Set ERC20 Contract**: Configure which token to interact with.
 
-**Generate New Wallet:**
+### Building Executable
+
+You can compile the wallet into a single executable file (binary) for easy distribution or running on systems without Node.js.
+
+1. Build the package:
+   ```bash
+   pnpm package
+   ```
+
+2. Run the executable:
+   ```bash
+   ./cew
+   ```
+
+## Architecture
+
+- **`data/wallets.json`**: Stores your encrypted wallet data. **Do not delete this if you want to keep your accounts.**
+- **Password**: The encryption key is derived from your password. **If you lose your password, you lose access to your local data.**
+
+## Development
+
+To compile the TypeScript code manually:
 ```bash
-npm start -- generate
-```
-
-**Check Balance:**
-```bash
-# Check loaded wallet's balance
-npm start -- balance
-
-# Check a specific address
-npm start -- balance 0xYourAddress...
-```
-
-**Transfer ERC20 Tokens:**
-```bash
-npm start -- transfer \
-  --token <TOKEN_ADDRESS> \
-  --to <RECIPIENT_ADDRESS> \
-  --amount <AMOUNT>
-```
-
-**Example USDC Transfer:**
-```bash
-npm start -- transfer \
-  --token 0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238 \
-  --to 0xRecipientAddress... \
-  --amount 10
-```
-
-## Build
-To compile the TypeScript code to JavaScript (optional, for distribution):
-```bash
-npm run build
+pnpm build
 ```
 The output will be in the `dist` folder.

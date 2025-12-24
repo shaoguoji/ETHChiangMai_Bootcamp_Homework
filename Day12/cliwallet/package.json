@@ -1,13 +1,13 @@
 {
-    "name": "cli-wallet",
+    "name": "cew",
     "version": "1.0.0",
-    "description": "A simple CLI wallet using Viem",
+    "description": "A simple CLI Ethereum Wallet using Viem",
     "main": "dist/cli.js",
     "bin": "dist/cli.js",
     "scripts": {
         "start": "ts-node src/cli.ts",
         "build": "tsc",
-        "package": "npm run build && pkg . -t node18-macos-x64 --output cliwallet"
+        "package": "npm run build && pkg . -t node18-macos-x64 --output cew"
     },
     "author": "",
     "license": "ISC",
