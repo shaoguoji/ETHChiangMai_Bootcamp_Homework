@@ -75,4 +75,5 @@ contract MultiSignWallet {
         require(success, "Transaction failed");
         emit logExecuteProposal(msg.sender, walletId, to, value, data);
     }
+    receive() external payable {}
 }
