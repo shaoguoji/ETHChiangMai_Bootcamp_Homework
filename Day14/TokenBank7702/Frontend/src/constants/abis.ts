@@ -362,6 +362,7 @@ export const TOKEN_BANK_V2_ABI = [
 
 // Delegate ABI - EIP-7702 batch execution support
 export const DELEGATE_ABI = [
+  // Local Delegate Interface (Address/Bytes)
   {
     "type": "function",
     "name": "execute",
@@ -386,9 +387,10 @@ export const DELEGATE_ABI = [
     ],
     "stateMutability": "payable"
   },
+  // Local Delegate Interface (Calls[])
   {
     "type": "function",
-    "name": "executeBatch",
+    "name": "execute",
     "inputs": [
       {
         "name": "calls",
@@ -396,7 +398,7 @@ export const DELEGATE_ABI = [
         "internalType": "struct Delegate.Call[]",
         "components": [
           {
-            "name": "target",
+            "name": "to",
             "type": "address",
             "internalType": "address"
           },
@@ -404,6 +406,11 @@ export const DELEGATE_ABI = [
             "name": "data",
             "type": "bytes",
             "internalType": "bytes"
+          },
+          {
+            "name": "value",
+            "type": "uint256",
+            "internalType": "uint256"
           }
         ]
       }
@@ -417,34 +424,28 @@ export const DELEGATE_ABI = [
     ],
     "stateMutability": "payable"
   },
+  // ERC-7579 Interface (MetaMask Delegator - Mode/Bytes)
   {
-    "type": "event",
-    "name": "Executed",
+    "type": "function",
+    "name": "execute",
     "inputs": [
       {
-        "name": "target",
-        "type": "address",
-        "indexed": true,
-        "internalType": "address"
+        "name": "mode",
+        "type": "bytes32",
+        "internalType": "bytes32"
       },
       {
-        "name": "data",
+        "name": "executionCalldata",
         "type": "bytes",
-        "indexed": false,
-        "internalType": "bytes"
-      },
-      {
-        "name": "result",
-        "type": "bytes",
-        "indexed": false,
         "internalType": "bytes"
       }
     ],
-    "anonymous": false
+    "outputs": [],
+    "stateMutability": "payable"
   },
   {
     "type": "event",
-    "name": "BatchExecuted",
+    "name": "Executed",
     "inputs": [
       {
         "name": "callCount",

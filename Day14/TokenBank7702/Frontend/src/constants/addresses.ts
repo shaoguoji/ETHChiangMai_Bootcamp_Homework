@@ -12,11 +12,11 @@ export const CHAIN_IDS = {
   SEPOLIA: 11155111,
 } as const;
 
-// V2 Contracts Sepolia
+// Sepolia Testnet Contracts
 export const CONTRACTS_SEPOLIA: ContractAddresses = {
   MyTokenV2: '0xcf137BBFd546360bd09444D4761c5627A238D39A',
   TokenBankV2: '0x3A730cf364BeDeB1f2b36bF823AC90e6d7f2f207',
-  Delegate: '', // TODO: Deploy to Sepolia and update
+  Delegate: '0x63c0c19a282a1B52b07dD5a65b58948A07DAE32B', // MetaMask EIP7702StatelessDeleGator
 };
 
 // Anvil Local Contracts (for local testing)
