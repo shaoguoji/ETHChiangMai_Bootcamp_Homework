@@ -130,6 +130,7 @@ export default function EIP7702Deposit() {
 
             const authorization = await walletClient.signAuthorization({
                 contractAddress: delegateAddress as AddressType,
+                executor: 'self',
             });
 
             // Step 2: Prepare batch calls (approve + deposit)
