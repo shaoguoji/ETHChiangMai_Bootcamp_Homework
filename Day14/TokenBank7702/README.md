@@ -1,8 +1,8 @@
 # TokenBank with EIP-7702 Support
 
-A decentralized banking application implementing **EIP-7702** to enable seamless, one-click deposits via authorized account delegation.
+A decentralized banking application implementing **EIP-7702** to enable seamless, one-click deposits via authorized account delegation. Verified on **Anvil (Prague Hardfork)** and **Sepolia Testnet**.
 
-![TokenBank Deposit](Img/7702Deposit.png)
+![TokenBank Deposit](Img/demo.png)
 
 ## 🌟 Features
 
@@ -22,7 +22,7 @@ Using **EIP-7702**, this project authorizes a temporary delegation to a smart co
 ## 🛠️ Tech Stack
 
 - **Smart Contracts**: Solidity, Foundry
-- **Frontend**: React, TypeScript, Wagmi, Viem
+- **Frontend**: React, TypeScript, Wagmi, Viem, @metamask/smart-accounts-kit
 - **Chain**: Anvil (Local Node) running `prague` hardfork
 
 ## 🏁 Getting Started
@@ -54,12 +54,13 @@ Navigate to the frontend directory:
 cd ../Frontend
 ```
 
-Create a `.env` file and configure your testing private key (required for local EIP-7702 signing):
+Create a `.env` file and configure your private key (REQUIRED for EIP-7702 signing):
 
 ```bash
-echo "VITE_PRIVATE_KEY=0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80" > .env
+# Example Local Key (Anvil Account #0)
+VITE_PRIVATE_KEY=0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80
 ```
-*Note: The key above is the default Anvil account #0, which holds the deployed tokens.*
+*Note: Even when using MetaMask, the `signAuthorization` action currently requires a local private key because wallet extensions do not yet support the EIP-7702 JSON-RPC method.*
 
 ### 4. Run Application
 
@@ -68,22 +69,43 @@ pnpm install
 pnpm dev
 ```
 
-Open [http://localhost:5173](http://localhost:5173) in your browser.
+Open [http://localhost:5173](http://localhost:5173).
+
+---
+
+## 🌍 Sepolia Testnet Support
+
+The application fully supports the **Sepolia Testnet** using **MetaMask Smart Accounts Kit** conventions.
+
+### Prerequisite: Sepolia Configuration
+To execute EIP-7702 transactions on Sepolia:
+1.  **Fund your account**: Ensure the account corresponding to your `VITE_PRIVATE_KEY` has Sepolia ETH.
+2.  **Environment**: The app uses `@metamask/smart-accounts-kit` to automatically resolve the official **EIP7702StatelessDeleGator** address.
+
+### Deployed Contracts (Sepolia)
+| Contract | Address |
+|----------|---------|
+| **TokenBankV2** | `0x3A730cf364BeDeB1f2b36bF823AC90e6d7f2f207` |
+| **MyTokenV2** | `0xcf137BBFd546360bd09444D4761c5627A238D39A` |
+| **Mask Delegator** | *Resolved dynamically via SDK* |
 
 ## 📖 How EIP-7702 Execution Works
 
-1. **Authorization**: The user signs an EIP-7702 authorization message. This delegates their EOA to reuse the code of our deployed `Delegate` contract.
-2. **Construction**: The frontend constructs a batch transaction containing:
-   - `Call 1`: `token.approve(bank, amount)`
-   - `Call 2`: `bank.deposit(amount)`
-3. **Execution**: The transaction is sent using `sendTransaction` with the signed `authorizationList`.
-   - The EOA temporarily acts as a smart contract.
-   - It executes `execute(calls)` which iterates through the batch.
-   - **Crucial Detail**: We use `executor: 'self'` during signing to ensure the `nonce` is correctly calculated for a self-executed transaction.
+1.  **Authorization**: The user signs an EIP-7702 authorization message locally. This delegates their EOA to reuse the code of the `Delegate` contract (or MetaMask's official Delegator on Sepolia).
+2.  **Construction**: The frontend constructs a batch transaction.
+    - **Sepolia**: Uses ERC-7579 `execute(ModeCode, ExecutionVals)` encoding.
+    - **Anvil**: Uses simple struct array encoding.
+3.  **Execution**: The transaction is sent using `sendTransaction` with the included `authorizationList`.
+    - The transaction temporarily upgrades the EOA.
+    - The batch is executed atomically.
+    - **Executor**: Set to `'self'` to ensure proper nonce management.
 
 ## 🔍 Troubleshooting
 
+**"Account type 'json-rpc' is not supported"**
+- This confirms that you are trying to use EIP-7702 with a browser wallet extension (like MetaMask) directly.
+- **Fix**: Ensure `VITE_PRIVATE_KEY` is set in `.env`. The app falls back to local signing for this specific action.
+
 **"Transaction successful but no logs/events?"**
-This usually happens if the EIP-7702 authorization fails silently (e.g. `nonce` mismatch).
-- Ensure you are using `executor: 'self'` when signing if the signer is also the sender.
+- Ensure you are using `executor: 'self'`.
 - Ensure your Anvil node is running with `--hardfork prague`.
