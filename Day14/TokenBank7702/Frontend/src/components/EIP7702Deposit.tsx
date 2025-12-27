@@ -1,32 +1,13 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useAccount, useReadContract, usePublicClient, useChainId } from 'wagmi';
-import { formatEther, parseEther, encodeFunctionData, type Hex, createWalletClient, http, encodeAbiParameters } from 'viem';
-import { privateKeyToAccount } from 'viem/accounts';
+import { formatEther, parseEther, encodeFunctionData, type Hex, type Address } from 'viem';
 import { getContractsByChainId, CHAIN_IDS } from '../constants/addresses';
-import { TOKEN_BANK_V2_ABI, HOOKERC20_ABI, DELEGATE_ABI } from '../constants/abis';
+import { TOKEN_BANK_V2_ABI, HOOKERC20_ABI } from '../constants/abis';
 
 type AddressType = `0x${string}`;
 
-// Get chain config for wallet client
-const getChainConfig = (chainId: number) => {
-    if (chainId === CHAIN_IDS.SEPOLIA) {
-        return {
-            id: 11155111,
-            name: 'Sepolia',
-            nativeCurrency: { name: 'Sepolia Ether', symbol: 'ETH', decimals: 18 },
-            rpcUrls: { default: { http: ['https://ethereum-sepolia.publicnode.com'] } },
-        };
-    }
-    return {
-        id: 31337,
-        name: 'Anvil',
-        nativeCurrency: { name: 'Ether', symbol: 'ETH', decimals: 18 },
-        rpcUrls: { default: { http: ['http://127.0.0.1:8545'] } },
-    };
-};
-
 export default function EIP7702Deposit() {
-    const { address } = useAccount();
+    const { address, isConnected, connector } = useAccount();
     const publicClient = usePublicClient();
     const chainId = useChainId();
 
@@ -36,34 +17,17 @@ export default function EIP7702Deposit() {
 
     const [depositAmount, setDepositAmount] = useState('');
     const [isProcessing, setIsProcessing] = useState(false);
-    const [txHash, setTxHash] = useState<Hex | null>(null);
+    const [txHash, setTxHash] = useState<string | null>(null); // callsId or txHash
     const [error, setError] = useState<string | null>(null);
     const [status, setStatus] = useState<string>('');
+    const [debugStatus, setDebugStatus] = useState<string>('');
 
-    // Check if private key is available
-    const privateKey = import.meta.env.VITE_PRIVATE_KEY as Hex | undefined;
-    const hasPrivateKey = privateKey && privateKey.startsWith('0x') && privateKey.length === 66;
-
-    // Create local account from private key
-    const localAccount = useMemo(() => {
-        if (hasPrivateKey && privateKey) {
-            try {
-                return privateKeyToAccount(privateKey);
-            } catch {
-                return null;
-            }
-        }
-        return null;
-    }, [privateKey, hasPrivateKey]);
-
-    // Read token balance (use local account address if available, otherwise connected wallet)
-    const accountAddress = localAccount?.address || address;
-
+    // Read token balance
     const { data: tokenBalance, refetch: refetchTokenBalance } = useReadContract({
         address: CONTRACTS.MyTokenV2 as AddressType,
         abi: HOOKERC20_ABI,
         functionName: 'balanceOf',
-        args: accountAddress ? [accountAddress] : undefined,
+        args: address ? [address] : undefined,
     });
 
     // Read bank balance
@@ -71,7 +35,7 @@ export default function EIP7702Deposit() {
         address: CONTRACTS.TokenBankV2 as AddressType,
         abi: TOKEN_BANK_V2_ABI,
         functionName: 'amountsOf',
-        args: accountAddress ? [accountAddress] : undefined,
+        args: address ? [address] : undefined,
     });
 
     // Read token symbol
@@ -82,31 +46,62 @@ export default function EIP7702Deposit() {
         args: [],
     });
 
-    // Refetch balances when transaction succeeds
+    // Refetch statuses
     useEffect(() => {
-        if (txHash) {
-            const timer = setTimeout(() => {
-                refetchTokenBalance();
-                refetchBankBalance();
-            }, 5000); // 5s for Sepolia mainly
-            return () => clearTimeout(timer);
+        if (txHash && !isProcessing) {
+            refetchTokenBalance();
+            refetchBankBalance();
         }
-    }, [txHash, refetchTokenBalance, refetchBankBalance]);
+    }, [txHash, isProcessing, refetchTokenBalance, refetchBankBalance]);
+
+    // Polling function for wallet_getCallsStatus
+    const waitForCallsConfirmation = useCallback(async (
+        callId: string,
+        provider: any
+    ): Promise<{ success: boolean; transactionHash?: Hex }> => {
+        const maxAttempts = 60;
+        const intervalMs = 2000;
+
+        for (let i = 0; i < maxAttempts; i++) {
+            try {
+                const status = await provider.request({
+                    method: 'wallet_getCallsStatus',
+                    params: [callId]
+                }) as { status: string | number; receipts?: Array<{ transactionHash: Hex }> };
+
+                console.log('Call Status:', status);
+                setDebugStatus(JSON.stringify(status));
+
+                // Success if status is 'CONFIRMED' or 200 (HTTP OK-like code used by MetaMask)
+                if (status.status === 'CONFIRMED' || status.status === 200) {
+                    return {
+                        success: true,
+                        transactionHash: status.receipts?.[0]?.transactionHash
+                    };
+                }
+
+                if (status.status === 'FAILED') {
+                    return { success: false };
+                }
+
+                // Still pending
+                await new Promise(resolve => setTimeout(resolve, intervalMs));
+            } catch (err) {
+                console.warn('Status check failed, retrying...', err);
+                await new Promise(resolve => setTimeout(resolve, intervalMs));
+            }
+        }
+        return { success: false };
+    }, []);
 
     const handleEIP7702Deposit = async () => {
-        if (!depositAmount || !publicClient) {
+        if (!isConnected || !address || !connector) {
+            setError('Please connect your wallet');
+            return;
+        }
+
+        if (!depositAmount) {
             setError('Please enter amount');
-            return;
-        }
-
-        if (!localAccount) {
-            setError('Private key not configured. Set VITE_PRIVATE_KEY in .env file.');
-            return;
-        }
-
-        const delegateAddress = CONTRACTS.Delegate;
-        if (!delegateAddress || delegateAddress.length < 42) {
-            setError('Delegate contract not configured.');
             return;
         }
 
@@ -116,130 +111,115 @@ export default function EIP7702Deposit() {
 
         try {
             const amount = parseEther(depositAmount);
-            const chainConfig = getChainConfig(chainId);
+            const provider = await connector.getProvider() as any;
 
-            // Create wallet client with local account
-            const walletClient = createWalletClient({
-                account: localAccount,
-                chain: chainConfig,
-                transport: http(),
-            });
+            if (!provider) {
+                throw new Error('Provider not available');
+            }
 
-            // Step 1: Sign EIP-7702 authorization
-            setStatus('Signing EIP-7702 authorization...');
-
-            const authorization = await walletClient.signAuthorization({
-                contractAddress: delegateAddress as AddressType,
-                executor: 'self',
-            });
-
-            // Step 2: Prepare calls
-            setStatus('Preparing batch transaction...');
-
+            // Prepare Batch Calls
+            // Call 1: Approve
             const approveData = encodeFunctionData({
                 abi: HOOKERC20_ABI,
                 functionName: 'approve',
                 args: [CONTRACTS.TokenBankV2 as AddressType, amount],
             });
 
+            // Call 2: Deposit
             const depositData = encodeFunctionData({
                 abi: TOKEN_BANK_V2_ABI,
                 functionName: 'deposit',
                 args: [amount],
             });
 
-            let executeCallData: Hex;
+            const calls = [
+                {
+                    to: CONTRACTS.MyTokenV2 as AddressType,
+                    data: approveData,
+                    value: '0x0'
+                },
+                {
+                    to: CONTRACTS.TokenBankV2 as AddressType,
+                    data: depositData,
+                    value: '0x0'
+                }
+            ];
 
-            // Step 3: Construct Transaction Data based on Network
-            if (isSepolia) {
-                // SEPOLIA: MetaMask EIP-7702 Delegator (ERC-7579)
-                console.log("Encoding for MetaMask Delegator (Sepolia)...");
+            setStatus('Requesting EIP-5792 Batch Transaction via MetaMask...');
 
-                // ERC-7579 Batch Mode: CallType(0x01) + ExecType(0x00) + Unused(4 bytes) + Payload(22 bytes)
-                // Mode = 0x0100000000000000000000000000000000000000000000000000000000000000
-                const mode = '0x0100000000000000000000000000000000000000000000000000000000000000';
+            // wallet_sendCalls (EIP-5792)
+            // MetaMask interprets this and handles the EIP-7702 upgrade internally if needed
+            const callId = await provider.request({
+                method: 'wallet_sendCalls',
+                params: [{
+                    version: '2.0.0', // MetaMask requires 2.0.0 strictly
+                    chainId: `0x${chainId.toString(16)}`,
+                    from: address,
+                    calls: calls,
+                    // capabilities: { atomicBatch: { supported: true } }, // Old spec
+                    // EIP-5792 Atomic Batch validation requires this field at top level
+                    atomicRequired: true
+                }]
+            }) as unknown;
 
-                // Encode Execution[] for batch call
-                // Execution struct: { target: address, value: uint256, callData: bytes }
-                const executionCalldata = encodeAbiParameters(
-                    [
-                        {
-                            components: [
-                                { name: 'target', type: 'address' },
-                                { name: 'value', type: 'uint256' },
-                                { name: 'callData', type: 'bytes' }
-                            ],
-                            name: 'executions',
-                            type: 'tuple[]'
-                        }
-                    ],
-                    [[
-                        { target: CONTRACTS.MyTokenV2 as AddressType, value: 0n, callData: approveData },
-                        { target: CONTRACTS.TokenBankV2 as AddressType, value: 0n, callData: depositData }
-                    ]]
-                );
-
-                executeCallData = encodeFunctionData({
-                    abi: DELEGATE_ABI,
-                    functionName: 'execute',
-                    args: [mode, executionCalldata],
-                });
+            console.log('Batch Call Response:', callId);
+            // Extract identifier properly
+            let actualCallId: string;
+            if (typeof callId === 'string') {
+                actualCallId = callId;
+            } else if (callId && typeof callId === 'object' && 'id' in callId) {
+                actualCallId = (callId as any).id;
             } else {
-                // ANVIL: Local Delegate (Simple struct array)
-                console.log("Encoding for Local Delegate (Anvil)...");
-                executeCallData = encodeFunctionData({
-                    abi: DELEGATE_ABI,
-                    functionName: 'execute',
-                    args: [[
-                        { to: CONTRACTS.MyTokenV2 as AddressType, data: approveData, value: 0n },
-                        { to: CONTRACTS.TokenBankV2 as AddressType, data: depositData, value: 0n },
-                    ]],
-                });
+                actualCallId = JSON.stringify(callId);
             }
 
-            // Step 4: Send transaction
-            setStatus('Sending 7702 transaction...');
+            setStatus(`Batch submitted! Call ID: ${actualCallId.slice(0, 10)}...`);
+            setTxHash(actualCallId);
 
-            const hash = await walletClient.sendTransaction({
-                to: localAccount.address, // Execute as self
-                data: executeCallData,
-                authorizationList: [authorization],
-                gas: isSepolia ? 500000n : undefined, // Explicit gas for Sepolia safety too
-            });
+            setStatus('Waiting for confirmation...');
+            const result = await waitForCallsConfirmation(actualCallId, provider);
 
-            setTxHash(hash);
-            setStatus('Transaction sent! Waiting for confirmation...');
-
-            const receipt = await publicClient.waitForTransactionReceipt({ hash });
-
-            if (receipt.status === 'success') {
+            if (result.success) {
                 setStatus('Transaction confirmed successfully!');
+                if (result.transactionHash) {
+                    setTxHash(result.transactionHash);
+                    console.log('Final Tx Hash:', result.transactionHash);
+                }
                 setDepositAmount('');
                 refetchTokenBalance();
                 refetchBankBalance();
+
+                // Delayed refetch to ensure indexing
+                setTimeout(() => {
+                    refetchTokenBalance();
+                    refetchBankBalance();
+                }, 2000);
             } else {
-                setError('Transaction failed');
+                setError('Transaction failed or timed out.');
                 setStatus('');
             }
-        } catch (err) {
-            console.error('EIP-7702 deposit error:', err);
-            setError(err instanceof Error ? err.message : 'Unknown error occurred');
+
+        } catch (err: any) {
+            console.error('EIP-7702/5792 error:', err);
+            // Handle specific errors
+            if (err.code === 4001 || err.message?.includes('rejected')) {
+                setError('User rejected the request.');
+            } else if (err.message?.includes('unsupported') || err.message?.includes('method not found')) {
+                setError('Your wallet does not support wallet_sendCalls (EIP-5792) yet. Please update MetaMask.');
+            } else {
+                setError(err.message || 'Unknown error');
+            }
             setStatus('');
         } finally {
             setIsProcessing(false);
         }
     };
 
-    if (!localAccount) {
+    if (!isConnected || !address) {
         return (
-            <div className="rounded-xl border border-dashed border-orange-300 bg-gradient-to-br from-orange-50 to-amber-50 px-6 py-12 text-center shadow-sm">
-                <h2 className="text-2xl font-semibold text-orange-900">EIP-7702 Deposit</h2>
-                <p className="mt-2 text-sm text-orange-700">
-                    Private key not configured. Set <code className="bg-orange-100 px-1 rounded">VITE_PRIVATE_KEY</code> in your <code className="bg-orange-100 px-1 rounded">.env</code> file.
-                </p>
-                <p className="mt-4 text-xs text-orange-600">
-                    Example: VITE_PRIVATE_KEY=0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80
-                </p>
+            <div className="rounded-xl border border-dashed border-gray-300 bg-gray-50 px-6 py-12 text-center shadow-sm">
+                <h2 className="text-xl font-semibold text-gray-700">Wallet Not Connected</h2>
+                <p className="mt-2 text-sm text-gray-500">Please connect your MetaMask wallet to continue.</p>
             </div>
         );
     }
@@ -252,10 +232,10 @@ export default function EIP7702Deposit() {
                         {isSepolia ? 'MetaMask 7702 Deposit (Sepolia)' : 'EIP-7702 Deposit (Local)'}
                     </h2>
                     <p className={`mt-1 text-sm ${isSepolia ? 'text-purple-700' : 'text-cyan-700'}`}>
-                        {isSepolia ? 'Using MetaMask Delegator (ERC-7579)' : 'Using Local Delegate Contract'}
+                        {isSepolia ? 'Using wallet_sendCalls (EIP-5792)' : 'Using Local Delegate Contract'}
                     </p>
                     <p className={`mt-1 text-xs ${isSepolia ? 'text-purple-600' : 'text-cyan-600'}`}>
-                        Account: <code className={`${isSepolia ? 'bg-purple-100' : 'bg-cyan-100'} px-1 rounded`}>{localAccount.address.slice(0, 10)}...{localAccount.address.slice(-8)}</code>
+                        Account: <code className={`${isSepolia ? 'bg-purple-100' : 'bg-cyan-100'} px-1 rounded`}>{address.slice(0, 10)}...{address.slice(-8)}</code>
                     </p>
                 </div>
                 <span className={`rounded-full px-3 py-1 text-xs font-bold text-white shadow bg-gradient-to-r ${isSepolia ? 'from-purple-500 to-indigo-500' : 'from-cyan-500 to-teal-500'}`}>
@@ -298,13 +278,19 @@ export default function EIP7702Deposit() {
                     disabled={isProcessing || !depositAmount}
                     className={`w-full rounded-lg px-4 py-3 font-semibold text-white shadow-md transition-all hover:shadow-lg disabled:cursor-not-allowed disabled:shadow-none bg-gradient-to-r ${isSepolia ? 'from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 disabled:from-gray-300 disabled:to-gray-400' : 'from-cyan-600 to-teal-600 hover:from-cyan-700 hover:to-teal-700 disabled:from-gray-300 disabled:to-gray-400'}`}
                 >
-                    {isProcessing ? status || 'Processing...' : `🚀 7702 Deposit ${isSepolia ? '(SDK)' : '(Local)'}`}
+                    {isProcessing ? status || 'Processing...' : `🚀 7702 Deposit (Popup)`}
                 </button>
 
                 {/* Status Messages */}
                 {status && !error && (
-                    <div className={`rounded-lg p-3 text-sm ${isSepolia ? 'bg-purple-100 text-purple-800' : 'bg-cyan-100 text-cyan-800'}`}>
-                        <span className="mr-2 animate-pulse">⏳</span>
+                    <div className={`rounded-lg p-3 text-sm ${status.toLowerCase().includes('success') || status.toLowerCase().includes('confirmed')
+                        ? 'bg-green-100 text-green-800'
+                        : (isSepolia ? 'bg-purple-100 text-purple-800' : 'bg-cyan-100 text-cyan-800')
+                        }`}>
+                        <span className={`mr-2 ${status.toLowerCase().includes('success') || status.toLowerCase().includes('confirmed') ? '' : 'animate-pulse'
+                            }`}>
+                            {status.toLowerCase().includes('success') || status.toLowerCase().includes('confirmed') ? '✅' : '⏳'}
+                        </span>
                         {status}
                     </div>
                 )}
@@ -317,11 +303,13 @@ export default function EIP7702Deposit() {
                 )}
 
                 {txHash && (
-                    <div className="rounded-lg bg-green-100 p-3 text-sm text-green-800">
+                    <div className="rounded-lg bg-green-100 p-3 text-sm text-green-800 break-all">
                         <span className="mr-2">✅</span>
-                        Transaction: {txHash.slice(0, 10)}...{txHash.slice(-8)}
+                        ID/Hash: {txHash}
                     </div>
                 )}
+
+                {/* Debug Info: Hidden */}
             </div>
         </div>
     );
