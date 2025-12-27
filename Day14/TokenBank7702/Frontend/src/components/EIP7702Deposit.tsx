@@ -1,14 +1,33 @@
 import { useState, useEffect, useMemo } from 'react';
-import { useAccount, useReadContract, useWalletClient, usePublicClient, useChainId } from 'wagmi';
-import { formatEther, parseEther, encodeFunctionData, type Hex } from 'viem';
-import { getContractsByChainId } from '../constants/addresses';
+import { useAccount, useReadContract, usePublicClient, useChainId } from 'wagmi';
+import { formatEther, parseEther, encodeFunctionData, type Hex, createWalletClient, http } from 'viem';
+import { privateKeyToAccount } from 'viem/accounts';
+import { getContractsByChainId, CHAIN_IDS } from '../constants/addresses';
 import { TOKEN_BANK_V2_ABI, HOOKERC20_ABI, DELEGATE_ABI } from '../constants/abis';
 
 type AddressType = `0x${string}`;
 
+// Get chain config for wallet client
+const getChainConfig = (chainId: number) => {
+    if (chainId === CHAIN_IDS.ANVIL) {
+        return {
+            id: 31337,
+            name: 'Anvil',
+            nativeCurrency: { name: 'Ether', symbol: 'ETH', decimals: 18 },
+            rpcUrls: { default: { http: ['http://127.0.0.1:8545'] } },
+        };
+    }
+    // Add more chains as needed
+    return {
+        id: 31337,
+        name: 'Anvil',
+        nativeCurrency: { name: 'Ether', symbol: 'ETH', decimals: 18 },
+        rpcUrls: { default: { http: ['http://127.0.0.1:8545'] } },
+    };
+};
+
 export default function EIP7702Deposit() {
-    const { address, isConnected } = useAccount();
-    const { data: walletClient } = useWalletClient();
+    const { address } = useAccount();
     const publicClient = usePublicClient();
     const chainId = useChainId();
 
@@ -21,12 +40,30 @@ export default function EIP7702Deposit() {
     const [error, setError] = useState<string | null>(null);
     const [status, setStatus] = useState<string>('');
 
-    // Read token balance
+    // Check if private key is available
+    const privateKey = import.meta.env.VITE_PRIVATE_KEY as Hex | undefined;
+    const hasPrivateKey = privateKey && privateKey.startsWith('0x') && privateKey.length === 66;
+
+    // Create local account from private key
+    const localAccount = useMemo(() => {
+        if (hasPrivateKey && privateKey) {
+            try {
+                return privateKeyToAccount(privateKey);
+            } catch {
+                return null;
+            }
+        }
+        return null;
+    }, [privateKey, hasPrivateKey]);
+
+    // Read token balance (use local account address if available, otherwise connected wallet)
+    const accountAddress = localAccount?.address || address;
+
     const { data: tokenBalance, refetch: refetchTokenBalance } = useReadContract({
         address: CONTRACTS.MyTokenV2 as AddressType,
         abi: HOOKERC20_ABI,
         functionName: 'balanceOf',
-        args: address ? [address] : undefined,
+        args: accountAddress ? [accountAddress] : undefined,
     });
 
     // Read bank balance
@@ -34,7 +71,7 @@ export default function EIP7702Deposit() {
         address: CONTRACTS.TokenBankV2 as AddressType,
         abi: TOKEN_BANK_V2_ABI,
         functionName: 'amountsOf',
-        args: address ? [address] : undefined,
+        args: accountAddress ? [accountAddress] : undefined,
     });
 
     // Read token symbol
@@ -57,8 +94,13 @@ export default function EIP7702Deposit() {
     }, [txHash, refetchTokenBalance, refetchBankBalance]);
 
     const handleEIP7702Deposit = async () => {
-        if (!depositAmount || !walletClient || !address || !publicClient) {
-            setError('Please connect wallet and enter amount');
+        if (!depositAmount || !publicClient) {
+            setError('Please enter amount');
+            return;
+        }
+
+        if (!localAccount) {
+            setError('Private key not configured. Set VITE_PRIVATE_KEY in .env file.');
             return;
         }
 
@@ -74,12 +116,18 @@ export default function EIP7702Deposit() {
 
         try {
             const amount = parseEther(depositAmount);
+            const chainConfig = getChainConfig(chainId);
 
-            // Step 1: Sign EIP-7702 authorization
+            // Create wallet client with local account
+            const walletClient = createWalletClient({
+                account: localAccount,
+                chain: chainConfig,
+                transport: http(),
+            });
+
+            // Step 1: Sign EIP-7702 authorization using local account
             setStatus('Signing EIP-7702 authorization...');
 
-            // Get the authorization from the wallet
-            // Note: This requires wallet support for EIP-7702 (eth_signAuthorization)
             const authorization = await walletClient.signAuthorization({
                 contractAddress: delegateAddress as AddressType,
             });
@@ -115,7 +163,7 @@ export default function EIP7702Deposit() {
             setStatus('Sending 7702 transaction...');
 
             const hash = await walletClient.sendTransaction({
-                to: address, // Send to self (EOA will execute as Delegate)
+                to: localAccount.address, // Send to self (EOA will execute as Delegate)
                 data: batchCallData,
                 authorizationList: [authorization],
             });
@@ -144,11 +192,16 @@ export default function EIP7702Deposit() {
         }
     };
 
-    if (!isConnected) {
+    if (!localAccount) {
         return (
-            <div className="rounded-xl border border-dashed border-cyan-300 bg-gradient-to-br from-cyan-50 to-teal-50 px-6 py-12 text-center shadow-sm">
-                <h2 className="text-2xl font-semibold text-cyan-900">EIP-7702 Deposit</h2>
-                <p className="mt-2 text-sm text-cyan-700">Connect your wallet to use 7702 deposit.</p>
+            <div className="rounded-xl border border-dashed border-orange-300 bg-gradient-to-br from-orange-50 to-amber-50 px-6 py-12 text-center shadow-sm">
+                <h2 className="text-2xl font-semibold text-orange-900">EIP-7702 Deposit</h2>
+                <p className="mt-2 text-sm text-orange-700">
+                    Private key not configured. Set <code className="bg-orange-100 px-1 rounded">VITE_PRIVATE_KEY</code> in your <code className="bg-orange-100 px-1 rounded">.env</code> file.
+                </p>
+                <p className="mt-4 text-xs text-orange-600">
+                    Example: VITE_PRIVATE_KEY=0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80
+                </p>
             </div>
         );
     }
@@ -160,6 +213,9 @@ export default function EIP7702Deposit() {
                     <h2 className="text-xl font-bold text-cyan-900">EIP-7702 Deposit</h2>
                     <p className="mt-1 text-sm text-cyan-700">
                         Authorize EOA to Delegate & execute approve + deposit in one transaction
+                    </p>
+                    <p className="mt-1 text-xs text-cyan-600">
+                        Account: <code className="bg-cyan-100 px-1 rounded">{localAccount.address.slice(0, 10)}...{localAccount.address.slice(-8)}</code>
                     </p>
                 </div>
                 <span className="rounded-full bg-gradient-to-r from-cyan-500 to-teal-500 px-3 py-1 text-xs font-bold text-white shadow">
