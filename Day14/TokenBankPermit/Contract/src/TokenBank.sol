@@ -24,6 +24,7 @@ contract TokenBank {
     }
 
     function permitDeposit(
+        address _depositor,
         uint256 _value,
         uint256 _deadline,
         uint8 _v,
@@ -32,7 +33,7 @@ contract TokenBank {
     ) public {
         require(_value > 0, "zero");
         IERC20Permit(address(erc20Token)).permit(
-            msg.sender,
+            _depositor,
             address(this),
             _value,
             _deadline,
@@ -40,7 +41,13 @@ contract TokenBank {
             _r,
             _s
         );
-        deposit(_value);
+        bool success = erc20Token.transferFrom(
+            _depositor,
+            address(this),
+            _value
+        );
+        require(success, "deposit failed!");
+        amount[_depositor] += _value;
     }
 
     function withdraw(uint256 _value) public {

@@ -360,6 +360,11 @@ export const TOKEN_BANK_ABI = [
     "name": "permitDeposit",
     "inputs": [
       {
+        "name": "_depositor",
+        "type": "address",
+        "internalType": "address"
+      },
+      {
         "name": "_value",
         "type": "uint256",
         "internalType": "uint256"
@@ -402,4 +407,3 @@ export const TOKEN_BANK_ABI = [
     "stateMutability": "nonpayable"
   }
 ] as const;
-
