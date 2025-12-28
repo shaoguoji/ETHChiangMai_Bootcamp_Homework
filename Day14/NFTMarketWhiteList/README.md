@@ -1,82 +1,92 @@
-# NFT Market & ERC20 System
+# NFT Market with Whitelist
 
-An NFT Marketplace built with Solidity and React, featuring an ERC20 token economy, NFT trading, and advanced transfer mechanisms like `transferWithCallback` for single-transaction purchasing.
+This project implements an NFT Marketplace with a whitelist functionality using ECDSA signatures. Only authorized addresses (whitelisted via a signature from the contract owner) can purchase specific NFTs.
 
 ## 📸 Screenshots
 
-### Wallet Connect
-![Wallet Connect](./Img/WalletConnect.png)
+### Buyer WhiteList
+![Buyer WhiteList](./Img/WhiteList.png)
 
-### AppKit Integration
-![AppKit](./Img/appkit.png)
+### Permit Buy
+![Permit Buy](./Img/PermitBuy.png)
 
-### Market
-![Market](./Img/Market.png)
-
-### My Collection
-![My Collection](./Img/MyCollection.png)
-
-### ERC20 Transfer & Auto-Buy
-![ERC20 Transfer](./Img/ERC20Transfer.png)
-
-### Activity History
+### Activity
 ![Activity](./Img/Activity.png)
 
----
+## Features
 
-## 🚀 Features
+- **Standard NFT Functions**: List, buy, and view NFTs.
+- **Whitelist Integration**: 
+  - `permitBuy` function in the smart contract allows purchases with a valid signature.
+  - Signatures are generated off-chain by the owner.
+  - Whitelist addresses are configured in the frontend.
+- **Frontend Utility**:
+  - **Whitelist Tab**: Automatically generates signatures for pre-configured addresses using the owner's private key (local dev only).
+  - **Signature Copy**: Easy copy-paste of signatures for testing.
+  - **Verification**: Verifies the signer matches the contract owner.
+- **Error Handling**: Friendly error messages for invalid signatures or unauthorized access.
 
-- **ERC721 NFT Support**: Mint, list, and transfer standard NFTs.
-- **ERC20 Token Economy**: Use custom ERC20 tokens for all marketplace transactions.
-- **Marketplace Logic**:
-  - List NFTs for sale (approves Market contract).
-  - Buy NFTs using ERC20 tokens.
-  - **Auto-Buy**: Support for `transferWithCallback` to buy an NFT by simply transferring tokens to the market contract with the Token ID encoded.
-- **Reactive Frontend**:
-  - Real-time updates using event listeners.
-  - Auto-refreshing UI for smooth user experience.
-  - Wallet connection via Reown AppKit.
+## Tech Stack
 
-## 🛠 Tech Stack
+- **Smart Contracts**: Solidity, Foundry
+- **Frontend**: React, Vite, Tailwind CSS, Wagmi/Viem
 
-- **Smart Contracts**: Solidity, Foundry, OpenZeppelin.
-- **Frontend**: React, Vite, Tailwind CSS, Wagmi, Viem, Reown AppKit.
-- **Tools**: Anvil (Local Blockchain), Make.
+## Getting Started
 
-## 📦 Deployment & Setup
+### Prerequisites
 
-### prerequisites
-- Node.js & pnpm
-- Foundry (Forge, Anvil)
+- [Foundry](https://book.getfoundry.sh/getting-started/installation)
+- [Node.js](https://nodejs.org/) & pnpm
 
-### 1. Start Local Blockchain
-Start a local Anvil node to deploy contracts to.
+### 1. Contract Setup
+
+Navigate to the `Contract` directory:
+```bash
+cd Contract
+forge install
+forge build
+```
+
+Start a local Anvil chain:
 ```bash
 anvil
 ```
 
-### 2. Deploy Contracts
-In a new terminal, deploy the smart contracts (NFTMarket, HookERC20, BaseERC721).
+Deploy contracts (example using forge script or manual deploy):
 ```bash
-cd Contract
-make deploy local
+forge script script/Deploy.s.sol --rpc-url http://127.0.0.1:8545 --broadcast
 ```
-*This will deploy the contracts and automatically update `Frontend/src/config/contracts.ts` with the new addresses.*
 
-### 3. Run Frontend
-Start the React application.
+### 2. Frontend Setup
+
+Navigate to the `Frontend` directory:
 ```bash
 cd Frontend
 pnpm install
+```
+
+Configure Environment Variables:
+Create a `.env` file in the `Frontend` directory:
+```env
+VITE_PROJECT_ID=your_walletconnect_project_id
+VITE_MARKET_OWNER_KEY=your_anvil_private_key_0
+```
+
+Update Contract Addresses:
+Update `src/config/contracts.ts` with your deployed contract addresses.
+
+Run the development server:
+```bash
 pnpm dev
 ```
-Open [http://localhost:5173](http://localhost:5173) in your browser.
 
-## 🎮 Usage Guide
+## Usage
 
-1.  **Connect Wallet**: Login with your wallet (e.g., MetaMask connected to Anvil).
-2.  **Mint NFT**: Go to "My Collection" and mint a new NFT.
-3.  **List NFT**: Click "Approve Market" then "List for Sale" on your NFT card.
-4.  **Buy NFT**:
-    - **Standard Buy**: Go to "Market", switch accounts, approve tokens, and buy.
-    - **Auto-Buy (Transfer w/ Callback)**: Go to "ERC20 Transfer", select "Transfer w/ Callback", enter the Token ID, and send. The NFT will be bought and transferred instantly.
+1.  **Configure Whitelist**: Edit `src/config/whitelist.ts` to include the addresses you want to test.
+2.  **Generate Signatures**: 
+    - Go to the **Whitelist** tab in the app.
+    - Copy the signature for your test address.
+3.  **Buy NFT**:
+    - Switch your wallet to the whitelisted address.
+    - Go to **Market** -> Select an NFT -> Click **Buy (Whitelist)**.
+    - Paste the signature and confirm.
