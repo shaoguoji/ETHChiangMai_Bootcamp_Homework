@@ -1,5 +1,5 @@
 import { ConnectButton } from '@rainbow-me/rainbowkit';
-import TokenBankV2 from './components/TokenBankV2';
+import TokenBankPermit from './components/TokenBankPermit';
 
 export default function App() {
   return (
@@ -8,14 +8,14 @@ export default function App() {
         <header className="flex flex-col gap-4 rounded-xl border border-slate-200 bg-white/80 px-6 py-5 shadow-sm backdrop-blur sm:flex-row sm:items-center sm:justify-between">
           <div>
             <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">TokenBank</p>
-            <h1 className="text-2xl font-semibold text-slate-900">TokenBank V2 Dashboard</h1>
-            <p className="mt-1 text-sm text-slate-600">Manage deposits, approvals, and withdrawals in one place.</p>
+            <h1 className="text-2xl font-semibold text-slate-900">TokenBank Permit Dashboard</h1>
+            <p className="mt-1 text-sm text-slate-600">Manage deposits with Offline Signatures (EIP-2612).</p>
           </div>
           <ConnectButton />
         </header>
 
         <main className="mt-8 flex-1">
-          <TokenBankV2 />
+          <TokenBankPermit />
         </main>
       </div>
     </div>
