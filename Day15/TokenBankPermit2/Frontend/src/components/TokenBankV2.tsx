@@ -3,6 +3,7 @@ import { useAccount, useReadContract, useWriteContract, useWaitForTransactionRec
 import { formatEther, parseEther } from 'viem';
 import { CONTRACTS_V2 } from '../constants/addresses';
 import { TOKEN_BANK_V2_ABI, HOOKERC20_ABI } from '../constants/abis';
+import Permit2Deposit from './Permit2Deposit';
 
 const EXPLORER_URL = 'https://sepolia.etherscan.io/tx/';
 
@@ -12,7 +13,6 @@ export default function TokenBankV2() {
   const { address, isConnected } = useAccount();
   const [depositAmount, setDepositAmount] = useState('');
   const [withdrawAmount, setWithdrawAmount] = useState('');
-  const [directDepositAmount, setDirectDepositAmount] = useState('');
 
   // Read token balance
   const { data: tokenBalance, refetch: refetchTokenBalance } = useReadContract({
@@ -58,11 +58,7 @@ export default function TokenBankV2() {
     hash: depositHash,
   });
 
-  // Direct deposit via transferWithCallback
-  const { writeContract: directDeposit, data: directDepositHash, isPending: isDirectDepositing } = useWriteContract();
-  const { isLoading: isDirectDepositConfirming, isSuccess: isDirectDepositSuccess } = useWaitForTransactionReceipt({
-    hash: directDepositHash,
-  });
+
 
   // Withdraw transaction
   const { writeContract: withdraw, data: withdrawHash, isPending: isWithdrawing } = useWriteContract();
@@ -78,14 +74,13 @@ export default function TokenBankV2() {
   }, [isApproveSuccess, refetchAllowance]);
 
   useEffect(() => {
-    if (isDepositSuccess || isDirectDepositSuccess) {
+    if (isDepositSuccess) {
       refetchTokenBalance();
       refetchBankBalance();
       refetchAllowance();
       setDepositAmount('');
-      setDirectDepositAmount('');
     }
-  }, [isDepositSuccess, isDirectDepositSuccess, refetchTokenBalance, refetchBankBalance, refetchAllowance]);
+  }, [isDepositSuccess, refetchTokenBalance, refetchBankBalance, refetchAllowance]);
 
   useEffect(() => {
     if (isWithdrawSuccess) {
@@ -115,15 +110,7 @@ export default function TokenBankV2() {
     });
   };
 
-  const handleDirectDeposit = () => {
-    if (!directDepositAmount) return;
-    directDeposit({
-      address: CONTRACTS_V2.MyTokenV2 as AddressType,
-      abi: HOOKERC20_ABI,
-      functionName: 'transferWithCallback',
-      args: [CONTRACTS_V2.TokenBankV2 as AddressType, parseEther(directDepositAmount), '0x'],
-    });
-  };
+
 
   const handleWithdraw = () => {
     if (!withdrawAmount) return;
@@ -138,7 +125,7 @@ export default function TokenBankV2() {
   if (!isConnected) {
     return (
       <div className="rounded-xl border border-dashed border-slate-300 bg-white px-6 py-12 text-center shadow-sm">
-        <h2 className="text-2xl font-semibold text-slate-900">TokenBank V2</h2>
+        <h2 className="text-2xl font-semibold text-slate-900">TokenBank Permit2</h2>
         <p className="mt-2 text-sm text-slate-600">Connect your wallet to view balances and manage deposits.</p>
       </div>
     );
@@ -147,7 +134,7 @@ export default function TokenBankV2() {
   return (
     <div className="space-y-8">
       <div className="text-center">
-        <h2 className="text-3xl font-bold text-gray-900">TokenBank V2</h2>
+        <h2 className="text-3xl font-bold text-gray-900">TokenBank Permit2</h2>
         <p className="mt-2 text-gray-600">Enhanced version with transferWithCallback hook support</p>
       </div>
 
@@ -166,7 +153,7 @@ export default function TokenBankV2() {
         </div>
       </div>
 
-      {(approveHash || depositHash || directDepositHash || withdrawHash) && (
+      {(approveHash || depositHash || withdrawHash) && (
         <div className="rounded-lg border border-blue-200 bg-blue-50 p-4">
           <h3 className="mb-2 text-sm font-semibold text-blue-900">Recent Transactions</h3>
           <div className="space-y-2">
@@ -200,21 +187,7 @@ export default function TokenBankV2() {
                 </a>
               </div>
             )}
-            {directDepositHash && (
-              <div className="flex items-center justify-between text-sm">
-                <span className="text-gray-700">
-                  Direct Deposit: {isDirectDepositConfirming ? 'Confirming...' : isDirectDepositSuccess ? 'Success' : 'Pending'}
-                </span>
-                <a
-                  href={`${EXPLORER_URL}${directDepositHash}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-blue-600 underline hover:text-blue-800"
-                >
-                  View on Etherscan
-                </a>
-              </div>
-            )}
+
             {withdrawHash && (
               <div className="flex items-center justify-between text-sm">
                 <span className="text-gray-700">
@@ -234,38 +207,15 @@ export default function TokenBankV2() {
         </div>
       )}
 
-      <div className="rounded-lg border-2 border-purple-300 bg-gradient-to-r from-purple-50 to-blue-50 p-6 shadow-sm">
-        <div className="mb-4 flex items-start justify-between">
-          <div>
-            <h2 className="text-xl font-semibold text-gray-900">Direct Deposit (One-Step)</h2>
-            <p className="mt-1 text-sm text-gray-600">Use transferWithCallback - No approve needed!</p>
-          </div>
-          <span className="rounded-full bg-purple-500 px-3 py-1 text-xs font-semibold text-white">V2 Feature</span>
-        </div>
-        <div className="space-y-4">
-          <div>
-            <label className="mb-1 block text-sm text-gray-600">Amount</label>
-            <input
-              type="number"
-              value={directDepositAmount}
-              onChange={(e) => setDirectDepositAmount(e.target.value)}
-              placeholder="Enter amount for direct deposit"
-              className="w-full rounded-lg border border-purple-300 bg-white px-4 py-2 text-gray-900 focus:border-purple-500 focus:outline-none"
-            />
-          </div>
-          <button
-            onClick={handleDirectDeposit}
-            disabled={isDirectDepositing || isDirectDepositConfirming || !directDepositAmount}
-            className="w-full rounded-lg bg-purple-600 px-4 py-2 font-medium text-white transition-colors hover:bg-purple-700 disabled:cursor-not-allowed disabled:bg-gray-300"
-          >
-            {isDirectDepositing || isDirectDepositConfirming ? 'Processing...' : 'Direct Deposit (transferWithCallback)'}
-          </button>
-          <div className="rounded border border-purple-200 bg-white p-3 text-xs text-gray-600">
-            <strong>How it works:</strong> This uses transferWithCallback which automatically calls the TokenBank tokensReceived
-            function, completing the deposit in a single transaction without needing separate approve!
-          </div>
-        </div>
-      </div>
+
+
+      <Permit2Deposit
+        onSuccess={() => {
+          refetchTokenBalance();
+          refetchBankBalance();
+          refetchAllowance();
+        }}
+      />
 
       <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
         <div className="mb-4 flex items-start justify-between">

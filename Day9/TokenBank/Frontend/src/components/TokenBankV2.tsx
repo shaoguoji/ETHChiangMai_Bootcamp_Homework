@@ -138,7 +138,7 @@ export default function TokenBankV2() {
   if (!isConnected) {
     return (
       <div className="rounded-xl border border-dashed border-slate-300 bg-white px-6 py-12 text-center shadow-sm">
-        <h2 className="text-2xl font-semibold text-slate-900">TokenBank V2</h2>
+        <h2 className="text-2xl font-semibold text-slate-900">TokenBank Permit2</h2>
         <p className="mt-2 text-sm text-slate-600">Connect your wallet to view balances and manage deposits.</p>
       </div>
     );
@@ -147,7 +147,7 @@ export default function TokenBankV2() {
   return (
     <div className="space-y-8">
       <div className="text-center">
-        <h2 className="text-3xl font-bold text-gray-900">TokenBank V2</h2>
+        <h2 className="text-3xl font-bold text-gray-900">TokenBank Permit2</h2>
         <p className="mt-2 text-gray-600">Enhanced version with transferWithCallback hook support</p>
       </div>
 

@@ -3,7 +3,7 @@
 .PHONY: all test clean deploy fund help install snapshot format anvil scopefile local sepolia
 
 # Default deploy script (can be overridden by script=ScriptName)
-script ?= DeployTokenBankV2
+script ?= DeployTokenBankPermit2
 DEPLOY_SCRIPT_PATH := script/$(script).s.sol
 
 # Determine network and account based on make goals

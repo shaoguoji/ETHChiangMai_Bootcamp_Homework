@@ -8,7 +8,7 @@ export default function App() {
         <header className="flex flex-col gap-4 rounded-xl border border-slate-200 bg-white/80 px-6 py-5 shadow-sm backdrop-blur sm:flex-row sm:items-center sm:justify-between">
           <div>
             <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">TokenBank</p>
-            <h1 className="text-2xl font-semibold text-slate-900">TokenBank V2 Dashboard</h1>
+            <h1 className="text-2xl font-semibold text-slate-900">TokenBank Permit2 Dashboard</h1>
             <p className="mt-1 text-sm text-slate-600">Manage deposits, approvals, and withdrawals in one place.</p>
           </div>
           <ConnectButton />
