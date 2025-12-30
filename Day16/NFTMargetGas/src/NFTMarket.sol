@@ -14,18 +14,27 @@ buyNFT() : 普通的购买 NFT 功能，用户转入所定价的 token 数量，
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
-import { HookERC20 } from "./HookERC20.sol";
-import { BaseERC721 } from "./BaseERC721.sol";
+import {HookERC20} from "./HookERC20.sol";
+import {BaseERC721} from "./BaseERC721.sol";
 
 contract NFTMarket {
-    mapping (uint256 => uint256) public priceOfNft; // selling price, nftTokenId => price
+    mapping(uint256 => uint256) public priceOfNft; // selling price, nftTokenId => price
 
-    HookERC20 private hookErc20;
-    BaseERC721 private erc721Token;
+    HookERC20 private immutable hookErc20;
+    BaseERC721 private immutable erc721Token;
 
     event logList(address saler, uint256 tokenId, uint256 price);
     event logBuy(address buyer, uint256 tokenId, uint256 price);
     event logTokensReceived(address from, uint256 value, bytes data);
+
+    error NotOwnerOfNft();
+    error OwnerNotApprove();
+    error ZeroValue();
+    error NftNotOnSale();
+    error PriceNotEnough();
+    error InsufficientFunds();
+    error Erc20TransferFailed();
+    error CallerNotCA();
 
     constructor(address erc20Addr, address erc721Addr) {
         hookErc20 = HookERC20(erc20Addr);
@@ -33,35 +42,62 @@ contract NFTMarket {
     }
 
     function list(uint256 _tokenId, uint256 _price) public {
-        require(_price > 0, "sale price must greater than zero");
-        require(msg.sender == erc721Token.ownerOf(_tokenId), "not owner of nft");
-        require(erc721Token.isApprovedForAll(msg.sender, address(this)), "owner must ApprovedForAll to market first");
+        if (_price == 0) revert ZeroValue();
+        if (erc721Token.ownerOf(_tokenId) != msg.sender) revert NotOwnerOfNft();
+        if (!erc721Token.isApprovedForAll(msg.sender, address(this)))
+            revert OwnerNotApprove();
 
         priceOfNft[_tokenId] = _price;
         emit logList(msg.sender, _tokenId, _price);
     }
 
     function buyNFT(uint256 _tokenId, uint256 _price) public {
-        require(priceOfNft[_tokenId] > 0, "NFT not in sale");
-        require(_price >= priceOfNft[_tokenId], "buy price less than list price");
-        require(hookErc20.balanceOf(msg.sender) >= _price, "Insufficient funds");
-        require(hookErc20.transferFrom(msg.sender, erc721Token.ownerOf(_tokenId), _price), "erc20 transferFrom failed");
-        
-        erc721Token.transferFrom(erc721Token.ownerOf(_tokenId), msg.sender, _tokenId);
+        if (priceOfNft[_tokenId] == 0) revert NftNotOnSale();
+        if (_price < priceOfNft[_tokenId]) revert PriceNotEnough();
+        if (hookErc20.balanceOf(msg.sender) < _price)
+            revert InsufficientFunds();
+        if (
+            !hookErc20.transferFrom(
+                msg.sender,
+                erc721Token.ownerOf(_tokenId),
+                _price
+            )
+        ) revert Erc20TransferFailed();
+
+        erc721Token.transferFrom(
+            erc721Token.ownerOf(_tokenId),
+            msg.sender,
+            _tokenId
+        );
         priceOfNft[_tokenId] = 0; // clear selling price
         emit logBuy(msg.sender, _tokenId, _price);
     }
 
-    function tokensReceived(address from, uint256 value, bytes memory data) public {
-        require(msg.sender == address(hookErc20), "only be called by token contract");
+    function tokensReceived(
+        address from,
+        uint256 value,
+        bytes calldata data
+    ) public {
+        if (msg.sender != address(hookErc20)) revert CallerNotCA();
 
         if (data.length > 0) {
             uint256 tokenId = abi.decode(data, (uint256));
-            
-            require((priceOfNft[tokenId] != 0) && (value >= priceOfNft[tokenId]), "NFT not in sale or not enough token received");
-            require(hookErc20.transfer(erc721Token.ownerOf(tokenId), priceOfNft[tokenId]), "erc20 transferFrom failed"); // pay to owner
-            erc721Token.transferFrom(erc721Token.ownerOf(tokenId), from, tokenId); // transfer nft
-            
+
+            if (priceOfNft[tokenId] == 0 || value < priceOfNft[tokenId])
+                revert NftNotOnSale();
+            require(
+                hookErc20.transfer(
+                    erc721Token.ownerOf(tokenId),
+                    priceOfNft[tokenId]
+                ),
+                "erc20 transferFrom failed"
+            ); // pay to owner
+            erc721Token.transferFrom(
+                erc721Token.ownerOf(tokenId),
+                from,
+                tokenId
+            ); // transfer nft
+
             uint256 refund = value - priceOfNft[tokenId];
             if (refund > 0) {
                 hookErc20.transfer(from, refund); // refund to buyer
