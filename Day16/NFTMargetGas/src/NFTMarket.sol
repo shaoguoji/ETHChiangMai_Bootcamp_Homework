@@ -27,14 +27,15 @@ contract NFTMarket {
     event logBuy(address buyer, uint256 tokenId, uint256 price);
     event logTokensReceived(address from, uint256 value, bytes data);
 
+    error ZeroValue();
     error NotOwnerOfNft();
     error OwnerNotApprove();
-    error ZeroValue();
     error NftNotOnSale();
     error PriceNotEnough();
     error InsufficientFunds();
     error Erc20TransferFailed();
-    error CallerNotCA();
+    error OnlyTokenContract();
+    error TokenTransferFailed();
 
     constructor(address erc20Addr, address erc721Addr) {
         hookErc20 = HookERC20(erc20Addr);
@@ -56,13 +57,13 @@ contract NFTMarket {
         if (_price < priceOfNft[_tokenId]) revert PriceNotEnough();
         if (hookErc20.balanceOf(msg.sender) < _price)
             revert InsufficientFunds();
-        if (
-            !hookErc20.transferFrom(
-                msg.sender,
-                erc721Token.ownerOf(_tokenId),
-                _price
-            )
-        ) revert Erc20TransferFailed();
+
+        bool success = hookErc20.transferFrom(
+            msg.sender,
+            erc721Token.ownerOf(_tokenId),
+            _price
+        );
+        if (!success) revert Erc20TransferFailed();
 
         erc721Token.transferFrom(
             erc721Token.ownerOf(_tokenId),
@@ -78,20 +79,20 @@ contract NFTMarket {
         uint256 value,
         bytes calldata data
     ) public {
-        if (msg.sender != address(hookErc20)) revert CallerNotCA();
+        if (msg.sender != address(hookErc20)) revert OnlyTokenContract();
 
         if (data.length > 0) {
             uint256 tokenId = abi.decode(data, (uint256));
 
             if (priceOfNft[tokenId] == 0 || value < priceOfNft[tokenId])
                 revert NftNotOnSale();
-            require(
-                hookErc20.transfer(
-                    erc721Token.ownerOf(tokenId),
-                    priceOfNft[tokenId]
-                ),
-                "erc20 transferFrom failed"
-            ); // pay to owner
+
+            bool success = hookErc20.transfer(
+                erc721Token.ownerOf(tokenId),
+                priceOfNft[tokenId]
+            );
+            if (!success) revert TokenTransferFailed(); // pay to owner
+
             erc721Token.transferFrom(
                 erc721Token.ownerOf(tokenId),
                 from,

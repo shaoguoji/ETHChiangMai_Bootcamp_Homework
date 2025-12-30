@@ -44,16 +44,16 @@ contract NFTMarketTest is Test {
     function test_NFTMarketList() public {
         vm.startPrank(saler);
         console.log("test failed zero price...");
-        vm.expectRevert("sale price must greater than zero");
+        vm.expectRevert(NFTMarket.ZeroValue.selector);
         nftMarket.list(1, 0);
         console.log("test failed list not approved for all");
-        vm.expectRevert("owner must ApprovedForAll to market first");
+        vm.expectRevert(NFTMarket.OwnerNotApprove.selector);
         nftMarket.list(1, 100);
         vm.stopPrank();
 
         console.log("test failed list not owner");
         vm.prank(buyer);
-        vm.expectRevert("not owner of nft");
+        vm.expectRevert(NFTMarket.NotOwnerOfNft.selector);
         nftMarket.list(1, 100);
 
         console.log("test success list");
@@ -92,7 +92,7 @@ contract NFTMarketTest is Test {
         assertEq(baseERC721.ownerOf(1), buyer);
 
         console.log("repeat buy test...");
-        vm.expectRevert("NFT not in sale");
+        vm.expectRevert(NFTMarket.NftNotOnSale.selector);
         nftMarket.buyNFT(1, 100);
 
         vm.stopPrank();
@@ -109,7 +109,7 @@ contract NFTMarketTest is Test {
         nftMarket.buyNFT(3, 200);
 
         console.log("less token buy test...");
-        vm.expectRevert("buy price less than list price");
+        vm.expectRevert(NFTMarket.PriceNotEnough.selector);
         nftMarket.buyNFT(4, 50);
 
         vm.stopPrank();
