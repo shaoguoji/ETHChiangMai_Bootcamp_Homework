@@ -12,16 +12,11 @@ import "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
  * @dev Deploy upgradeable NFT marketplace with UUPS proxy pattern
  * 
  * Usage:
- * forge script script/DeployUpgradeableNFTMarket.s.sol --rpc-url $RPC_URL --broadcast --private-key $PRIVATE_KEY
+ * forge script script/DeployUpgradeableNFTMarket.s.sol --rpc-url $RPC_URL --broadcast --account <keystore_account>
  */
 contract DeployUpgradeableNFTMarket is Script {
     function run() external {
-        uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
-        address deployer = vm.addr(deployerPrivateKey);
-        
-        console.log("Deployer:", deployer);
-        
-        vm.startBroadcast(deployerPrivateKey);
+        vm.startBroadcast();
 
         // 1. Deploy HookERC20
         HookERC20 erc20 = new HookERC20();

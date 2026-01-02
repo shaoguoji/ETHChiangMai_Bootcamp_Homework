@@ -10,12 +10,10 @@ import "../src/NFTMarketV2.sol";
  * @dev Upgrade NFTMarket proxy from V1 to V2
  * 
  * Usage:
- * forge script script/UpgradeToV2.s.sol --rpc-url $RPC_URL --broadcast --private-key $PRIVATE_KEY
+ * forge script script/UpgradeToV2.s.sol --rpc-url $RPC_URL --broadcast --account <keystore_account>
  */
 contract UpgradeToV2 is Script {
     function run() external {
-        uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
-        
         // Load existing proxy address
         address marketProxy = _loadDeployedAddress("NFTMarket_Proxy");
         console.log("NFTMarket proxy:", marketProxy);
@@ -24,7 +22,7 @@ contract UpgradeToV2 is Script {
         string memory currentVersion = NFTMarketV1(marketProxy).version();
         console.log("Current version:", currentVersion);
 
-        vm.startBroadcast(deployerPrivateKey);
+        vm.startBroadcast();
 
         // 1. Deploy NFTMarketV2 implementation
         NFTMarketV2 v2Implementation = new NFTMarketV2();
