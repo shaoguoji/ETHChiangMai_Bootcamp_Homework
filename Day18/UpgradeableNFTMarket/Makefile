@@ -29,7 +29,7 @@ all: build test
 
 # Build contracts
 build:
-	forge build
+	forge clean && forge build
 
 # Run tests
 test:
