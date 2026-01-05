@@ -30,7 +30,8 @@ contract VaultExploiter is Test {
         vm.startPrank(palyer);
 
         // add your hacker code.
-        Attack attack = new Attack(address(vault), address(logic));
+        Attack attack = new Attack(address(logic), address(vault));
+        vm.deal(address(attack), 1 ether);  // prepare gas
         attack.startAttack();
 
         require(vault.isSolve(), "solved");

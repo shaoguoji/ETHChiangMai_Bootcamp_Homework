@@ -29,7 +29,7 @@ contract Attack {
 
         // deposit 0.1 ether
         IVault(vaultAddr).deposite{value: 0.1 ether}();
-
+        
         // open withdraw
         IVault(vaultAddr).openWithdraw();
 
