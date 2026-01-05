@@ -1,3 +1,6 @@
 [submodule "Day8/lib/openzeppelin-contracts"]
 	path = Day8/lib/openzeppelin-contracts
 	url = https://github.com/OpenZeppelin/openzeppelin-contracts
+[submodule "Day19/AutoBank/lib/chainlink-brownie-contracts"]
+	path = Day19/AutoBank/lib/chainlink-brownie-contracts
+	url = https://github.com/smartcontractkit/chainlink-brownie-contracts
