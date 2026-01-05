@@ -16,12 +16,15 @@ contract BankScript is Script {
     function run() public {
         vm.startBroadcast();
 
-        // Step 1: Deploy Bank - msg.sender (deployer) becomes admin
+        // Receiver address for automation withdrawals
+        address receiver = 0xBF2A4454226E8296825d3eC06d08D6c0b41dcebd;
+
+        // Step 1: Deploy Bank - deployer becomes admin
         bank = new Bank();
         _saveDeployment("Bank", address(bank));
         
-        // Step 2: Deploy Automation with bank address and deployer as receiver
-        automation = new Automation(address(bank), msg.sender, 100 gwei);
+        // Step 2: Deploy Automation with bank address and receiver
+        automation = new Automation(address(bank), receiver, 100 gwei);
         _saveDeployment("Automation", address(automation));
 
         // Step 3: Set Automation as the new admin of Bank
@@ -31,6 +34,7 @@ contract BankScript is Script {
 
         console.log("Bank deployed to: ", address(bank));
         console.log("Automation deployed to: ", address(automation));
+        console.log("Receiver set to: ", receiver);
     }
 
     function _saveDeployment(string memory name, address addr) internal {
