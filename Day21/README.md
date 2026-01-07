@@ -210,6 +210,7 @@ remappings = [
 | WETH9 | `0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512` |
 | UniswapV2Factory | `0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0` |
 | UniswapV2Router02 | `0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9` |
+| TestERC20 (TERC) | `0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9` |
 | Init Code Hash | `0x4a164ea51df2a6a7cb0fc4385184ca464c646f6510b5cd69201035f64e9ee391` |
 
 ## 🔄 Redeployment Checklist

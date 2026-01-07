@@ -38,6 +38,12 @@ contract DeployScript is Script {
         console.log("UniswapV2Router02 deployed to:", router);
         _saveDeployment("UniswapV2Router02", router);
 
+        // Deploy TestERC20 (TERC)
+        // Constructor arg: initialSupply (1,000,000 tokens)
+        address terc = deployCode("TestERC20.sol:TestERC20", abi.encode(1000000));
+        console.log("TestERC20 (TERC) deployed to:", terc);
+        _saveDeployment("TestERC20", terc);
+
         vm.stopBroadcast();
 
         console.log("\n=== Deployment Summary ===");
@@ -45,6 +51,7 @@ contract DeployScript is Script {
         console.log("WETH9:", weth);
         console.log("Factory:", factory);
         console.log("Router:", router);
+        console.log("TestERC20:", terc);
     }
 
     function _saveDeployment(string memory name, address addr) internal {
