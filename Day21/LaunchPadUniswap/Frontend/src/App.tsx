@@ -1,7 +1,7 @@
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { useAccount, useChainId } from 'wagmi';
 import { DeployMeme } from './components/DeployMeme';
-import { MemeInteraction } from './components/MemeInteraction';
+import { DeployedMemeList } from './components/DeployedMemeList';
 import { CONTRACTS } from './contracts';
 
 function App() {
@@ -13,7 +13,7 @@ function App() {
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900/20 to-gray-900">
       {/* Header */}
       <header className="border-b border-purple-500/20 backdrop-blur-sm bg-gray-900/50">
-        <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
+        <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <span className="text-3xl">🚀</span>
             <h1 className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-pink-400 to-cyan-400">
@@ -25,7 +25,7 @@ function App() {
       </header>
 
       {/* Main Content */}
-      <main className="max-w-6xl mx-auto px-4 py-8">
+      <main className="max-w-7xl mx-auto px-4 py-8">
         {!isConnected ? (
           <div className="text-center py-20">
             <div className="text-6xl mb-6">🎮</div>
@@ -43,23 +43,23 @@ function App() {
                 <span className="text-2xl">💡</span>
                 <div>
                   <p className="text-yellow-200 font-medium">
-                    Factory Contract: <span className="font-mono text-sm">{factoryAddress || 'Not deployed on this chain'}</span>
+                    Factory: <span className="font-mono text-sm">{factoryAddress || 'Not deployed'}</span>
                   </p>
                   <p className="text-yellow-400/70 text-sm">
-                    Deploy a new meme token or interact with existing ones. 5% of mint fees go to liquidity!
+                    5% of mint fees go to Uniswap liquidity!
                   </p>
                 </div>
               </div>
             </div>
 
-            {/* Grid Layout */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-              <DeployMeme />
-              <MemeInteraction />
-            </div>
+            {/* Deploy Section */}
+            <DeployMeme />
+
+            {/* Deployed Memes List with Interactions */}
+            <DeployedMemeList />
 
             {/* Features */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div className="bg-gray-800/30 rounded-xl p-6 border border-gray-700/50">
                 <div className="text-3xl mb-3">🏭</div>
                 <h3 className="text-lg font-semibold text-white mb-2">Deploy Tokens</h3>
@@ -72,8 +72,8 @@ function App() {
               </div>
               <div className="bg-gray-800/30 rounded-xl p-6 border border-gray-700/50">
                 <div className="text-3xl mb-3">💱</div>
-                <h3 className="text-lg font-semibold text-white mb-2">Swap Tokens</h3>
-                <p className="text-gray-400 text-sm">Buy tokens directly from Uniswap when the price is better.</p>
+                <h3 className="text-lg font-semibold text-white mb-2">Smart Buy</h3>
+                <p className="text-gray-400 text-sm">Compare mint vs Uniswap prices and buy at the best rate.</p>
               </div>
             </div>
           </div>
@@ -82,7 +82,7 @@ function App() {
 
       {/* Footer */}
       <footer className="border-t border-gray-800 mt-16">
-        <div className="max-w-6xl mx-auto px-4 py-6 text-center text-gray-500 text-sm">
+        <div className="max-w-7xl mx-auto px-4 py-6 text-center text-gray-500 text-sm">
           Built with ❤️ for ETH Chiang Mai Bootcamp
         </div>
       </footer>

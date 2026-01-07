@@ -19,6 +19,7 @@ contract MemeFactory {
     address public immutable implementation;
     IUniswapV2Router02 public immutable uniswapRouter;
     mapping(address => MemeInfo) public memeInfos;
+    address[] public deployedMemes;
 
     event MemeDeployed(
         address indexed tokenAddress,
@@ -70,6 +71,7 @@ contract MemeFactory {
             issuer: msg.sender
         });
 
+        deployedMemes.push(clone);
         emit MemeDeployed(clone, symbol, msg.sender);
         return clone;
     }
@@ -127,28 +129,16 @@ contract MemeFactory {
             // Approve router
             MemeToken(tokenAddr).approve(address(uniswapRouter), tokensForLiquidity);
 
-            // Add Liquidity ETH
-            // We use fee amount in ETH.
-            // We set min amounts to 0 for simplicity in this task context.
-            // Liquidity tokens go to this contract.
-            try uniswapRouter.addLiquidityETH{value: fee}(
+            // Add Liquidity ETH - this MUST succeed, revert if it fails
+            (uint amountToken, uint amountETH, uint liquidity) = uniswapRouter.addLiquidityETH{value: fee}(
                 tokenAddr,
                 tokensForLiquidity,
-                0, // slippage desired 0
-                0, // slippage desired 0
+                0, // min token amount (accept any)
+                0, // min ETH amount (accept any)
                 address(this),
                 block.timestamp
-            ) returns (uint amountToken, uint amountETH, uint liquidity) {
-                emit LiquidityAdded(tokenAddr, amountToken, amountETH, liquidity);
-            } catch {
-                // If addLiquidity fails, we shouldn't revert the whole txn, just keep fee?
-                // Or maybe revert. The requirement says "Add Liquidity".
-                // I'll let it revert if it fails (using try/catch just to emit or handle? No, better to revert if critical)
-                // Actually remove try/catch to valid requirement, but since I added try/catch I'll keep it simple: 
-                // Using "try" helps if for some reason the pool setup is weird or tiny amounts fail.
-                // But generally we want it to succeed. I'll revert on failure for robustness unless I want to accumulate fees.
-                // Revert is better.
-            }
+            );
+            emit LiquidityAdded(tokenAddr, amountToken, amountETH, liquidity);
         }
     }
 
@@ -171,6 +161,20 @@ contract MemeFactory {
             msg.sender,
             block.timestamp
         );
+    }
+
+    /**
+     * @notice Get all deployed meme token addresses
+     */
+    function getDeployedMemes() external view returns (address[] memory) {
+        return deployedMemes;
+    }
+
+    /**
+     * @notice Get the number of deployed meme tokens
+     */
+    function getDeployedMemesCount() external view returns (uint256) {
+        return deployedMemes.length;
     }
 
     // Allow factory to receive ETH (needed for removeLiquidity or refunds if any)

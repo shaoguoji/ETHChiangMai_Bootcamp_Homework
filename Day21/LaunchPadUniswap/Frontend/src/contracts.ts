@@ -89,6 +89,20 @@ export const MemeFactoryABI = [
     stateMutability: 'view',
     type: 'function',
   },
+  {
+    inputs: [],
+    name: 'getDeployedMemes',
+    outputs: [{ internalType: 'address[]', name: '', type: 'address[]' }],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [],
+    name: 'getDeployedMemesCount',
+    outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
+    stateMutability: 'view',
+    type: 'function',
+  },
   { stateMutability: 'payable', type: 'receive' },
 ] as const;
 
@@ -147,6 +161,39 @@ export const CONTRACTS = {
   },
   // Sepolia (Chain ID: 11155111)
   11155111: {
-    MemeFactory: '0x35Ff997cC048bb6dd51447a8b01DC1c3e5Df77d5' as `0x${string}`,
+    MemeFactory: '0x11ACe159470496f5197A4e6b58EA688B49e4902A' as `0x${string}`,
   },
+} as const;
+
+// Uniswap V2 Router ABI (subset for price queries)
+export const UniswapRouterABI = [
+  {
+    inputs: [
+      { internalType: 'uint256', name: 'amountIn', type: 'uint256' },
+      { internalType: 'address[]', name: 'path', type: 'address[]' },
+    ],
+    name: 'getAmountsOut',
+    outputs: [{ internalType: 'uint256[]', name: 'amounts', type: 'uint256[]' }],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [],
+    name: 'WETH',
+    outputs: [{ internalType: 'address', name: '', type: 'address' }],
+    stateMutability: 'pure',
+    type: 'function',
+  },
+] as const;
+
+// Uniswap Router addresses
+export const UNISWAP_ROUTER = {
+  31337: '0xeE567Fe1712Faf6149d80dA1E6934E354124CfE3' as `0x${string}`,
+  11155111: '0xeE567Fe1712Faf6149d80dA1E6934E354124CfE3' as `0x${string}`,
+} as const;
+
+// WETH addresses
+export const WETH = {
+  31337: '0x7b79995e5f793A07Bc00c21412e50Ecae098E7f9' as `0x${string}`,
+  11155111: '0x7b79995e5f793A07Bc00c21412e50Ecae098E7f9' as `0x${string}`,
 } as const;
