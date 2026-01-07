@@ -4,21 +4,41 @@ pragma solidity ^0.8.13;
 import {Script} from "forge-std/Script.sol";
 import {console} from "forge-std/console.sol";
 
-import {Counter} from "../src/Counter.sol";
+import {UniswapV2Factory} from "../src/v2-core/UniswapV2Factory.sol";
+import {UniswapV2Router02} from "../src/v2-periphery/UniswapV2Router02.sol";
+import {WETH9} from "../src/WETH9.sol";
 
 contract DeployScript is Script {
-    Counter public counter;
+    UniswapV2Factory public factory;
+    UniswapV2Router02 public router;
+    WETH9 public weth;
 
     function setUp() public {}
 
     function run() public {
         vm.startBroadcast();
 
-        counter = new Counter();
-        _saveDeployment("Counter", address(counter));
-        console.log("Counter deployed to:", _loadDeployedAddress("Counter"));
+        // Deploy WETH9
+        weth = new WETH9();
+        _saveDeployment("WETH9", address(weth));
+        console.log("WETH9 deployed to:", address(weth));
+
+        // Deploy UniswapV2Factory with deployer as feeToSetter
+        factory = new UniswapV2Factory(msg.sender);
+        _saveDeployment("UniswapV2Factory", address(factory));
+        console.log("UniswapV2Factory deployed to:", address(factory));
+
+        // Deploy UniswapV2Router02
+        router = new UniswapV2Router02(address(factory), address(weth));
+        _saveDeployment("UniswapV2Router02", address(router));
+        console.log("UniswapV2Router02 deployed to:", address(router));
 
         vm.stopBroadcast();
+
+        console.log("\n=== Deployment Summary ===");
+        console.log("WETH9:", address(weth));
+        console.log("Factory:", address(factory));
+        console.log("Router:", address(router));
     }
 
     function _saveDeployment(string memory name, address addr) internal {
