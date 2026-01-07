@@ -145,7 +145,6 @@ address counterAddr = _loadDeployedAddress("Counter");
 ## 📚 依赖
 
 - [Foundry](https://book.getfoundry.sh/) - 智能合约开发工具链
-- [OpenZeppelin Contracts](https://github.com/OpenZeppelin/openzeppelin-contracts) - 安全的合约标准库
 
 ## 📄 License
 

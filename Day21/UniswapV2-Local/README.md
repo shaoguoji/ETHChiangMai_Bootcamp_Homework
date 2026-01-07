@@ -107,6 +107,7 @@ forge script script/Deploy.s.sol \
 - WETH9: `0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512`
 - Factory: `0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0`
 - Router: `0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9`
+- TestERC20: `0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9`
 
 ### 3. Configure Frontend
 
@@ -176,13 +177,13 @@ cast send TOKEN_ADDRESS \
 
 1. Go to http://localhost:3000/#/pool
 2. Click "Add Liquidity"
-3. Select ETH and paste your token address
+3. Select ETH and paste your TestERC20 token address
 4. Enter amounts and click "Supply"
 
 ### 4. Perform a Swap
 
 1. Go to http://localhost:3000/#/swap
-2. Select tokens
+2. Select TestERC20 and ETH tokens
 3. Enter amount and click "Swap"
 
 ## 📝 Configuration Files
@@ -199,7 +200,6 @@ optimizer = true
 optimizer_runs = 200
 
 remappings = [
-    "@openzeppelin/contracts/=lib/openzeppelin-contracts/contracts/",
     "@uniswap/lib/contracts/libraries/=src/v2-periphery/libraries/",
     "@uniswap/v2-core/contracts/interfaces/=src/v2-core/interfaces/",
     "@uniswap/v2-core/contracts/libraries/=src/v2-core/libraries/",
