@@ -147,6 +147,6 @@ export const CONTRACTS = {
   },
   // Sepolia (Chain ID: 11155111)
   11155111: {
-    MemeFactory: '0x0000000000000000000000000000000000000000' as `0x${string}`, // Update after Sepolia deployment
+    MemeFactory: '0x35Ff997cC048bb6dd51447a8b01DC1c3e5Df77d5' as `0x${string}`,
   },
 } as const;

@@ -1,17 +1,14 @@
 -include .env
 
-.PHONY: all test clean deploy fund help install snapshot format anvil scopefile local sepolia
+.PHONY: all test clean deploy upgrade help build anvil local sepolia
 
-# Default deploy script (can be overridden by script=ScriptName)
-script ?= Deploy
-DEPLOY_SCRIPT_PATH := script/$(script).s.sol
-
-# Determine network and account based on make goals
+# Network and account configuration
+# Usage: make deploy local  (uses anviltest account)
+#        make deploy sepolia (uses shaoguoji account, with verify)
 IS_SEPOLIA := $(filter sepolia,$(MAKECMDGOALS))
-
-# Set variables based on the target check
 NETWORK := $(if $(IS_SEPOLIA),sepolia,local)
 ACCOUNT := $(if $(IS_SEPOLIA),shaoguoji,anviltest)
+VERIFY_FLAG := $(if $(IS_SEPOLIA),--verify,)
 
 # Dummy targets to allow 'make deploy local' without error
 local:; @:
@@ -19,31 +16,41 @@ sepolia:; @:
 
 help:
 	@echo "Usage:"
-	@echo "  make deploy [local|sepolia] [script=ScriptName]"
+	@echo "  make deploy [local|sepolia]   - Deploy a contract"
+	@echo "  make test                     - Run all tests"
+	@echo "  make anvil                    - Start local anvil chain"
 	@echo ""
-	@echo "  network: local (default) -> uses account 'anviltest'"
-	@echo "           sepolia         -> uses account 'shaoguoji'"
-	@echo "  script : Name of the script in script/ folder (default: DeployTokenBankV2)"
-	@echo "           Example: make deploy local script=MyOtherScript"
+	@echo "Networks:"
+	@echo "  local   - Anvil (http://127.0.0.1:8545), account: anviltest"
+	@echo "  sepolia - Sepolia testnet, account: shaoguoji (auto verify)"
 
-all: remove install build
+all: build test
 
-# Clean the repo
-clean  :; forge clean
+# Build contracts
+build:
+	forge clean && forge build
 
-# Remove modules
-remove :; rm -rf .gitmodules && rm -rf .git/modules/* && rm -rf lib && touch .gitmodules && git add . && git commit -m "modules"
+# Run tests
+test:
+	forge test -vvv
 
-install :; forge install cyfrin/foundry-devops@0.0.11 --no-commit && forge install smartcontractkit/chainlink-brownie-contracts@0.6.1 --no-commit && forge install foundry-rs/forge-std@v1.5.3 --no-commit
-update:; forge update
-build:; forge clean && forge build
-test :; forge test 
-snapshot :; forge snapshot
-format :; forge fmt
+# Clean build artifacts
+clean:
+	forge clean
 
 # Start local anvil chain
-anvil :; anvil -m 'test test test test test test test test test test test junk' --steps-tracing --block-time 1
+anvil:
+	anvil -m 'test test test test test test test test test test test junk' --steps-tracing --block-time 1
 
+# Deploy AutoBank
 deploy:
-	@echo "Deploying $(script) to $(NETWORK) with account $(ACCOUNT)..."
-	forge script $(DEPLOY_SCRIPT_PATH) --rpc-url $(NETWORK) --account $(ACCOUNT) --broadcast
+	@echo "================================================"
+	@echo "Deploying contract to $(NETWORK)"
+	@echo "Account: $(ACCOUNT)"
+	@echo "Verify: $(if $(IS_SEPOLIA),Yes,No)"
+	@echo "================================================"
+	forge script script/Deploy.s.sol \
+		--rpc-url $(NETWORK) \
+		--account $(ACCOUNT) \
+		--broadcast \
+		$(VERIFY_FLAG)

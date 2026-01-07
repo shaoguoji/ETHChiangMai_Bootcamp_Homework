@@ -161,7 +161,7 @@ export function MemeInteraction() {
 
         {(mintSuccess || buySuccess) && (
           <div className="p-3 bg-green-900/50 rounded-lg border border-green-500/50 text-green-300 text-sm">
-            ✅ Transaction successful! {mintSuccess && `TX: ${mintHash?.slice(0, 10)}...`}{buySuccess && `TX: ${buyHash?.slice(0, 10)}...`}
+            ✅ Transaction successful!
           </div>
         )}
       </div>

@@ -1,20 +1,24 @@
 import { getDefaultConfig } from '@rainbow-me/rainbowkit';
-import { http } from 'wagmi';
-import { mainnet, sepolia, anvil } from 'wagmi/chains';
+import { sepolia } from 'wagmi/chains';
+import { type Chain } from 'viem';
+
+const anvil = {
+    id: 31337,
+    name: 'Anvil Local',
+    nativeCurrency: {
+        decimals: 18,
+        name: 'Ether',
+        symbol: 'ETH',
+    },
+    rpcUrls: {
+        default: { http: ['http://127.0.0.1:8545'] },
+    },
+    testnet: true,
+} as const satisfies Chain;
 
 export const config = getDefaultConfig({
-  appName: 'Launchpad',
-  projectId: 'YOUR_PROJECT_ID', // Get from WalletConnect Cloud
-  chains: [anvil, sepolia, mainnet],
-  transports: {
-    [anvil.id]: http('http://127.0.0.1:8545'),
-    [sepolia.id]: http(),
-    [mainnet.id]: http(),
-  },
+    appName: 'TokenBank Dapp',
+    projectId: import.meta.env.VITE_PROJECT_ID,
+    chains: [anvil, sepolia],
+    ssr: false, // Vite is client-side
 });
-
-declare module 'wagmi' {
-  interface Register {
-    config: typeof config;
-  }
-}
