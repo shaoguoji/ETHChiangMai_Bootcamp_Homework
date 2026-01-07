@@ -4,14 +4,18 @@ pragma solidity ^0.8.20;
 import "forge-std/Test.sol";
 import "../src/MemeFactory.sol";
 import "../src/MemeToken.sol";
+import "./mocks/MockUniswapV2Router.sol";
 
 contract MemeFactoryTest is Test {
     MemeFactory public factory;
     address public issuer = address(0x111);
     address public user = address(0x222);
 
+    MockUniswapV2Router public router;
+
     function setUp() public {
-        factory = new MemeFactory();
+        router = new MockUniswapV2Router();
+        factory = new MemeFactory(address(router));
         vm.deal(user, 100 ether);
     }
 
@@ -47,10 +51,13 @@ contract MemeFactoryTest is Test {
 
         MemeToken meme = MemeToken(memeAddr);
         assertEq(meme.balanceOf(user), 100);
-        assertEq(meme.totalSupply(), 100);
+        // 5% fee = 0.05 ETH. Price = 1 ETH/100 tokens = 0.01 ETH/token.
+        // Liquidity tokens = 0.05 / 0.01 = 5 tokens.
+        // Total supply = 100 + 5 = 105.
+        assertEq(meme.totalSupply(), 105);
 
         (, uint256 currentSupply, , , ) = factory.memeInfos(memeAddr);
-        assertEq(currentSupply, 100);
+        assertEq(currentSupply, 105);
     }
 
     function testFeeDistribution() public {
@@ -67,17 +74,18 @@ contract MemeFactoryTest is Test {
         uint256 factoryBalanceAfter = address(factory).balance;
 
         // 1 ether total
-        // 1% = 0.01 ether to factory
-        // 99% = 0.99 ether to issuer
+        // 5% = 0.05 ether used for liquidity (sent to Router)
+        // 95% = 0.95 ether to issuer
 
+        // Factory balance shouldn't change (fee passed to router)
         assertEq(
             factoryBalanceAfter - factoryBalanceBefore,
-            0.01 ether,
-            "Factory fee incorrect"
+            0,
+            "Factory balance should not change"
         );
         assertEq(
             issuerBalanceAfter - issuerBalanceBefore,
-            0.99 ether,
+            0.95 ether,
             "Issuer income incorrect"
         );
     }
@@ -114,7 +122,7 @@ contract MemeFactoryTest is Test {
         factory.mintMeme{value: 0.1 ether}(memeAddr);
 
         // Third time should fail
-        vm.expectRevert("Exceeds total supply");
+        vm.expectRevert("Exceeds total supply (including liquidity tokens)");
         vm.prank(user);
         factory.mintMeme{value: 0.1 ether}(memeAddr);
     }

@@ -3,7 +3,7 @@
 .PHONY: all test clean deploy fund help install snapshot format anvil scopefile local sepolia
 
 # Default deploy script (can be overridden by script=ScriptName)
-script ?= Counter
+script ?= Deploy
 DEPLOY_SCRIPT_PATH := script/$(script).s.sol
 
 # Determine network and account based on make goals
@@ -36,7 +36,7 @@ remove :; rm -rf .gitmodules && rm -rf .git/modules/* && rm -rf lib && touch .gi
 
 install :; forge install cyfrin/foundry-devops@0.0.11 --no-commit && forge install smartcontractkit/chainlink-brownie-contracts@0.6.1 --no-commit && forge install foundry-rs/forge-std@v1.5.3 --no-commit
 update:; forge update
-build:; forge build
+build:; forge clean && forge build
 test :; forge test 
 snapshot :; forge snapshot
 format :; forge fmt
