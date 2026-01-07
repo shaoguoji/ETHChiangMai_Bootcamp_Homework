@@ -7,9 +7,9 @@ import { PortisConnector } from '@web3-react/portis-connector'
 import { FortmaticConnector } from './Fortmatic'
 import { NetworkConnector } from './NetworkConnector'
 
-const NETWORK_URL = process.env.REACT_APP_NETWORK_URL
-const FORMATIC_KEY = process.env.REACT_APP_FORTMATIC_KEY
-const PORTIS_ID = process.env.REACT_APP_PORTIS_ID
+const NETWORK_URL = "https://mainnet.infura.io/v3/099fc58e0de9451d80b18d7c74caa7c1"
+const FORMATIC_KEY = "pk_live_F937DF033A1666BF"
+const PORTIS_ID = "c0e2bf01-4b08-4fd5-ac7b-8e26b58cd236"
 
 export const NETWORK_CHAIN_ID: number = parseInt(process.env.REACT_APP_CHAIN_ID ?? '1')
 
