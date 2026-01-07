@@ -21,7 +21,7 @@ contract NFTMarketTest is Test {
     event logBuy(address buyer, uint256 tokenId, uint256 price);
 
     function setUp() public {
-        hookERC20 = HookERC20(_loadDeployedAddress("HookERC20"));
+        hookERC20 = HookERC20(Depl_loadoyedAddress("HookERC20"));
         baseERC721 = BaseERC721(_loadDeployedAddress("BaseERC721"));
         nftMarket = NFTMarket(_loadDeployedAddress("NFTMarket"));
 
