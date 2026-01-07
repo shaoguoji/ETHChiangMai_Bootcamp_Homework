@@ -3,6 +3,7 @@ pragma solidity ^0.8.13;
 
 import {Script} from "forge-std/Script.sol";
 import {console} from "forge-std/console.sol";
+import {Multicall} from "../src/Multicall.sol";
 
 /**
  * @title UniswapV2 Deployment Script
@@ -14,6 +15,11 @@ contract DeployScript is Script {
 
     function run() public {
         vm.startBroadcast();
+
+        // Deploy Multicall (required by Uniswap frontend for batch calls)
+        Multicall multicall = new Multicall();
+        console.log("Multicall deployed to:", address(multicall));
+        _saveDeployment("Multicall", address(multicall));
 
         // Deploy WETH9 (0.8.x compatible)
         address weth = deployCode("WETH9.sol:WETH9");
@@ -35,6 +41,7 @@ contract DeployScript is Script {
         vm.stopBroadcast();
 
         console.log("\n=== Deployment Summary ===");
+        console.log("Multicall:", address(multicall));
         console.log("WETH9:", weth);
         console.log("Factory:", factory);
         console.log("Router:", router);
