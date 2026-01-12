@@ -1,152 +1,109 @@
-# Forge Template
+# vAMM 杠杆 DEX
 
-一个功能增强的 Foundry 项目模板，提供便捷的 Makefile 命令、自动化部署地址管理和多网络配置支持。
+基于虚拟自动做市商 (vAMM) 机制的简单杠杆交易协议。
 
-## ✨ 特性
+## vAMM 机制
 
-- 🛠️ **Makefile 支持** - 简化常用命令，一键部署到本地或测试网
-- 💾 **部署地址管理** - 自动保存和加载合约部署地址
-- 🔐 **Keystore 账户** - 使用 `cast wallet` 安全管理私钥
-- 🌐 **多网络配置** - 预配置本地 Anvil 和 Sepolia 测试网
-- ✅ **自动验证** - Sepolia 部署自动进行合约验证
+使用恒定乘积公式 (`x * y = k`) 实现价格发现，但不需要实际的代币储备：
 
-## 📁 项目结构
+- **vQuoteReserve**: 虚拟报价资产储备 (如 vUSD)
+- **vBaseReserve**: 虚拟基础资产储备 (如 vETH)
+- **价格** = vQuote / vBase
 
 ```
-forge-template/
-├── src/              # 合约源码
-├── script/           # 部署脚本
-├── test/             # 测试文件
-├── deployments/      # 部署地址记录 (JSON)
-├── lib/              # 依赖库
-├── Makefile          # 便捷命令
-├── foundry.toml      # Foundry 配置
-└── .env.example      # 环境变量示例
+┌─────────────────────────────────────────────────────────┐
+│                    vAMM Price Curve                     │
+│                                                         │
+│  vQuote │    *                                          │
+│         │      *                                        │
+│         │        *     x * y = k                        │
+│         │          *                                    │
+│         │            *                                  │
+│         │              * * * *                          │
+│         └─────────────────────────────── vBase          │
+└─────────────────────────────────────────────────────────┘
 ```
 
-## 🚀 快速开始
+## 核心功能
 
-### 1. 环境配置
+### `openPosition(uint256 _margin, uint level, bool long)`
 
-复制并配置环境变量：
+开启杠杆头寸。
+
+| 参数 | 说明 |
+|------|------|
+| `_margin` | 存入的保证金数量 |
+| `level` | 杠杆倍数 (1-10x) |
+| `long` | `true` = 做多, `false` = 做空 |
+
+**做多流程:**
+1. 用户存入保证金
+2. 计算名义价值 = margin × leverage
+3. 将 quote 添加到池中，获得 base: `size = vBase - k/(vQuote + notional)`
+4. 记录 `openNotional` 用于平仓 PnL 计算
+
+**做空流程:**
+1. 用户存入保证金
+2. 从池中移除 quote，添加 base: `size = k/(vQuote - notional) - vBase`
+
+### `closePosition()`
+
+关闭调用者的头寸并结算盈亏。
+
+**PnL 计算** (基于实际 swap 输出，而非即时价格):
+- **Long**: `closeNotional = vQuote - k/(vBase + size)` → PnL = closeNotional - openNotional
+- **Short**: `closeNotional = k/(vBase - size) - vQuote` → PnL = openNotional - closeNotional
+
+### `liquidatePosition(address _user)`
+
+清算亏损超过阈值的头寸。
+
+- **清算条件**: 亏损 ≥ 保证金的 80%
+- **清算奖励**: 剩余保证金归清算人
+
+## 测试
 
 ```bash
-cp .env.example .env
+# 运行所有测试
+forge test -vvv
+
+# 测试覆盖
+15/15 tests passed ✅
 ```
 
-编辑 `.env` 文件：
+### 测试用例
+
+| 测试 | 说明 |
+|------|------|
+| `test_OpenLongPosition` | 开启多头头寸 |
+| `test_OpenShortPosition` | 开启空头头寸 |
+| `test_ClosePositionWithProfit` | 盈利平仓 |
+| `test_ClosePositionWithLoss` | 亏损平仓 |
+| `test_ShortPositionProfit` | 做空获利 |
+| `test_LiquidateUnderwaterPosition` | 清算水下头寸 |
+| `test_PnLMatchesActualSwapOutput` | 验证 PnL 与 swap 输出一致 |
+
+## 合约地址
+
+开发环境部署命令:
 
 ```bash
-ETHERSCAN_API_KEY=<你的 Etherscan API Key>
-LOCAL_RPC_URL=http://127.0.0.1:8545
-SEPOLIA_RPC_URL=https://1rpc.io/sepolia
-```
-
-### 2. 配置 Keystore 账户
-
-使用 `cast wallet` 创建和管理加密的密钥库账户：
-
-```bash
-# 本地测试账户 (使用 Anvil 默认助记词)
-cast wallet import anviltest --private-key 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80
-
-# 导入真实账户 (用于 Sepolia)
-cast wallet import shaoguoji --interactive
-```
-
-> 💡 Keystore 账户存储在 `~/.foundry/keystores/`，每次使用时需输入密码
-
-### 3. 安装依赖
-
-```bash
-forge install
-```
-
-## 📖 使用指南
-
-### Makefile 命令
-
-```bash
-# 查看帮助
-make help
-
-# 编译合约
-make build
-
-# 运行测试
-make test
-
-# 启动本地 Anvil 链
-make anvil
-
-# 部署到本地
 make deploy local
-
-# 部署到 Sepolia (带合约验证)
-make deploy sepolia
-
-# 清理构建产物
-make clean
 ```
 
-### 网络配置说明
-
-| 网络    | RPC                     | 账户       | 合约验证 |
-| ------- | ----------------------- | ---------- | -------- |
-| local   | http://127.0.0.1:8545   | anviltest  | ❌       |
-| sepolia | https://1rpc.io/sepolia | shaoguoji  | ✅       |
-
-### 部署地址管理
-
-部署脚本会自动保存合约地址到 `deployments/` 目录：
+## 项目结构
 
 ```
-deployments/
-├── Counter_31337.json    # 本地链 (chainId: 31337)
-└── Counter_11155111.json # Sepolia (chainId: 11155111)
+vAMMDex/
+├── src/
+│   └── VammDex.sol         # 主合约
+├── test/
+│   └── VammDex.t.sol       # 测试文件
+├── script/
+│   └── Deploy.s.sol        # 部署脚本
+└── foundry.toml            # Foundry 配置
 ```
 
-**保存地址** (`Deploy.s.sol` 中):
-```solidity
-_saveDeployment("Counter", address(counter));
-```
-
-**加载地址**:
-```solidity
-address counterAddr = _loadDeployedAddress("Counter");
-```
-
-## 🔧 自定义配置
-
-### 添加新网络
-
-1. 在 `.env` 添加 RPC URL：
-   ```bash
-   MAINNET_RPC_URL=https://eth.llamarpc.com
-   ```
-
-2. 在 `foundry.toml` 添加配置：
-   ```toml
-   [rpc_endpoints]
-   mainnet = "${MAINNET_RPC_URL}"
-   
-   [etherscan]
-   mainnet = { key = "${ETHERSCAN_API_KEY}" }
-   ```
-
-3. 在 `Makefile` 添加对应规则
-
-### 添加新合约
-
-1. 在 `src/` 创建合约
-2. 在 `script/Deploy.s.sol` 添加部署逻辑
-3. 使用 `make deploy local|sepolia` 部署
-
-## 📚 依赖
-
-- [Foundry](https://book.getfoundry.sh/) - 智能合约开发工具链
-- [OpenZeppelin Contracts](https://github.com/OpenZeppelin/openzeppelin-contracts) - 安全的合约标准库
-
-## 📄 License
+## 许可证
 
 MIT
