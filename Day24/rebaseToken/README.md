@@ -1,152 +1,99 @@
-# Forge Template
+# Deflationary Rebase Token
 
-一个功能增强的 Foundry 项目模板，提供便捷的 Makefile 命令、自动化部署地址管理和多网络配置支持。
+通缩型 Rebase Token (ERC20)，每年供应量在上一年的基础上下降 1%。
 
-## ✨ 特性
+## 设计原理
 
-- 🛠️ **Makefile 支持** - 简化常用命令，一键部署到本地或测试网
-- 💾 **部署地址管理** - 自动保存和加载合约部署地址
-- 🔐 **Keystore 账户** - 使用 `cast wallet` 安全管理私钥
-- 🌐 **多网络配置** - 预配置本地 Anvil 和 Sepolia 测试网
-- ✅ **自动验证** - Sepolia 部署自动进行合约验证
-
-## 📁 项目结构
+Rebase Token 的核心思想是**分离内部份额 (shares) 与外部余额 (balance)**：
 
 ```
-forge-template/
-├── src/              # 合约源码
-├── script/           # 部署脚本
-├── test/             # 测试文件
-├── deployments/      # 部署地址记录 (JSON)
-├── lib/              # 依赖库
-├── Makefile          # 便捷命令
-├── foundry.toml      # Foundry 配置
-└── .env.example      # 环境变量示例
+balance = shares × rebaseRatio / 1e18
 ```
 
-## 🚀 快速开始
+| 概念 | 说明 |
+|-----|------|
+| **Shares** | 用户实际持有的内部份额，转账时转移 shares |
+| **Balance** | 用户看到的余额，通过 shares × ratio 计算 |
+| **Rebase** | 调整 rebaseRatio，使所有用户余额同时变化 |
 
-### 1. 环境配置
+### 通缩机制
 
-复制并配置环境变量：
-
-```bash
-cp .env.example .env
-```
-
-编辑 `.env` 文件：
-
-```bash
-ETHERSCAN_API_KEY=<你的 Etherscan API Key>
-LOCAL_RPC_URL=http://127.0.0.1:8545
-SEPOLIA_RPC_URL=https://1rpc.io/sepolia
-```
-
-### 2. 配置 Keystore 账户
-
-使用 `cast wallet` 创建和管理加密的密钥库账户：
-
-```bash
-# 本地测试账户 (使用 Anvil 默认助记词)
-cast wallet import anviltest --private-key 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80
-
-# 导入真实账户 (用于 Sepolia)
-cast wallet import shaoguoji --interactive
-```
-
-> 💡 Keystore 账户存储在 `~/.foundry/keystores/`，每次使用时需输入密码
-
-### 3. 安装依赖
-
-```bash
-forge install
-```
-
-## 📖 使用指南
-
-### Makefile 命令
-
-```bash
-# 查看帮助
-make help
-
-# 编译合约
-make build
-
-# 运行测试
-make test
-
-# 启动本地 Anvil 链
-make anvil
-
-# 部署到本地
-make deploy local
-
-# 部署到 Sepolia (带合约验证)
-make deploy sepolia
-
-# 清理构建产物
-make clean
-```
-
-### 网络配置说明
-
-| 网络    | RPC                     | 账户       | 合约验证 |
-| ------- | ----------------------- | ---------- | -------- |
-| local   | http://127.0.0.1:8545   | anviltest  | ❌       |
-| sepolia | https://1rpc.io/sepolia | shaoguoji  | ✅       |
-
-### 部署地址管理
-
-部署脚本会自动保存合约地址到 `deployments/` 目录：
+每年调用 `rebase()` 时，`rebaseRatio` 下降 1%：
 
 ```
-deployments/
-├── Counter_31337.json    # 本地链 (chainId: 31337)
-└── Counter_11155111.json # Sepolia (chainId: 11155111)
+Year 0: ratio = 1.0    → balance = 1,000,000
+Year 1: ratio = 0.99   → balance = 990,000 (-1%)
+Year 2: ratio = 0.9801 → balance = 980,100 (-1.99%)
+...
+Year 10: ratio ≈ 0.904 → balance ≈ 904,382 (-9.56%)
 ```
 
-**保存地址** (`Deploy.s.sol` 中):
+## 核心 API
+
 ```solidity
-_saveDeployment("Counter", address(counter));
+// 查询通缩后余额
+function balanceOf(address account) returns (uint256)
+
+// 查询原始份额
+function sharesOf(address account) returns (uint256)
+
+// 执行通缩 rebase（每年只能调用一次）
+function rebase() external
+
+// 检查是否可以 rebase
+function canRebase() returns (bool)
+
+// 获取当前年份（从部署开始计算）
+function getCurrentYear() returns (uint256)
 ```
 
-**加载地址**:
+## 使用示例
+
 ```solidity
-address counterAddr = _loadDeployedAddress("Counter");
+// 部署时 mint 100万代币
+DeflationaryToken token = new DeflationaryToken("DFT", "DFT", 1_000_000 ether);
+
+// 初始余额
+token.balanceOf(user); // 1,000,000
+
+// 1年后调用 rebase
+vm.warp(block.timestamp + 365 days);
+token.rebase();
+
+// 余额自动下降 1%
+token.balanceOf(user); // 990,000
 ```
 
-## 🔧 自定义配置
+## 运行测试
 
-### 添加新网络
+```bash
+forge test -vvv
+```
 
-1. 在 `.env` 添加 RPC URL：
-   ```bash
-   MAINNET_RPC_URL=https://eth.llamarpc.com
-   ```
+### 测试用例
 
-2. 在 `foundry.toml` 添加配置：
-   ```toml
-   [rpc_endpoints]
-   mainnet = "${MAINNET_RPC_URL}"
-   
-   [etherscan]
-   mainnet = { key = "${ETHERSCAN_API_KEY}" }
-   ```
+| 测试 | 描述 |
+|-----|------|
+| `testInitialBalance` | 初始 mint 余额正确 |
+| `testRebaseAfterOneYear` | 1 年后余额下降 1% |
+| `testRebaseAfterMultipleYears` | 多年复合通缩 |
+| `testCannotRebaseSameYear` | 同年不能重复 rebase |
+| `testTransferAfterRebase` | rebase 后转账正确 |
+| `testAllowanceAfterRebase` | rebase 后授权额度调整 |
+| `testLongTermDeflation` | 10 年长期通缩验证 |
 
-3. 在 `Makefile` 添加对应规则
+## 项目结构
 
-### 添加新合约
+```
+rebaseToken/
+├── src/
+│   └── DeflationaryToken.sol   # 主合约
+├── test/
+│   └── DeflationaryToken.t.sol # Foundry 测试
+├── foundry.toml
+└── README.md
+```
 
-1. 在 `src/` 创建合约
-2. 在 `script/Deploy.s.sol` 添加部署逻辑
-3. 使用 `make deploy local|sepolia` 部署
-
-## 📚 依赖
-
-- [Foundry](https://book.getfoundry.sh/) - 智能合约开发工具链
-- [OpenZeppelin Contracts](https://github.com/OpenZeppelin/openzeppelin-contracts) - 安全的合约标准库
-
-## 📄 License
+## License
 
 MIT
