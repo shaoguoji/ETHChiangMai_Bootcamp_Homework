@@ -82,6 +82,47 @@ forge test -vvv
 | `testAllowanceAfterRebase` | rebase 后授权额度调整 |
 | `testLongTermDeflation` | 10 年长期通缩验证 |
 
+### 测试日志
+
+```
+➜  rebaseToken git:(main) ✗ forge test -vvv
+[⠊] Compiling...
+No files changed, compilation skipped
+
+Ran 13 tests for test/DeflationaryToken.t.sol:DeflationaryTokenTest
+[PASS] testAllowanceAfterRebase() (gas: 73379)
+[PASS] testApproveAndTransferFrom() (gas: 79785)
+[PASS] testCannotRebaseInFirstYear() (gas: 15073)
+[PASS] testCannotRebaseSameYear() (gas: 46144)
+[PASS] testInitialBalance() (gas: 17990)
+[PASS] testInitialRebaseRatio() (gas: 14709)
+[PASS] testLongTermDeflation() (gas: 58945)
+Logs:
+  Initial supply: 1000000000000000000000000
+  Balance after 10 years: 904382075008804490000000
+  Percentage remaining: 90 %
+
+[PASS] testRebaseAfterMultipleYears() (gas: 61860)
+Logs:
+  Balance before 3-year rebase: 1000000000000000000000000
+  Balance after 3-year rebase: 970299000000000000000000
+  Total deflation: 29701000000000000000000
+
+[PASS] testRebaseAfterOneYear() (gas: 67511)
+Logs:
+  Balance before rebase: 1000000000000000000000000
+  Balance after rebase: 990000000000000000000000
+  Deflation amount: 10000000000000000000000
+
+[PASS] testRebaseInConsecutiveYears() (gas: 50922)
+[PASS] testRebaseWithZeroBalance() (gas: 78181)
+[PASS] testTransferAfterRebase() (gas: 120230)
+[PASS] testTransferBeforeRebase() (gas: 45935)
+Suite result: ok. 13 passed; 0 failed; 0 skipped; finished in 2.15ms (2.13ms CPU time)
+
+Ran 1 test suite in 226.07ms (2.15ms CPU time): 13 tests passed, 0 failed, 0 skipped (13 total tests)
+```
+
 ## 项目结构
 
 ```
