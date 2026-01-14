@@ -1,152 +1,103 @@
-# Forge Template
+# DAO Bank
 
-一个功能增强的 Foundry 项目模板，提供便捷的 Makefile 命令、自动化部署地址管理和多网络配置支持。
-
-## ✨ 特性
-
-- 🛠️ **Makefile 支持** - 简化常用命令，一键部署到本地或测试网
-- 💾 **部署地址管理** - 自动保存和加载合约部署地址
-- 🔐 **Keystore 账户** - 使用 `cast wallet` 安全管理私钥
-- 🌐 **多网络配置** - 预配置本地 Anvil 和 Sepolia 测试网
-- ✅ **自动验证** - Sepolia 部署自动进行合约验证
+基于 OpenZeppelin Governor 的 DAO 管理银行系统。代币持有者可以通过投票提案来管理银行资金的提取。
 
 ## 📁 项目结构
 
 ```
-forge-template/
-├── src/              # 合约源码
-├── script/           # 部署脚本
-├── test/             # 测试文件
-├── deployments/      # 部署地址记录 (JSON)
-├── lib/              # 依赖库
-├── Makefile          # 便捷命令
-├── foundry.toml      # Foundry 配置
-└── .env.example      # 环境变量示例
+src/
+├── GovToken.sol      # ERC20Votes 治理代币
+├── Bank.sol          # 银行合约 (仅管理员可提款)
+└── BankGovernor.sol  # Governor 合约 (提案/投票/执行)
 ```
 
-## 🚀 快速开始
+## ⚙️ Governor 配置
 
-### 1. 环境配置
+| 参数 | 值 | 说明 |
+|------|---|------|
+| Voting Delay | 1 block | 提案创建后等待时间 |
+| Voting Period | 50,400 blocks | 投票持续时间 (~1 周) |
+| Quorum | 4% | 最低参与率 |
+| Proposal Threshold | 0 | 任何人都可提案 |
 
-复制并配置环境变量：
+## 🔄 提案生命周期
+
+```
+1. propose()  →  Pending
+2. [等待 1 block]  →  Active
+3. castVote()  →  投票中
+4. [等待 50,400 blocks]  →  Succeeded/Defeated
+5. execute()  →  Executed
+```
+
+## 🧪 测试日志
 
 ```bash
-cp .env.example .env
+➜  DaoBank git:(main) forge test -vvv
+[⠊] Compiling...
+No files changed, compilation skipped
+
+Ran 7 tests for test/DaoBank.t.sol:DaoBankTest
+[PASS] test_BankDeposit() (gas: 23961)
+[PASS] test_BankReceiveETH() (gas: 23498)
+[PASS] test_BankWithdrawByGovernor() (gas: 55801)
+[PASS] test_BankWithdrawOnlyAdmin() (gas: 16751)
+[PASS] test_GovernorSettings() (gas: 16051)
+[PASS] test_ProposalDefeated() (gas: 312016)
+[PASS] test_ProposalLifecycle() (gas: 460782)
+Logs:
+  === DAO Bank Proposal Lifecycle Test ===
+  
+  Step 1: Creating proposal...
+    - Withdraw amount: 5000000000000000000
+    - Recipient: 0x006217c47ffA5Eb3F3c92247ffFE22AD998242c5
+    - Proposal ID: 1666499474038357532009377763834646886152701363814623466647609998075117013054
+    - State: Pending
+  
+  Step 2: Advancing past voting delay...
+    - State: Active
+  
+  Step 3: Casting votes...
+    - Alice voted: For (400,000 GOV)
+    - Bob voted: Against (100,000 GOV)
+    - Deployer voted: For (500,000 GOV)
+  
+    Vote Tally:
+      For: 900000000000000000000000
+      Against: 100000000000000000000000
+      Abstain: 0
+  
+  Step 4: Advancing past voting period...
+    - State: Succeeded
+  
+  Step 5: Executing proposal...
+    - Bank balance before: 10000000000000000000
+    - Recipient balance before: 0
+    - Bank balance after: 5000000000000000000
+    - Recipient balance after: 5000000000000000000
+    - State: Executed
+  
+  === Proposal Lifecycle Complete ===
+  Successfully withdrew 5000000000000000000 wei via DAO vote!
+
+Suite result: ok. 7 passed; 0 failed; 0 skipped; finished in 12.67ms (11.26ms CPU time)
+
+Ran 1 test suite in 252.59ms (12.67ms CPU time): 7 tests passed, 0 failed, 0 skipped (7 total tests)
 ```
 
-编辑 `.env` 文件：
+## 📖 核心函数
 
-```bash
-ETHERSCAN_API_KEY=<你的 Etherscan API Key>
-LOCAL_RPC_URL=http://127.0.0.1:8545
-SEPOLIA_RPC_URL=https://1rpc.io/sepolia
-```
+### Bank.sol
+- `deposit()` - 存入 ETH
+- `withdraw(to, amount)` - 提取 ETH (仅管理员)
+- `setAdmin(newAdmin)` - 更换管理员 (仅管理员)
 
-### 2. 配置 Keystore 账户
-
-使用 `cast wallet` 创建和管理加密的密钥库账户：
-
-```bash
-# 本地测试账户 (使用 Anvil 默认助记词)
-cast wallet import anviltest --private-key 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80
-
-# 导入真实账户 (用于 Sepolia)
-cast wallet import shaoguoji --interactive
-```
-
-> 💡 Keystore 账户存储在 `~/.foundry/keystores/`，每次使用时需输入密码
-
-### 3. 安装依赖
-
-```bash
-forge install
-```
-
-## 📖 使用指南
-
-### Makefile 命令
-
-```bash
-# 查看帮助
-make help
-
-# 编译合约
-make build
-
-# 运行测试
-make test
-
-# 启动本地 Anvil 链
-make anvil
-
-# 部署到本地
-make deploy local
-
-# 部署到 Sepolia (带合约验证)
-make deploy sepolia
-
-# 清理构建产物
-make clean
-```
-
-### 网络配置说明
-
-| 网络    | RPC                     | 账户       | 合约验证 |
-| ------- | ----------------------- | ---------- | -------- |
-| local   | http://127.0.0.1:8545   | anviltest  | ❌       |
-| sepolia | https://1rpc.io/sepolia | shaoguoji  | ✅       |
-
-### 部署地址管理
-
-部署脚本会自动保存合约地址到 `deployments/` 目录：
-
-```
-deployments/
-├── Counter_31337.json    # 本地链 (chainId: 31337)
-└── Counter_11155111.json # Sepolia (chainId: 11155111)
-```
-
-**保存地址** (`Deploy.s.sol` 中):
-```solidity
-_saveDeployment("Counter", address(counter));
-```
-
-**加载地址**:
-```solidity
-address counterAddr = _loadDeployedAddress("Counter");
-```
-
-## 🔧 自定义配置
-
-### 添加新网络
-
-1. 在 `.env` 添加 RPC URL：
-   ```bash
-   MAINNET_RPC_URL=https://eth.llamarpc.com
-   ```
-
-2. 在 `foundry.toml` 添加配置：
-   ```toml
-   [rpc_endpoints]
-   mainnet = "${MAINNET_RPC_URL}"
-   
-   [etherscan]
-   mainnet = { key = "${ETHERSCAN_API_KEY}" }
-   ```
-
-3. 在 `Makefile` 添加对应规则
-
-### 添加新合约
-
-1. 在 `src/` 创建合约
-2. 在 `script/Deploy.s.sol` 添加部署逻辑
-3. 使用 `make deploy local|sepolia` 部署
+### BankGovernor.sol
+- `propose(targets, values, calldatas, description)` - 创建提案
+- `castVote(proposalId, support)` - 投票 (0=反对, 1=支持, 2=弃权)
+- `execute(targets, values, calldatas, descriptionHash)` - 执行提案
 
 ## 📚 依赖
 
-- [Foundry](https://book.getfoundry.sh/) - 智能合约开发工具链
-- [OpenZeppelin Contracts](https://github.com/OpenZeppelin/openzeppelin-contracts) - 安全的合约标准库
-
-## 📄 License
-
-MIT
+- [OpenZeppelin Contracts v5.5.0](https://github.com/OpenZeppelin/openzeppelin-contracts)
+- [Forge Std](https://github.com/foundry-rs/forge-std)
