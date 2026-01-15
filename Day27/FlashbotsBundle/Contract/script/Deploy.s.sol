@@ -4,19 +4,19 @@ pragma solidity ^0.8.13;
 import {Script} from "forge-std/Script.sol";
 import {console} from "forge-std/console.sol";
 
-import {Counter} from "../src/Counter.sol";
+import {OpenspaceNFT} from "../src/OpenspaceNFT.sol";
 
 contract DeployScript is Script {
-    Counter public counter;
+    OpenspaceNFT public nft;
 
     function setUp() public {}
 
     function run() public {
         vm.startBroadcast();
 
-        counter = new Counter();
-        _saveDeployment("Counter", address(counter));
-        console.log("Counter deployed to:", _loadDeployedAddress("Counter"));
+        nft = new OpenspaceNFT();
+        _saveDeployment("OpenspaceNFT", address(nft));
+        console.log("OpenspaceNFT deployed to:", _loadDeployedAddress("OpenspaceNFT"));
 
         vm.stopBroadcast();
     }

@@ -1,0 +1,21 @@
+{
+  "name": "flashbots-bundle-script",
+  "version": "1.0.0",
+  "description": "Flashbots bundle script for OpenspaceNFT presale",
+  "main": "src/flashbotsBundle.ts",
+  "scripts": {
+    "build": "tsc",
+    "start": "npx ts-node src/flashbotsBundle.ts",
+    "bundle": "npx ts-node src/flashbotsBundle.ts"
+  },
+  "dependencies": {
+    "@flashbots/ethers-provider-bundle": "^0.6.2",
+    "dotenv": "^16.3.1",
+    "ethers": "^5.7.2"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.3.2"
+  }
+}
