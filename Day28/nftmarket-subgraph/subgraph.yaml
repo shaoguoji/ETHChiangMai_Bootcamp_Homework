@@ -1,0 +1,32 @@
+specVersion: 1.3.0
+indexerHints:
+  prune: auto
+schema:
+  file: ./schema.graphql
+dataSources:
+  - kind: ethereum
+    name: NFTMarket
+    network: sepolia
+    source:
+      address: "0xd4ADe8031E01492bE106335C7B5Eed81cd7A29fD"
+      abi: NFTMarket
+      startBlock: 9893105
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.9
+      language: wasm/assemblyscript
+      entities:
+        - logBuy
+        - logList
+        - logTokensReceived
+      abis:
+        - name: NFTMarket
+          file: ./abis/NFTMarket.json
+      eventHandlers:
+        - event: logBuy(address,uint256,uint256)
+          handler: handlelogBuy
+        - event: logList(address,uint256,uint256)
+          handler: handlelogList
+        - event: logTokensReceived(address,uint256,bytes)
+          handler: handlelogTokensReceived
+      file: ./src/nft-market.ts
