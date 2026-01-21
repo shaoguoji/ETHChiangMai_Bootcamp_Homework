@@ -1,4 +1,89 @@
-## deploy L1 token
+# Cross-Chain Token Bridge
+
+This project demonstrates how to bridge a custom ERC20 token from Sepolia (L1) to Base Sepolia (L2) using the Optimism Standard Bridge.
+
+## Prerequisites
+
+- **Foundry**: Ensure `forge` is installed.
+- **Account**: You need a keystore or private key with Sepolia ETH.
+- **RPC URLs**: Set `SEPOLIA_RPC_URL` and `BASE_SEPOLIA_RPC_URL` in `.env`.
+
+## Configuration
+
+1.  **Clone & Install Dependencies**
+    ```bash
+    git clone <repo>
+    forge install
+    ```
+
+2.  **Environment Setup**
+    Create a `.env` file from `.env.example`:
+    ```bash
+    cp .env.example .env
+    ```
+    Populate it with:
+    ```ini
+    SEPOLIA_RPC_URL=https://sepolia.infura.io/v3/YOUR_KEY
+    BASE_SEPOLIA_RPC_URL=https://sepolia.base.org
+    PRIVATE_KEY=... (Optional if using keystore)
+    ETHERSCAN_API_KEY=... (For verification)
+    SENDER=0xYourAddress (REQUIRED for bridge script)
+    ```
+
+## Usage Steps
+
+### 1. Deploy L1 Token (Sepolia)
+
+Deploy your custom ERC20 token to Sepolia.
+
+```bash
+# Using Makefile shortcut
+make deploy sepolia
+
+# OR using Forge directly
+forge script script/Deploy.s.sol --rpc-url sepolia --account <your_account> --broadcast --verify
+```
+
+> **Note**: Verify the L1 Token address in `deployments/MyToken_11155111.json`.
+
+### 2. Deploy L2 Token (Base Sepolia)
+
+Deploy the corresponding `OptimismMintableERC20` on Base Sepolia. This requires the L1 token address.
+
+```bash
+# Ensure you are on Base Sepolia RPC
+# It will read L1 address from 'deployments/MyToken_11155111.json'
+forge script script/BridgeToken.s.sol --rpc-url base_sepolia --account <your_account> --broadcast
+```
+
+> **Note**: This will save the L2 Token address to `deployments/MyTokenL2_84532.json`.
+
+### 3. Bridge Tokens (Sepolia -> Base Sepolia)
+
+Send tokens from L1 to L2.
+
+**Important**: You must set `SENDER` in `.env` or prefix command with it for balance checks.
+
+```bash
+# Example
+export SENDER=<your_wallet_address>
+forge script script/BridgeToken.s.sol --rpc-url sepolia --account <your_account> --broadcast
+```
+
+**What happens:**
+1.  Check L1 Balance.
+2.  Approve `L1StandardBridge` to spend tokens.
+3.  Call `bridgeERC20` to initiate transfer.
+
+## Verification
+
+After bridging, wait ~5-10 minutes. You can check your L2 balance on Base Sepolia:
+
+```bash
+cast call <L2_TOKEN_ADDRESS> "balanceOf(address)" <YOUR_ADDRESS> --rpc-url base_sepolia
+```
+
+## deploy L1 token log
 
 ```sh
 ➜  crossToken git:(main) ✗ make deploy sepolia
@@ -99,7 +184,7 @@ Sensitive values saved to: /Users/shaoguoji/ETHChiangMai_Bootcamp/Homework/Day31
 ➜
 ```
 
-## deploy L2 token
+## deploy L2 token log
 
 ```sh
 ➜  crossToken git:(main) ✗ forge script script/BridgeToken.s.sol --rpc-url base_sepolia --account shaoguoji --broadcast
@@ -154,7 +239,7 @@ Transactions saved to: /Users/shaoguoji/ETHChiangMai_Bootcamp/Homework/Day31/cro
 Sensitive values saved to: /Users/shaoguoji/ETHChiangMai_Bootcamp/Homework/Day31/crossToken/cache/BridgeToken.s.sol/84532/run-latest.json
 ```
 
-## cross bridge
+## cross bridge log
 
 ```sh
 ➜  crossToken git:(main) ✗ forge script script/BridgeToken.s.sol --rpc-url sepolia --account shaoguoji --broadcast
