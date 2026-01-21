@@ -1,24 +1,35 @@
-// SPDX-License-Identifier: UNLICENSED
-pragma solidity ^0.8.13;
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.20;
 
 import {Script} from "forge-std/Script.sol";
 import {console} from "forge-std/console.sol";
 
-import {Counter} from "../src/Counter.sol";
+import {MyToken} from "../src/MyToken.sol";
 
 contract DeployScript is Script {
-    Counter public counter;
+    MyToken public token;
 
     function setUp() public {}
 
     function run() public {
+        console.log("================================================");
+        console.log("Deploying MyToken (CRT)");
+        console.log("================================================");
+        console.log("Chain ID:", block.chainid);
+        console.log("Deployer:", msg.sender);
+
         vm.startBroadcast();
 
-        counter = new Counter();
-        _saveDeployment("Counter", address(counter));
-        console.log("Counter deployed to:", _loadDeployedAddress("Counter"));
+        token = new MyToken("CrossChainToken", "CRT");
+        _saveDeployment("MyToken", address(token));
 
         vm.stopBroadcast();
+
+        console.log("================================================");
+        console.log("MyToken deployed to:", address(token));
+        console.log("Initial supply:", token.totalSupply());
+        console.log("Deployment saved to: deployments/MyToken_%s.json", vm.toString(block.chainid));
+        console.log("================================================");
     }
 
     function _saveDeployment(string memory name, address addr) internal {
