@@ -1,0 +1,8 @@
+{
+  "../../../Day22/StakingPool/lib/openzeppelin-contracts": {
+    "rev": "1e5b89110853663f4d7f83c867b3945854f40a76"
+  },
+  "../../../Day8/lib/openzeppelin-contracts": {
+    "rev": "fcbae5394ae8ad52d8e580a3477db99814b9d565"
+  }
+}
