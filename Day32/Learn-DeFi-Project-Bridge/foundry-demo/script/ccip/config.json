@@ -1,0 +1,17 @@
+{
+  "BnMToken": {
+    "name": "CrossChainToken",
+    "symbol": "CCT",
+    "decimals": 18,
+    "maxSupply": 0,
+    "preMint": 0,
+    "ccipAdminAddress": "0x0b332c99Fd6511Ca9FAf9654DfcF18C575941094"
+  },
+  "tokenAmountToMint": 1000000000000000000000,
+  "tokenAmountToTransfer": 100000000000000000,
+  "feeType": "native",
+  "remoteChains": {
+    "11155111": 84532,
+    "84532": 11155111
+  }
+}
