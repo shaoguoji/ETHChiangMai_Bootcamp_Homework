@@ -1,5 +1,7 @@
 # CCIP Bridge DApp - Chainlink 跨链桥前端
 
+![bridge-frontend](img/bridge-frontend.png)
+
 基于 Next.js 的 Chainlink CCIP 跨链桥 Web 应用，实现 Sepolia ↔ Base Sepolia 双向跨链。
 
 ## 📋 目录
