@@ -5,7 +5,7 @@
     "decimals": 18,
     "maxSupply": 0,
     "preMint": 0,
-    "ccipAdminAddress": "0x0b332c99Fd6511Ca9FAf9654DfcF18C575941094"
+    "ccipAdminAddress": "0xBF2A4454226E8296825d3eC06d08D6c0b41dcebd"
   },
   "tokenAmountToMint": 1000000000000000000000,
   "tokenAmountToTransfer": 100000000000000000,

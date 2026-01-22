@@ -1,0 +1,940 @@
+==========================
+
+Chain 11155111
+
+Estimated gas price: 2.069760424 gwei
+
+Estimated total gas used for script: 1840780
+
+Estimated amount required: 0.00380997359329072 ETH
+
+==========================
+
+##### sepolia
+✅  [Success] Hash: 0xe89b026a6e19769a8049fb2e7f240aab1a2fd72bf2d6b39bc4f3c7d78fb130e4
+Contract Address: 0xAF8E5D63c45925a201bDd824c3452CF77D92bFF8
+Block: 10097443
+Paid: 0.001443209878311852 ETH (1332884 gas * 1.082772303 gwei)
+
+
+##### sepolia
+✅  [Success] Hash: 0x36b3c295defff6de4ba5b5bc770141ad8ce98aafca4411f67945525856809148
+Block: 10097444
+Paid: 0.00007882385995473 ETH (78213 gas * 1.00781021 gwei)
+
+✅ Sequence #1 on sepolia | Total Paid: 0.001522033738266582 ETH (1411097 gas * avg 1.045291256 gwei)
+                                                                                                     
+
+==========================
+
+ONCHAIN EXECUTION COMPLETE & SUCCESSFUL.
+##
+Start verification for (1) contracts
+Start verifying contract `0xAF8E5D63c45925a201bDd824c3452CF77D92bFF8` deployed on sepolia
+EVM version: cancun
+Compiler version: 0.8.24
+Optimizations:    200
+Constructor args: 00000000000000000000000000000000000000000000000000000000000000a000000000000000000000000000000000000000000000000000000000000000e0000000000000000000000000000000000000000000000000000000000000001200000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000f43726f7373436861696e546f6b656e000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000034343540000000000000000000000000000000000000000000000000000000000
+
+Submitting verification for [node_modules/@chainlink/contracts/src/v0.8/shared/token/ERC20/BurnMintERC20.sol:BurnMintERC20] 0xAF8E5D63c45925a201bDd824c3452CF77D92bFF8.
+Warning: Could not detect deployment: Unable to locate ContractCode at 0xaf8e5d63c45925a201bdd824c3452cf77d92bff8; waiting 5 seconds before trying again (4 tries remaining)
+
+Submitting verification for [node_modules/@chainlink/contracts/src/v0.8/shared/token/ERC20/BurnMintERC20.sol:BurnMintERC20] 0xAF8E5D63c45925a201bDd824c3452CF77D92bFF8.
+Warning: Could not detect deployment: Unable to locate ContractCode at 0xaf8e5d63c45925a201bdd824c3452cf77d92bff8; waiting 5 seconds before trying again (3 tries remaining)
+
+Submitting verification for [node_modules/@chainlink/contracts/src/v0.8/shared/token/ERC20/BurnMintERC20.sol:BurnMintERC20] 0xAF8E5D63c45925a201bDd824c3452CF77D92bFF8.
+Warning: Could not detect deployment: Unable to locate ContractCode at 0xaf8e5d63c45925a201bdd824c3452cf77d92bff8; waiting 5 seconds before trying again (2 tries remaining)
+
+Submitting verification for [node_modules/@chainlink/contracts/src/v0.8/shared/token/ERC20/BurnMintERC20.sol:BurnMintERC20] 0xAF8E5D63c45925a201bDd824c3452CF77D92bFF8.
+Submitted contract for verification:
+        Response: `OK`
+        GUID: `kmcz7xye64wgumvve7nhtiauiehg4xxrqljx5pcsey4n5ju1l1`
+        URL: https://sepolia.etherscan.io/address/0xaf8e5d63c45925a201bdd824c3452cf77d92bff8
+Contract verification status:
+Response: `NOTOK`
+Details: `Pending in queue`
+Warning: Verification is still pending...; waiting 15 seconds before trying again (7 tries remaining)
+^LContract verification status:
+Response: `OK`
+Details: `Pass - Verified`
+Contract successfully verified
+All (1) contracts were verified!
+
+Transactions saved to: /Users/shaoguoji/ETHChiangMai_Bootcamp/Homework/Day32/Learn-DeFi-Project-Bridge/foundry-demo/broadcast/DeployToken.s.sol/11155111/run-latest.json
+
+Sensitive values saved to: /Users/shaoguoji/ETHChiangMai_Bootcamp/Homework/Day32/Learn-DeFi-Project-Bridge/foundry-demo/cache/DeployToken.s.sol/11155111/run-latest.json
+
+➜  foundry-demo git:(main) ✗ 
+➜  foundry-demo git:(main) ✗ forge script script/ccip/DeployToken.s.sol \
+  --rpc-url $BASE_SEPOLIA_RPC_URL \
+  --private-key $PRIVATE_KEY \
+  --broadcast \
+> --verify
+[⠊] Compiling...
+No files changed, compilation skipped
+Script ran successfully.
+
+== Logs ==
+  Deployed BurnMintERC20 at: 0x2be47261554ce80f6f2cC7490B072506eE20ca46
+  Granted mint and burn roles to: 0xBF2A4454226E8296825d3eC06d08D6c0b41dcebd
+  Writing deployed token address to file: ./script/ccip/output/deployedToken_baseSepolia.json
+
+## Setting up 1 EVM.
+
+==========================
+
+Chain 84532
+
+Estimated gas price: 0.001399935 gwei
+
+Estimated total gas used for script: 1840780
+
+Estimated amount required: 0.0000025769723493 ETH
+
+==========================
+
+##### base-sepolia
+✅  [Success] Hash: 0x50cbe2f4883b679be9a560a17ef18d8a4b141fe7c15c8f9dc603860b1fe7400e
+Block: 36650416
+Paid: 0.000000093850516155 ETH (78213 gas * 0.001199935 gwei)
+
+
+##### base-sepolia
+✅  [Success] Hash: 0xe5fb54db386a0cb8d3a84ba827980d04a87127f2adf7704b94333832374e1840
+Contract Address: 0x2be47261554ce80f6f2cC7490B072506eE20ca46
+Block: 36650416
+Paid: 0.00000159937416254 ETH (1332884 gas * 0.001199935 gwei)
+
+✅ Sequence #1 on base-sepolia | Total Paid: 0.000001693224678695 ETH (1411097 gas * avg 0.001199935 gwei)
+                                                                                                     
+
+==========================
+
+ONCHAIN EXECUTION COMPLETE & SUCCESSFUL.
+##
+Start verification for (1) contracts
+Start verifying contract `0x2be47261554ce80f6f2cC7490B072506eE20ca46` deployed on base-sepolia
+EVM version: cancun
+Compiler version: 0.8.24
+Optimizations:    200
+Constructor args: 00000000000000000000000000000000000000000000000000000000000000a000000000000000000000000000000000000000000000000000000000000000e0000000000000000000000000000000000000000000000000000000000000001200000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000f43726f7373436861696e546f6b656e000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000034343540000000000000000000000000000000000000000000000000000000000
+
+Submitting verification for [node_modules/@chainlink/contracts/src/v0.8/shared/token/ERC20/BurnMintERC20.sol:BurnMintERC20] 0x2be47261554ce80f6f2cC7490B072506eE20ca46.
+Submitted contract for verification:
+        Response: `OK`
+        GUID: `8xniwejshpuv9threedslrep6zawh2te5vcmvhzuif9tkwmg5b`
+        URL: https://sepolia.basescan.org/address/0x2be47261554ce80f6f2cc7490b072506ee20ca46
+Contract verification status:
+Response: `OK`
+Details: `Pass - Verified`
+Contract successfully verified
+All (1) contracts were verified!
+
+Transactions saved to: /Users/shaoguoji/ETHChiangMai_Bootcamp/Homework/Day32/Learn-DeFi-Project-Bridge/foundry-demo/broadcast/DeployToken.s.sol/84532/run-latest.json
+
+Sensitive values saved to: /Users/shaoguoji/ETHChiangMai_Bootcamp/Homework/Day32/Learn-DeFi-Project-Bridge/foundry-demo/cache/DeployToken.s.sol/84532/run-latest.json
+
+➜  foundry-demo git:(main) ✗ 
+➜  foundry-demo git:(main) ✗ forge script script/ccip/DeployBurnMintTokenPool.s.sol \
+  --rpc-url $SEPOLIA_RPC_URL \
+  --private-key $PRIVATE_KEY \
+  --broadcast \
+> --verify
+[⠊] Compiling...
+[⠔] Compiling 1 files with Solc 0.8.24
+[⠒] Solc 0.8.24 finished in 2.49s
+Compiler run successful!
+Script ran successfully.
+
+== Logs ==
+  Burn & Mint token pool deployed to: 0xc33F9B759f4f3b410DC4F1D4d6493619C1d1f1bF
+  Granted mint and burn roles to token pool: 0xc33F9B759f4f3b410DC4F1D4d6493619C1d1f1bF
+  Writing deployed token pool address to file: ./script/ccip/output/deployedTokenPool_ethereumSepolia.json
+
+## Setting up 1 EVM.
+
+==========================
+
+Chain 11155111
+
+Estimated gas price: 2.168500384 gwei
+
+Estimated total gas used for script: 4067123
+
+Estimated amount required: 0.008819557787275232 ETH
+
+==========================
+
+##### sepolia
+✅  [Success] Hash: 0x0ddea05a0177b2995414f6a61d31581ce61f3e5c64c21e6d4463d980a511cf57
+Contract Address: 0xc33F9B759f4f3b410DC4F1D4d6493619C1d1f1bF
+Block: 10097458
+Paid: 0.003128297288111424 ETH (3045456 gas * 1.027201604 gwei)
+
+
+##### sepolia
+✅  [Success] Hash: 0x17d01031be093e4a493ef5bd3ebceabecb56b6f4245aa2ed1120e7a0d3ff8ca2
+Block: 10097459
+Paid: 0.000077814002481114 ETH (78213 gas * 0.994898578 gwei)
+
+✅ Sequence #1 on sepolia | Total Paid: 0.003206111290592538 ETH (3123669 gas * avg 1.011050091 gwei)
+                                                                                                     
+
+==========================
+
+ONCHAIN EXECUTION COMPLETE & SUCCESSFUL.
+##
+Start verification for (1) contracts
+Start verifying contract `0xc33F9B759f4f3b410DC4F1D4d6493619C1d1f1bF` deployed on sepolia
+EVM version: cancun
+Compiler version: 0.8.24
+Optimizations:    200
+Constructor args: 000000000000000000000000af8e5d63c45925a201bdd824c3452cf77d92bff8000000000000000000000000000000000000000000000000000000000000001200000000000000000000000000000000000000000000000000000000000000a0000000000000000000000000ba3f6251de62ded61ff98590cb2fdf6871fbb9910000000000000000000000000bf3de8c5d3e8a2b34d2beeb17abfcebaf363a590000000000000000000000000000000000000000000000000000000000000000
+
+Submitting verification for [node_modules/@chainlink/contracts-ccip/contracts/pools/BurnMintTokenPool.sol:BurnMintTokenPool] 0xc33F9B759f4f3b410DC4F1D4d6493619C1d1f1bF.
+Submitted contract for verification:
+        Response: `OK`
+        GUID: `xxmln5bsqi1sxwy9p1nwugekg8xh9jwrexyx3n7xineta9pfks`
+        URL: https://sepolia.etherscan.io/address/0xc33f9b759f4f3b410dc4f1d4d6493619c1d1f1bf
+Contract verification status:
+Response: `NOTOK`
+Details: `Pending in queue`
+Warning: Verification is still pending...; waiting 15 seconds before trying again (7 tries remaining)
+Contract verification status:
+Response: `OK`
+Details: `Pass - Verified`
+Contract successfully verified
+All (1) contracts were verified!
+
+Transactions saved to: /Users/shaoguoji/ETHChiangMai_Bootcamp/Homework/Day32/Learn-DeFi-Project-Bridge/foundry-demo/broadcast/DeployBurnMintTokenPool.s.sol/11155111/run-latest.json
+
+Sensitive values saved to: /Users/shaoguoji/ETHChiangMai_Bootcamp/Homework/Day32/Learn-DeFi-Project-Bridge/foundry-demo/cache/DeployBurnMintTokenPool.s.sol/11155111/run-latest.json
+
+➜  foundry-demo git:(main) ✗ 
+➜  foundry-demo git:(main) ✗ forge script script/ccip/DeployBurnMintTokenPool.s.sol \
+  --rpc-url $BASE_SEPOLIA_RPC_URL \
+  --private-key $PRIVATE_KEY \
+  --broadcast \
+> --verify
+[⠊] Compiling...
+No files changed, compilation skipped
+Script ran successfully.
+
+== Logs ==
+  Burn & Mint token pool deployed to: 0xf499E1Fc5978fa1BC848c49c158eF2dB4B941FBA
+  Granted mint and burn roles to token pool: 0xf499E1Fc5978fa1BC848c49c158eF2dB4B941FBA
+  Writing deployed token pool address to file: ./script/ccip/output/deployedTokenPool_baseSepolia.json
+
+## Setting up 1 EVM.
+
+==========================
+
+Chain 84532
+
+Estimated gas price: 0.001399959 gwei
+
+Estimated total gas used for script: 4067123
+
+Estimated amount required: 0.000005693805447957 ETH
+
+==========================
+
+##### base-sepolia
+✅  [Success] Hash: 0x5e3fb0bbea635780d047ed4a1804a5363ea9ef041b552926d9bd1d6af7549d5f
+Contract Address: 0xf499E1Fc5978fa1BC848c49c158eF2dB4B941FBA
+Block: 36650542
+Paid: 0.000003654422336304 ETH (3045456 gas * 0.001199959 gwei)
+
+
+##### base-sepolia
+✅  [Success] Hash: 0x6b283f4f027b484d1f74fca2e37a0ed126b98f6827a3e1b0ad6b159d7e19b695
+Block: 36650542
+Paid: 0.000000093852393267 ETH (78213 gas * 0.001199959 gwei)
+
+✅ Sequence #1 on base-sepolia | Total Paid: 0.000003748274729571 ETH (3123669 gas * avg 0.001199959 gwei)
+                                                                                                     
+
+==========================
+
+ONCHAIN EXECUTION COMPLETE & SUCCESSFUL.
+##
+Start verification for (1) contracts
+Start verifying contract `0xf499E1Fc5978fa1BC848c49c158eF2dB4B941FBA` deployed on base-sepolia
+EVM version: cancun
+Compiler version: 0.8.24
+Optimizations:    200
+Constructor args: 0000000000000000000000002be47261554ce80f6f2cc7490b072506ee20ca46000000000000000000000000000000000000000000000000000000000000001200000000000000000000000000000000000000000000000000000000000000a000000000000000000000000099360767a4705f68cccb9533195b761648d6d807000000000000000000000000d3b06cebf099ce7da4accf578aaebfdbd6e88a930000000000000000000000000000000000000000000000000000000000000000
+
+Submitting verification for [node_modules/@chainlink/contracts-ccip/contracts/pools/BurnMintTokenPool.sol:BurnMintTokenPool] 0xf499E1Fc5978fa1BC848c49c158eF2dB4B941FBA.
+Submitted contract for verification:
+        Response: `OK`
+        GUID: `d9q9gecdgyazlcblxdqbpcdxueutjpadnayd4irb8nzskuksb4`
+        URL: https://sepolia.basescan.org/address/0xf499e1fc5978fa1bc848c49c158ef2db4b941fba
+Contract verification status:
+Response: `NOTOK`
+Details: `Pending in queue`
+Warning: Verification is still pending...; waiting 15 seconds before trying again (7 tries remaining)
+Contract verification status:
+Response: `OK`
+Details: `Pass - Verified`
+Contract successfully verified
+All (1) contracts were verified!
+
+Transactions saved to: /Users/shaoguoji/ETHChiangMai_Bootcamp/Homework/Day32/Learn-DeFi-Project-Bridge/foundry-demo/broadcast/DeployBurnMintTokenPool.s.sol/84532/run-latest.json
+
+Sensitive values saved to: /Users/shaoguoji/ETHChiangMai_Bootcamp/Homework/Day32/Learn-DeFi-Project-Bridge/foundry-demo/cache/DeployBurnMintTokenPool.s.sol/84532/run-latest.json
+
+➜  foundry-demo git:(main) ✗ forge script script/ccip/ClaimAdmin.s.sol \
+  --rpc-url $SEPOLIA_RPC_URL \
+  --private-key $PRIVATE_KEY \
+  --broadcast \
+> --verify
+[⠊] Compiling...
+[⠑] Compiling 1 files with Solc 0.8.24
+[⠘] Solc 0.8.24 finished in 1.60s
+Compiler run successful!
+Traces:
+  [1410166] → new ClaimAdmin@0x5b73C5498c1E3b4dbA84de0F1833c4a029d90519
+    └─ ← [Return] 6933 bytes of code
+
+  [592677] ClaimAdmin::run()
+    ├─ [0] VM::projectRoot() [staticcall]
+    │   └─ ← [Return] "/Users/shaoguoji/ETHChiangMai_Bootcamp/Homework/Day32/Learn-DeFi-Project-Bridge/foundry-demo"
+    ├─ [0] VM::readFile("/Users/shaoguoji/ETHChiangMai_Bootcamp/Homework/Day32/Learn-DeFi-Project-Bridge/foundry-demo/script/ccip/output/deployedToken_ethereumSepolia.json") [staticcall]
+    │   └─ ← [Return] <file>
+    ├─ [0] VM::parseJsonAddress("<stringified JSON>", ".deployedToken_ethereumSepolia") [staticcall]
+    │   └─ ← [Return] 0xAF8E5D63c45925a201bDd824c3452CF77D92bFF8
+    ├─ [0] VM::readFile("/Users/shaoguoji/ETHChiangMai_Bootcamp/Homework/Day32/Learn-DeFi-Project-Bridge/foundry-demo/script/ccip/config.json") [staticcall]
+    │   └─ ← [Return] <file>
+    ├─ [0] VM::parseJsonAddress("<stringified JSON>", ".BnMToken.ccipAdminAddress") [staticcall]
+    │   └─ ← [Return] 0x0b332c99Fd6511Ca9FAf9654DfcF18C575941094
+    ├─ [534614] → new HelperConfig@0xC7f2Cf4845C6db0e1a1e91ED41Bcd0FcC1b0E141
+    │   └─ ← [Return] 1781 bytes of code
+    ├─ [2223] HelperConfig::activeNetworkConfig() [staticcall]
+    │   └─ ← [Return] 16015286601757825753 [1.601e19], 0x0BF3dE8c5D3e8A2B34D2BEeB17ABfCeBaf363A59, 0xba3f6251de62dED61Ff98590cB2fDf6871FbB991, 0x95F29FEE11c5C55d26cCcf1DB6772DE953B37B82, 0x62e731218d0D47305aba2BE3751E7EE9E5520790, 0x779877A7B0D9E8603169DdbD7836e478b4624789, 2, "ETH"
+    ├─ [0] VM::startBroadcast()
+    │   └─ ← [Return]
+    ├─ [2368] 0xAF8E5D63c45925a201bDd824c3452CF77D92bFF8::getCCIPAdmin() [staticcall]
+    │   └─ ← [Return] 0xBF2A4454226E8296825d3eC06d08D6c0b41dcebd
+    ├─ [0] console::log("Current token admin:", 0xBF2A4454226E8296825d3eC06d08D6c0b41dcebd) [staticcall]
+    │   └─ ← [Stop]
+    └─ ← [Revert] CCIP admin of token doesn't match the token admin address.
+
+
+
+== Logs ==
+  Current token admin: 0xBF2A4454226E8296825d3eC06d08D6c0b41dcebd
+Error: script failed: CCIP admin of token doesn't match the token admin address.
+➜  foundry-demo git:(main) ✗ 
+➜  foundry-demo git:(main) ✗ forge script script/ccip/ClaimAdmin.s.sol \
+  --rpc-url $SEPOLIA_RPC_URL \
+  --private-key $PRIVATE_KEY \
+  --broadcast
+[⠊] Compiling...
+No files changed, compilation skipped
+Traces:
+  [1410166] → new ClaimAdmin@0x5b73C5498c1E3b4dbA84de0F1833c4a029d90519
+    └─ ← [Return] 6933 bytes of code
+
+  [592677] ClaimAdmin::run()
+    ├─ [0] VM::projectRoot() [staticcall]
+    │   └─ ← [Return] "/Users/shaoguoji/ETHChiangMai_Bootcamp/Homework/Day32/Learn-DeFi-Project-Bridge/foundry-demo"
+    ├─ [0] VM::readFile("/Users/shaoguoji/ETHChiangMai_Bootcamp/Homework/Day32/Learn-DeFi-Project-Bridge/foundry-demo/script/ccip/output/deployedToken_ethereumSepolia.json") [staticcall]
+    │   └─ ← [Return] <file>
+    ├─ [0] VM::parseJsonAddress("<stringified JSON>", ".deployedToken_ethereumSepolia") [staticcall]
+    │   └─ ← [Return] 0xAF8E5D63c45925a201bDd824c3452CF77D92bFF8
+    ├─ [0] VM::readFile("/Users/shaoguoji/ETHChiangMai_Bootcamp/Homework/Day32/Learn-DeFi-Project-Bridge/foundry-demo/script/ccip/config.json") [staticcall]
+    │   └─ ← [Return] <file>
+    ├─ [0] VM::parseJsonAddress("<stringified JSON>", ".BnMToken.ccipAdminAddress") [staticcall]
+    │   └─ ← [Return] 0x0b332c99Fd6511Ca9FAf9654DfcF18C575941094
+    ├─ [534614] → new HelperConfig@0xC7f2Cf4845C6db0e1a1e91ED41Bcd0FcC1b0E141
+    │   └─ ← [Return] 1781 bytes of code
+    ├─ [2223] HelperConfig::activeNetworkConfig() [staticcall]
+    │   └─ ← [Return] 16015286601757825753 [1.601e19], 0x0BF3dE8c5D3e8A2B34D2BEeB17ABfCeBaf363A59, 0xba3f6251de62dED61Ff98590cB2fDf6871FbB991, 0x95F29FEE11c5C55d26cCcf1DB6772DE953B37B82, 0x62e731218d0D47305aba2BE3751E7EE9E5520790, 0x779877A7B0D9E8603169DdbD7836e478b4624789, 2, "ETH"
+    ├─ [0] VM::startBroadcast()
+    │   └─ ← [Return]
+    ├─ [2368] 0xAF8E5D63c45925a201bDd824c3452CF77D92bFF8::getCCIPAdmin() [staticcall]
+    │   └─ ← [Return] 0xBF2A4454226E8296825d3eC06d08D6c0b41dcebd
+    ├─ [0] console::log("Current token admin:", 0xBF2A4454226E8296825d3eC06d08D6c0b41dcebd) [staticcall]
+    │   └─ ← [Stop]
+    └─ ← [Revert] CCIP admin of token doesn't match the token admin address.
+
+
+
+== Logs ==
+  Current token admin: 0xBF2A4454226E8296825d3eC06d08D6c0b41dcebd
+Error: script failed: CCIP admin of token doesn't match the token admin address.
+➜  foundry-demo git:(main) ✗ 
+➜  foundry-demo git:(main) ✗ forge script script/ccip/ClaimAdmin.s.sol \
+  --rpc-url $SEPOLIA_RPC_URL \
+  --private-key $PRIVATE_KEY \
+  --broadcast
+[⠊] Compiling...
+No files changed, compilation skipped
+Script ran successfully.
+
+== Logs ==
+  Current token admin: 0xBF2A4454226E8296825d3eC06d08D6c0b41dcebd
+  Claiming admin of the token via getCCIPAdmin() for CCIP admin: 0xBF2A4454226E8296825d3eC06d08D6c0b41dcebd
+  Admin claimed successfully for token: 0xAF8E5D63c45925a201bDd824c3452CF77D92bFF8
+
+## Setting up 1 EVM.
+
+==========================
+
+Chain 11155111
+
+Estimated gas price: 2.241654179 gwei
+
+Estimated total gas used for script: 152246
+
+Estimated amount required: 0.000341282882136034 ETH
+
+==========================
+⠐ Sequence #1 on sepolia | Waiting for pending transactions
+    ⢀ [Pending] 0xab14cd13fe82687ad244f47e9a6fd7ad00d5258fbee8edeb66e025c66efd548a
+    ⠉ [00:00:01] [##################################################################] 1/1 txes (0.0s)
+    ⠉ [00:00:01] [--------------------------------------------------------------] 0/1 receipts (0.0s)^C
+➜  foundry-demo git:(main) ✗ 
+➜  foundry-demo git:(main) ✗ forge script script/ccip/ClaimAdmin.s.sol \
+  --rpc-url $SEPOLIA_RPC_URL \
+  --private-key $PRIVATE_KEY \
+  --broadcast \
+> --verify
+[⠊] Compiling...
+No files changed, compilation skipped
+Script ran successfully.
+
+== Logs ==
+  Current token admin: 0xBF2A4454226E8296825d3eC06d08D6c0b41dcebd
+  Claiming admin of the token via getCCIPAdmin() for CCIP admin: 0xBF2A4454226E8296825d3eC06d08D6c0b41dcebd
+  Admin claimed successfully for token: 0xAF8E5D63c45925a201bDd824c3452CF77D92bFF8
+
+## Setting up 1 EVM.
+
+==========================
+
+Chain 11155111
+
+Estimated gas price: 1.958715415 gwei
+
+Estimated total gas used for script: 59325
+
+Estimated amount required: 0.000116200791994875 ETH
+
+==========================
+
+##### sepolia
+✅  [Success] Hash: 0x99b24964743067c6f0e9ecb0b38cdb5405870b952fd37b90b031a3c3d8def167
+Block: 10097490
+Paid: 0.000047274366096051 ETH (42951 gas * 1.100658101 gwei)
+
+✅ Sequence #1 on sepolia | Total Paid: 0.000047274366096051 ETH (42951 gas * avg 1.100658101 gwei)
+                                                                                                     
+
+==========================
+
+ONCHAIN EXECUTION COMPLETE & SUCCESSFUL.
+##
+Start verification for (0) contracts
+All (0) contracts were verified!
+
+Transactions saved to: /Users/shaoguoji/ETHChiangMai_Bootcamp/Homework/Day32/Learn-DeFi-Project-Bridge/foundry-demo/broadcast/ClaimAdmin.s.sol/11155111/run-latest.json
+
+Sensitive values saved to: /Users/shaoguoji/ETHChiangMai_Bootcamp/Homework/Day32/Learn-DeFi-Project-Bridge/foundry-demo/cache/ClaimAdmin.s.sol/11155111/run-latest.json
+
+➜  foundry-demo git:(main) ✗ forge script script/ccip/ClaimAdmin.s.sol \
+  --rpc-url $BASE_SEPOLIA_RPC_URL \
+  --private-key $PRIVATE_KEY \
+  --broadcast \
+> --verify
+[⠊] Compiling...
+No files changed, compilation skipped
+Script ran successfully.
+
+== Logs ==
+  Current token admin: 0xBF2A4454226E8296825d3eC06d08D6c0b41dcebd
+  Claiming admin of the token via getCCIPAdmin() for CCIP admin: 0xBF2A4454226E8296825d3eC06d08D6c0b41dcebd
+  Admin claimed successfully for token: 0x2be47261554ce80f6f2cC7490B072506eE20ca46
+
+## Setting up 1 EVM.
+
+==========================
+
+Chain 84532
+
+Estimated gas price: 0.0014 gwei
+
+Estimated total gas used for script: 152246
+
+Estimated amount required: 0.0000002131444 ETH
+
+==========================
+
+##### base-sepolia
+✅  [Success] Hash: 0x31d473ab7c26c69d81ed8742e5c99d80dbbce0328fdeff725b123cfc728aa0ed
+Block: 36650686
+Paid: 0.0000001322688 ETH (110224 gas * 0.0012 gwei)
+
+✅ Sequence #1 on base-sepolia | Total Paid: 0.0000001322688 ETH (110224 gas * avg 0.0012 gwei)
+                                                                                                     
+
+==========================
+
+ONCHAIN EXECUTION COMPLETE & SUCCESSFUL.
+##
+Start verification for (0) contracts
+All (0) contracts were verified!
+
+Transactions saved to: /Users/shaoguoji/ETHChiangMai_Bootcamp/Homework/Day32/Learn-DeFi-Project-Bridge/foundry-demo/broadcast/ClaimAdmin.s.sol/84532/run-latest.json
+
+Sensitive values saved to: /Users/shaoguoji/ETHChiangMai_Bootcamp/Homework/Day32/Learn-DeFi-Project-Bridge/foundry-demo/cache/ClaimAdmin.s.sol/84532/run-latest.json
+
+➜  foundry-demo git:(main) ✗ 
+➜  foundry-demo git:(main) ✗ forge script script/ccip/AcceptAdminRole.s.sol \
+  --rpc-url $SEPOLIA_RPC_URL \
+  --private-key $PRIVATE_KEY \
+  --broadcast \
+> --verify
+[⠊] Compiling...
+[⠆] Compiling 1 files with Solc 0.8.24
+[⠰] Solc 0.8.24 finished in 1.22s
+Compiler run successful!
+Script ran successfully.
+
+== Logs ==
+  Accepted admin role for token: 0xAF8E5D63c45925a201bDd824c3452CF77D92bFF8
+
+## Setting up 1 EVM.
+
+==========================
+
+Chain 11155111
+
+Estimated gas price: 2.204315118 gwei
+
+Estimated total gas used for script: 67089
+
+Estimated amount required: 0.000147885296951502 ETH
+
+==========================
+
+##### sepolia
+✅  [Success] Hash: 0x99f0a2f549aa5221d71e0b37e7a17dd3066bca4144e8b2d1266e4d270cd427f0
+Block: 10097499
+Paid: 0.00004653325972233 ETH (45873 gas * 1.01439321 gwei)
+
+✅ Sequence #1 on sepolia | Total Paid: 0.00004653325972233 ETH (45873 gas * avg 1.01439321 gwei)
+                                                                                                     
+
+==========================
+
+ONCHAIN EXECUTION COMPLETE & SUCCESSFUL.
+##
+Start verification for (0) contracts
+All (0) contracts were verified!
+
+Transactions saved to: /Users/shaoguoji/ETHChiangMai_Bootcamp/Homework/Day32/Learn-DeFi-Project-Bridge/foundry-demo/broadcast/AcceptAdminRole.s.sol/11155111/run-latest.json
+
+Sensitive values saved to: /Users/shaoguoji/ETHChiangMai_Bootcamp/Homework/Day32/Learn-DeFi-Project-Bridge/foundry-demo/cache/AcceptAdminRole.s.sol/11155111/run-latest.json
+
+➜  foundry-demo git:(main) ✗ forge script script/ccip/AcceptAdminRole.s.sol \
+  --rpc-url $BASE_SEPOLIA_RPC_URL \
+  --private-key $PRIVATE_KEY \
+  --broadcast \
+> --verify
+[⠊] Compiling...
+No files changed, compilation skipped
+Script ran successfully.
+
+== Logs ==
+  Accepted admin role for token: 0x2be47261554ce80f6f2cC7490B072506eE20ca46
+
+## Setting up 1 EVM.
+
+==========================
+
+Chain 84532
+
+Estimated gas price: 0.0014 gwei
+
+Estimated total gas used for script: 67089
+
+Estimated amount required: 0.0000000939246 ETH
+
+==========================
+
+##### base-sepolia
+✅  [Success] Hash: 0x739bdccda7228b2cc83a8f1731350a68ed19745b8aca99d6a44d2e22992ef2cb
+Block: 36650737
+Paid: 0.0000000550476 ETH (45873 gas * 0.0012 gwei)
+
+✅ Sequence #1 on base-sepolia | Total Paid: 0.0000000550476 ETH (45873 gas * avg 0.0012 gwei)
+                                                                                                     
+
+==========================
+
+ONCHAIN EXECUTION COMPLETE & SUCCESSFUL.
+##
+Start verification for (0) contracts
+All (0) contracts were verified!
+
+Transactions saved to: /Users/shaoguoji/ETHChiangMai_Bootcamp/Homework/Day32/Learn-DeFi-Project-Bridge/foundry-demo/broadcast/AcceptAdminRole.s.sol/84532/run-latest.json
+
+Sensitive values saved to: /Users/shaoguoji/ETHChiangMai_Bootcamp/Homework/Day32/Learn-DeFi-Project-Bridge/foundry-demo/cache/AcceptAdminRole.s.sol/84532/run-latest.json
+
+➜  foundry-demo git:(main) ✗ forge script script/ccip/SetPool.s.sol \
+  --rpc-url $SEPOLIA_RPC_URL \
+  --private-key $PRIVATE_KEY \
+  --broadcast \
+> --verify
+[⠊] Compiling...
+[⠆] Compiling 1 files with Solc 0.8.24
+[⠰] Solc 0.8.24 finished in 1.25s
+Compiler run successful!
+Script ran successfully.
+
+== Logs ==
+  Setting pool for token: 0xAF8E5D63c45925a201bDd824c3452CF77D92bFF8
+  New pool address: 0xc33F9B759f4f3b410DC4F1D4d6493619C1d1f1bF
+  Action performed by admin: 0xBF2A4454226E8296825d3eC06d08D6c0b41dcebd
+  Pool set for token 0xAF8E5D63c45925a201bDd824c3452CF77D92bFF8 to 0xc33F9B759f4f3b410DC4F1D4d6493619C1d1f1bF
+
+## Setting up 1 EVM.
+
+==========================
+
+Chain 11155111
+
+Estimated gas price: 1.862580973 gwei
+
+Estimated total gas used for script: 71810
+
+Estimated amount required: 0.00013375193967113 ETH
+
+==========================
+
+##### sepolia
+✅  [Success] Hash: 0xde2ca1eabb4a555303f5494ebd954566333928f78149b03663f76bc2a61325d1
+Block: 10097508
+Paid: 0.00005449899757566 ETH (51990 gas * 1.048259234 gwei)
+
+✅ Sequence #1 on sepolia | Total Paid: 0.00005449899757566 ETH (51990 gas * avg 1.048259234 gwei)
+                                                                                                     
+
+==========================
+
+ONCHAIN EXECUTION COMPLETE & SUCCESSFUL.
+##
+Start verification for (0) contracts
+All (0) contracts were verified!
+
+Transactions saved to: /Users/shaoguoji/ETHChiangMai_Bootcamp/Homework/Day32/Learn-DeFi-Project-Bridge/foundry-demo/broadcast/SetPool.s.sol/11155111/run-latest.json
+
+Sensitive values saved to: /Users/shaoguoji/ETHChiangMai_Bootcamp/Homework/Day32/Learn-DeFi-Project-Bridge/foundry-demo/cache/SetPool.s.sol/11155111/run-latest.json
+
+➜  foundry-demo git:(main) ✗ forge script script/ccip/SetPool.s.sol \
+  --rpc-url $BASE_SEPOLIA_RPC_URL \
+  --private-key $PRIVATE_KEY \
+  --broadcast \
+> --verify
+[⠊] Compiling...
+No files changed, compilation skipped
+Script ran successfully.
+
+== Logs ==
+  Setting pool for token: 0x2be47261554ce80f6f2cC7490B072506eE20ca46
+  New pool address: 0xf499E1Fc5978fa1BC848c49c158eF2dB4B941FBA
+  Action performed by admin: 0xBF2A4454226E8296825d3eC06d08D6c0b41dcebd
+  Pool set for token 0x2be47261554ce80f6f2cC7490B072506eE20ca46 to 0xf499E1Fc5978fa1BC848c49c158eF2dB4B941FBA
+
+## Setting up 1 EVM.
+
+==========================
+
+Chain 84532
+
+Estimated gas price: 0.001400062 gwei
+
+Estimated total gas used for script: 71810
+
+Estimated amount required: 0.00000010053845222 ETH
+
+==========================
+
+##### base-sepolia
+✅  [Success] Hash: 0xb76c877b5c919ffffc2b2bb5dcadce4f1c4bfc7b8ab6ba840b348ffca8e5d0d5
+Block: 36650784
+Paid: 0.000000062388 ETH (51990 gas * 0.0012 gwei)
+
+✅ Sequence #1 on base-sepolia | Total Paid: 0.000000062388 ETH (51990 gas * avg 0.0012 gwei)
+                                                                                                     
+
+==========================
+
+ONCHAIN EXECUTION COMPLETE & SUCCESSFUL.
+##
+Start verification for (0) contracts
+All (0) contracts were verified!
+
+Transactions saved to: /Users/shaoguoji/ETHChiangMai_Bootcamp/Homework/Day32/Learn-DeFi-Project-Bridge/foundry-demo/broadcast/SetPool.s.sol/84532/run-latest.json
+
+Sensitive values saved to: /Users/shaoguoji/ETHChiangMai_Bootcamp/Homework/Day32/Learn-DeFi-Project-Bridge/foundry-demo/cache/SetPool.s.sol/84532/run-latest.json
+
+➜  foundry-demo git:(main) ✗ forge script script/ccip/ApplyChainUpdates.s.sol \
+  --rpc-url $SEPOLIA_RPC_URL \
+  --private-key $PRIVATE_KEY \
+  --broadcast \
+> --verify
+[⠊] Compiling...
+[⠰] Compiling 1 files with Solc 0.8.24
+[⠔] Solc 0.8.24 finished in 1.28s
+Compiler run successful!
+Script ran successfully.
+
+== Logs ==
+  Chain update applied to pool at address: 0xc33F9B759f4f3b410DC4F1D4d6493619C1d1f1bF
+
+## Setting up 1 EVM.
+
+==========================
+
+Chain 11155111
+
+Estimated gas price: 1.975786925 gwei
+
+Estimated total gas used for script: 427716
+
+Estimated amount required: 0.0008450756804133 ETH
+
+==========================
+
+##### sepolia
+✅  [Success] Hash: 0xe7ce15f86c75e96a969ae070c287c61e719cb39a8e6df3045d472c40c00a029d
+Block: 10097516
+Paid: 0.0003262259290173 ETH (309660 gas * 1.053497155 gwei)
+
+✅ Sequence #1 on sepolia | Total Paid: 0.0003262259290173 ETH (309660 gas * avg 1.053497155 gwei)
+                                                                                                     
+
+==========================
+
+ONCHAIN EXECUTION COMPLETE & SUCCESSFUL.
+##
+Start verification for (0) contracts
+All (0) contracts were verified!
+
+Transactions saved to: /Users/shaoguoji/ETHChiangMai_Bootcamp/Homework/Day32/Learn-DeFi-Project-Bridge/foundry-demo/broadcast/ApplyChainUpdates.s.sol/11155111/run-latest.json
+
+Sensitive values saved to: /Users/shaoguoji/ETHChiangMai_Bootcamp/Homework/Day32/Learn-DeFi-Project-Bridge/foundry-demo/cache/ApplyChainUpdates.s.sol/11155111/run-latest.json
+
+➜  foundry-demo git:(main) ✗ forge script script/ccip/ApplyChainUpdates.s.sol \
+  --rpc-url $BASE_SEPOLIA_RPC_URL \
+  --private-key $PRIVATE_KEY \
+  --broadcast \
+> --verify
+[⠊] Compiling...
+No files changed, compilation skipped
+Script ran successfully.
+
+== Logs ==
+  Chain update applied to pool at address: 0xf499E1Fc5978fa1BC848c49c158eF2dB4B941FBA
+
+## Setting up 1 EVM.
+
+==========================
+
+Chain 84532
+
+Estimated gas price: 0.0014 gwei
+
+Estimated total gas used for script: 427716
+
+Estimated amount required: 0.0000005988024 ETH
+
+==========================
+
+##### base-sepolia
+✅  [Success] Hash: 0x92659a9f53f071eda16096b3daf0ad3bd6990860e4a726dbeaff33e7cabe0740
+Block: 36650835
+Paid: 0.000000371592 ETH (309660 gas * 0.0012 gwei)
+
+✅ Sequence #1 on base-sepolia | Total Paid: 0.000000371592 ETH (309660 gas * avg 0.0012 gwei)
+                                                                                                     
+
+==========================
+
+ONCHAIN EXECUTION COMPLETE & SUCCESSFUL.
+##
+Start verification for (0) contracts
+All (0) contracts were verified!
+
+Transactions saved to: /Users/shaoguoji/ETHChiangMai_Bootcamp/Homework/Day32/Learn-DeFi-Project-Bridge/foundry-demo/broadcast/ApplyChainUpdates.s.sol/84532/run-latest.json
+
+Sensitive values saved to: /Users/shaoguoji/ETHChiangMai_Bootcamp/Homework/Day32/Learn-DeFi-Project-Bridge/foundry-demo/cache/ApplyChainUpdates.s.sol/84532/run-latest.json
+
+➜  foundry-demo git:(main) ✗ 
+➜  foundry-demo git:(main) ✗ forge script script/ccip/MintTokens.s.sol \
+  --rpc-url $SEPOLIA_RPC_URL \
+  --private-key $PRIVATE_KEY \
+  --broadcast \
+> --verify
+[⠊] Compiling...
+[⠒] Compiling 1 files with Solc 0.8.24
+[⠑] Solc 0.8.24 finished in 1.53s
+Compiler run successful!
+Script ran successfully.
+
+== Logs ==
+  Minting 1000000000000000000000 tokens to 0xBF2A4454226E8296825d3eC06d08D6c0b41dcebd
+  Waiting for confirmations...
+  Minted 1000000000000000000000 tokens to 0xBF2A4454226E8296825d3eC06d08D6c0b41dcebd
+  Current balance of receiver is 1000000000000000000000 CCT
+
+## Setting up 1 EVM.
+
+==========================
+
+Chain 11155111
+
+Estimated gas price: 2.174906573 gwei
+
+Estimated total gas used for script: 97766
+
+Estimated amount required: 0.000212631916015918 ETH
+
+==========================
+
+##### sepolia
+✅  [Success] Hash: 0x134ce4c811c60e2d2f0fc81b4db026551fc844cc2104f54441051bb5cba072c4
+Block: 10097530
+Paid: 0.000071718961436088 ETH (70782 gas * 1.013237284 gwei)
+
+✅ Sequence #1 on sepolia | Total Paid: 0.000071718961436088 ETH (70782 gas * avg 1.013237284 gwei)
+                                                                                                     
+
+==========================
+
+ONCHAIN EXECUTION COMPLETE & SUCCESSFUL.
+##
+Start verification for (0) contracts
+All (0) contracts were verified!
+
+Transactions saved to: /Users/shaoguoji/ETHChiangMai_Bootcamp/Homework/Day32/Learn-DeFi-Project-Bridge/foundry-demo/broadcast/MintTokens.s.sol/11155111/run-latest.json
+
+Sensitive values saved to: /Users/shaoguoji/ETHChiangMai_Bootcamp/Homework/Day32/Learn-DeFi-Project-Bridge/foundry-demo/cache/MintTokens.s.sol/11155111/run-latest.json
+
+➜  foundry-demo git:(main) ✗ forge script script/ccip/TransferTokens.s.sol \
+  --rpc-url $SEPOLIA_RPC_URL \
+  --private-key $PRIVATE_KEY \
+  --broadcast \
+> --verify
+[⠊] Compiling...
+[⠆] Compiling 1 files with Solc 0.8.24
+[⠰] Solc 0.8.24 finished in 1.25s
+Compiler run successful!
+Script ran successfully.
+
+== Logs ==
+  Estimated fees: 75566589760305
+  Message ID:
+  0x2c1bdc69b65d9c71e3e520340413041b327ee35f8f513dc32fd4770e15c4c442
+  Check status of the message at https://ccip.chain.link/msg/2c1bdc69b65d9c71e3e520340413041b327ee35f8f513dc32fd4770e15c4c442
+
+## Setting up 1 EVM.
+
+==========================
+
+Chain 11155111
+
+Estimated gas price: 2.217131564 gwei
+
+Estimated total gas used for script: 387581
+
+Estimated amount required: 0.000859318068706684 ETH
+
+==========================
+
+##### sepolia
+✅  [Success] Hash: 0xce6eedf6b392884f71ae260c228ef9440c8e455892b4dfa13d834abf54f2aa57
+Block: 10097535
+Paid: 0.000052413371739896 ETH (46388 gas * 1.129890742 gwei)
+
+
+##### sepolia
+✅  [Success] Hash: 0x629dfe614302969ad3c44a6292eb5b25cec3e30cf605342064377eaf02163d5e
+Block: 10097536
+Paid: 0.000230303344729923 ETH (221203 gas * 1.041140241 gwei)
+
+✅ Sequence #1 on sepolia | Total Paid: 0.000282716716469819 ETH (267591 gas * avg 1.085515491 gwei)
+                                                                                                     
+
+==========================
+
+ONCHAIN EXECUTION COMPLETE & SUCCESSFUL.
+##
+Start verification for (0) contracts
+All (0) contracts were verified!
+
+Transactions saved to: /Users/shaoguoji/ETHChiangMai_Bootcamp/Homework/Day32/Learn-DeFi-Project-Bridge/foundry-demo/broadcast/TransferTokens.s.sol/11155111/run-latest.json
+
+Sensitive values saved to: /Users/shaoguoji/ETHChiangMai_Bootcamp/Homework/Day32/Learn-DeFi-Project-Bridge/foundry-demo/cache/TransferTokens.s.sol/11155111/run-latest.json
+
+➜  foundry-demo git:(main) ✗ 
+➜  foundry-demo git:(main) ✗ bash script/ccip/CheckCrossChainStatus.sh
+=========================================
+CCIP跨链状态监控
+=========================================
+
+Token地址 (Base Sepolia): 0x431306040c181E768C4301a7bfD4fC6a770E833F
+接收地址: 0x0b332c99Fd6511Ca9FAf9654DfcF18C575941094
+预期接收: 0.1 CCT (100000000000000000 wei)
+
+开始监控... (每30秒检查一次)
+=========================================
+
+[2026-01-22 15:23:42] 检查 #1 - Base Sepolia余额:  CCT
+script/ccip/CheckCrossChainStatus.sh: line 45: [: 100000000000000000 [1e17]: integer expression expected
+^C
+➜  foundry-demo git:(main) ✗ 
+➜  foundry-demo git:(main) ✗ bash script/ccip/CheckCrossChainStatus.sh
+=========================================
+CCIP跨链状态监控
+=========================================
+
+Token地址 (Base Sepolia): 0x431306040c181E768C4301a7bfD4fC6a770E833F
+接收地址: 0x0b332c99Fd6511Ca9FAf9654DfcF18C575941094
+预期接收: 0.1 CCT (100000000000000000 wei)
+
+开始监控... (每30秒检查一次)
+=========================================
+
+[2026-01-22 15:25:42] 检查 #1 - Base Sepolia余额: 0 CCT
+^C
+➜  foundry-demo git:(main) ✗ 
+➜  foundry-demo git:(main) ✗ bash script/ccip/CheckCrossChainStatus.sh
+=========================================
+CCIP跨链状态监控
+=========================================
+
+Token地址 (Base Sepolia): 0x2be47261554ce80f6f2cC7490B072506eE20ca46
+接收地址: 0xBF2A4454226E8296825d3eC06d08D6c0b41dcebd
+预期接收: 0.1 CCT (100000000000000000 wei)
+
+开始监控... (每30秒检查一次)
+=========================================
+
+[2026-01-22 15:26:10] 检查 #1 - Base Sepolia余额: 0 CCT
+[2026-01-22 15:26:43] 检查 #2 - Base Sepolia余额: 0 CCT
+[2026-01-22 15:27:16] 检查 #3 - Base Sepolia余额: 0 CCT
+[2026-01-22 15:27:48] 检查 #4 - Base Sepolia余额: 0 CCT
+[2026-01-22 15:28:21] 检查 #5 - Base Sepolia余额: 0 CCT
+[2026-01-22 15:28:54] 检查 #6 - Base Sepolia余额: 0 CCT
+[2026-01-22 15:29:26] 检查 #7 - Base Sepolia余额: 0 CCT
+[2026-01-22 15:30:04] 检查 #8 - Base Sepolia余额: 0 CCT
+[2026-01-22 15:30:37] 检查 #9 - Base Sepolia余额: 0 CCT
+[2026-01-22 15:31:09] 检查 #10 - Base Sepolia余额: 0 CCT
+[2026-01-22 15:31:42] 检查 #11 - Base Sepolia余额: 0 CCT
+[2026-01-22 15:32:15] 检查 #12 - Base Sepolia余额: 0 CCT
+[2026-01-22 15:32:51] 检查 #13 - Base Sepolia余额: 0 CCT
+[2026-01-22 15:33:24] 检查 #14 - Base Sepolia余额: 0 CCT
