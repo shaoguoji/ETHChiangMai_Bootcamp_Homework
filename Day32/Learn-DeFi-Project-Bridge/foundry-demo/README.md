@@ -1,5 +1,9 @@
 # Foundry DeFi Project - CCIP Bridge Module
 
+![ccip-tx](img/ccip-tx.png)
+
+最新跨链记录（Sepolia → Base Sepolia，0.1 CCT）: https://ccip.chain.link/#/side-drawer/msg/2c1bdc69b65d9c71e3e520340413041b327ee35f8f513dc32fd4770e15c4c442
+
 基于 Foundry 的 Chainlink CCIP 跨链桥项目，实现 Sepolia ↔ Base Sepolia 双向跨链。
 
 ## 📋 目录
@@ -43,8 +47,8 @@
 
 | 合约类型 | 地址 |
 |---------|------|
-| CrossChainToken (CCT) | `0xDC1D17004a2A724d5aa9f6B428C56814aBD156D9` |
-| BurnMintTokenPool | `0x7EbB65FC69F94Cf11f754B102950edab38343536` |
+| CrossChainToken (CCT) | `0xAF8E5D63c45925a201bDd824c3452CF77D92bFF8` |
+| BurnMintTokenPool | `0xc33F9B759f4f3b410DC4F1D4d6493619C1d1f1bF` |
 | CCIP Router | `0x0BF3dE8c5D3e8A2B34D2BEeB17ABfCeBaf363A59` |
 | Token Admin Registry | `0x95F29FEE11c5C55d26cCcf1DB6772DE953B37B82` |
 | Chain Selector | `16015286601757825753` |
@@ -53,21 +57,21 @@
 
 | 合约类型 | 地址 |
 |---------|------|
-| CrossChainToken (CCT) | `0x431306040c181E768C4301a7bfD4fC6a770E833F` |
-| BurnMintTokenPool | `0x27BCD1de1BDd9a40814e2d4BdC500C52c76938e7` |
+| CrossChainToken (CCT) | `0x2be47261554ce80f6f2cC7490B072506eE20ca46` |
+| BurnMintTokenPool | `0xf499E1Fc5978fa1BC848c49c158eF2dB4B941FBA` |
 | CCIP Router | `0xD3b06cEbF099CE7DA4AcCf578aaebFDBd6e88a93` |
 | Token Admin Registry | `0x6554c6fbd1c8f5b163a64183de8b9c1bd8e69016` |
 | Chain Selector | `10344971235874465080` |
 
 ### 成功验证
 
-**跨链测试结果** (2024-12-02):
+**跨链测试结果** (2026-01-22):
 ```
-源链 (Sepolia):   999.9 CCT (0.1 CCT burned) ✓
-目标链 (Base):    0.1 CCT (minted)           ✓
-Message ID:       0x12158e8a873e0666f1f37ccd5050562213398e4deb7c7ab9b9fe912364014902 ✓
-跨链时间:         ~10 minutes                ✓
-CCIP Explorer:    https://ccip.chain.link/msg/0x12158... ✓
+源链 (Sepolia):   铸造 1000 CCT -> 0xBF2A4454226E8296825d3eC06d08D6c0b41dcebd；随后跨 0.1 CCT
+目标链 (Base):    0.1 CCT（Burn → Mint），以 CCIP Explorer 状态为准
+Message ID:       0x2c1bdc69b65d9c71e3e520340413041b327ee35f8f513dc32fd4770e15c4c442
+监控脚本:         本地多轮检查 (至 #14) 余额为 0，最终以 Explorer 记录为准
+CCIP Explorer:    https://ccip.chain.link/msg/2c1bdc69b65d9c71e3e520340413041b327ee35f8f513dc32fd4770e15c4c442
 ```
 
 ## 🚀 快速开始
@@ -116,7 +120,9 @@ BASESCAN_API_KEY=your_basescan_api_key
 
 ## 📖 部署指南
 
-### 完整部署流程 (10 步)
+### 完整部署流程（结合本次终端日志）
+
+每一步包含命令、日志输出节选与技术说明，便于复现或对照排错。
 
 #### 步骤 1: 部署 Sepolia Token
 
@@ -127,7 +133,14 @@ forge script script/ccip/DeployToken.s.sol \
   --broadcast
 ```
 
-**输出**: `0xDC1D17004a2A724d5aa9f6B428C56814aBD156D9`
+**执行输出（节选）**
+- 合约: 0xAF8E5D63c45925a201bDd824c3452CF77D92bFF8（Tx: 0xe89b026a6e19769a8049fb2e7f240aab1a2fd72bf2d6b39bc4f3c7d78fb130e4，次交易 0x36b3c295defff6de4ba5b5bc770141ad8ce98aafca4411f67945525856809148）
+- Gas 支付: ~0.00152 ETH（1411097 gas，均价 ~1.05 gwei）
+- 验证: https://sepolia.etherscan.io/address/0xaf8e5d63c45925a201bdd824c3452cf77d92bff8
+
+**技术说明**
+- 部署 BurnMintERC20（CCT），授予 CCIP Admin `0xBF2A4454226E8296825d3eC06d08D6c0b41dcebd` 的 mint/burn 角色。
+- 地址写入 `script/ccip/output/deployedToken_ethereumSepolia.json`，供后续脚本读取；验证若 Pending，等待几秒自动重试。
 
 ---
 
@@ -140,7 +153,13 @@ forge script script/ccip/DeployToken.s.sol \
   --broadcast
 ```
 
-**输出**: `0x431306040c181E768C4301a7bfD4fC6a770E833F`
+**执行输出（节选）**
+- 合约: 0x2be47261554ce80f6f2cC7490B072506eE20ca46（Tx: 0xe5fb54db386a0cb8d3a84ba827980d04a87127f2adf7704b94333832374e1840，授权 Tx: 0x50cbe2f4883b679be9a560a17ef18d8a4b141fe7c15c8f9dc603860b1fe7400e）
+- Gas 支付: ~0.00000169 ETH（1411097 gas，均价 ~0.0012 gwei）
+- 验证: https://sepolia.basescan.org/address/0x2be47261554ce80f6f2cc7490b072506ee20ca46
+
+**技术说明**
+- 与步骤 1 相同逻辑，地址写入 `script/ccip/output/deployedToken_baseSepolia.json`，方便后续池子与权限脚本引用。
 
 ---
 
@@ -153,7 +172,13 @@ forge script script/ccip/DeployBurnMintTokenPool.s.sol \
   --broadcast
 ```
 
-**输出**: `0x7EbB65FC69F94Cf11f754B102950edab38343536`
+**执行输出（节选）**
+- 池子: 0xc33F9B759f4f3b410DC4F1D4d6493619C1d1f1bF（创建 Tx: 0x0ddea05a0177b2995414f6a61d31581ce61f3e5c64c21e6d4463d980a511cf57，授权 Tx: 0x17d01031be093e4a493ef5bd3ebceabecb56b6f4245aa2ed1120e7a0d3ff8ca2）
+- 验证: https://sepolia.etherscan.io/address/0xc33f9b759f4f3b410dc4f1d4d6493619c1d1f1bf
+
+**技术说明**
+- BurnMintTokenPool 绑定 token `0xAF8E...`、router `0x0BF3...`、RMN `0xba3f...`，并授予池子 mint/burn 权限。
+- 地址写入 `script/ccip/output/deployedTokenPool_ethereumSepolia.json`，供 SetPool/跨链配置使用。
 
 ---
 
@@ -166,47 +191,83 @@ forge script script/ccip/DeployBurnMintTokenPool.s.sol \
   --broadcast
 ```
 
-**输出**: `0x27BCD1de1BDd9a40814e2d4BdC500C52c76938e7`
+**执行输出（节选）**
+- 池子: 0xf499E1Fc5978fa1BC848c49c158eF2dB4B941FBA（创建 Tx: 0x5e3fb0bbea635780d047ed4a1804a5363ea9ef041b552926d9bd1d6af7549d5f，授权 Tx: 0x6b283f4f027b484d1f74fca2e37a0ed126b98f6827a3e1b0ad6b159d7e19b695）
+- 验证: https://sepolia.basescan.org/address/0xf499e1fc5978fa1bc848c49c158ef2db4b941fba
+
+**技术说明**
+- 同步骤 3，绑定 Base Sepolia router `0xD3b0...`、RMN `0x993607...`，并写入 `deployedTokenPool_baseSepolia.json`。
 
 ---
 
-#### 步骤 5-6: Claim Admin (两条链)
+#### 步骤 5: Claim Admin（Sepolia）
 
 ```bash
-# Sepolia
 forge script script/ccip/ClaimAdmin.s.sol \
   --rpc-url $SEPOLIA_RPC_URL \
   --private-key $PRIVATE_KEY \
   --broadcast
+```
 
-# Base Sepolia
+**执行输出（节选）**
+- 初次与再次尝试因 `getCCIPAdmin()` 返回 `0xBF2A...` 而配置为 `0x0b33...` 时触发 revert，调整 `BnMToken.ccipAdminAddress` 至 `0xBF2A...` 后成功。
+- 成功 Tx: 0x99b24964743067c6f0e9ecb0b38cdb5405870b952fd37b90b031a3c3d8def167
+
+**技术说明**
+- 将 token 的 CCIP 管理权领取到配置的 admin，确保后续 AcceptAdminRole 能完成权限迁移。
+
+---
+
+#### 步骤 6: Claim Admin（Base Sepolia）
+
+```bash
 forge script script/ccip/ClaimAdmin.s.sol \
   --rpc-url $BASE_SEPOLIA_RPC_URL \
   --private-key $PRIVATE_KEY \
   --broadcast
 ```
 
+**执行输出（节选）**
+- 成功 Tx: 0x31d473ab7c26c69d81ed8742e5c99d80dbbce0328fdeff725b123cfc728aa0ed
+
+**技术说明**
+- 与步骤 5 相同逻辑，确保 Base Sepolia token 的 CCIP admin 与配置保持一致。
+
 ---
 
-#### 步骤 7-8: Accept Admin Role (两条链)
+#### 步骤 7: Accept Admin Role（Sepolia）
 
 ```bash
-# Sepolia
 forge script script/ccip/AcceptAdminRole.s.sol \
   --rpc-url $SEPOLIA_RPC_URL \
   --private-key $PRIVATE_KEY \
   --broadcast
+```
 
-# Base Sepolia
+**执行输出**: 0x99f0a2f549aa5221d71e0b37e7a17dd3066bca4144e8b2d1266e4d270cd427f0
+
+**技术说明**
+- 接受 CCIP admin 角色变更，完成 token 权限的二步交接。
+
+---
+
+#### 步骤 8: Accept Admin Role（Base Sepolia）
+
+```bash
 forge script script/ccip/AcceptAdminRole.s.sol \
   --rpc-url $BASE_SEPOLIA_RPC_URL \
   --private-key $PRIVATE_KEY \
   --broadcast
 ```
 
+**执行输出**: 0x739bdccda7228b2cc83a8f1731350a68ed19745b8aca99d6a44d2e22992ef2cb
+
+**技术说明**
+- 与步骤 7 相同，完成 Base 侧 token 权限落地。
+
 ---
 
-#### 步骤 9: Set Pool (两条链)
+#### 步骤 9: Set Pool（两条链）
 
 ```bash
 # Sepolia
@@ -222,9 +283,16 @@ forge script script/ccip/SetPool.s.sol \
   --broadcast
 ```
 
+**执行输出（节选）**
+- Sepolia: 将 token 0xAF8E... 绑定池 0xc33F...；Tx 0xde2ca1eabb4a555303f5494ebd954566333928f78149b03663f76bc2a61325d1
+- Base: 将 token 0x2be4... 绑定池 0xf499...；Tx 0xb76c877b5c919ffffc2b2bb5dcadce4f1c4bfc7b8ab6ba840b348ffca8e5d0d5
+
+**技术说明**
+- Token → Pool 映射写入合约，后续跨链时 Burn/Mint 将委托给对应池子。
+
 ---
 
-#### 步骤 10: Apply Chain Updates (配置跨链路由)
+#### 步骤 10: Apply Chain Updates（配置跨链路由）
 
 ```bash
 # Sepolia (配置到 Base Sepolia 的路由)
@@ -240,38 +308,41 @@ forge script script/ccip/ApplyChainUpdates.s.sol \
   --broadcast
 ```
 
+**执行输出（节选）**
+- Sepolia Tx: 0xe7ce15f86c75e96a969ae070c287c61e719cb39a8e6df3045d472c40c00a029d（池 0xc33F... 已更新）
+- Base Tx: 0x92659a9f53f071eda16096b3daf0ad3bd6990860e4a726dbeaff33e7cabe0740（池 0xf499... 已更新）
+
+**技术说明**
+- 将远端链 selector 与 remote token/pool 写入池子，确保 CCIP Router 能在两条链间互通；两边都要执行才生效。
+
 ---
 
 ### 配置文件
 
-**`script/ccip/config.json`**:
+**`script/ccip/config.json`（本次执行使用）**:
 ```json
 {
-  "sourceTokenAdmin": "0x0b332c99Fd6511Ca9FAf9654DfcF18C575941094",
-  "networks": {
-    "11155111": {
-      "crossChainMap": {
-        "84532": {
-          "remoteToken": "0x431306040c181E768C4301a7bfD4fC6a770E833F",
-          "remotePool": "0x27BCD1de1BDd9a40814e2d4BdC500C52c76938e7",
-          "outboundRateLimiterEnabled": false,
-          "inboundRateLimiterEnabled": false
-        }
-      }
-    },
-    "84532": {
-      "crossChainMap": {
-        "11155111": {
-          "remoteToken": "0xDC1D17004a2A724d5aa9f6B428C56814aBD156D9",
-          "remotePool": "0x7EbB65FC69F94Cf11f754B102950edab38343536",
-          "outboundRateLimiterEnabled": false,
-          "inboundRateLimiterEnabled": false
-        }
-      }
-    }
+  "BnMToken": {
+    "name": "CrossChainToken",
+    "symbol": "CCT",
+    "decimals": 18,
+    "maxSupply": 0,
+    "preMint": 0,
+    "ccipAdminAddress": "0xBF2A4454226E8296825d3eC06d08D6c0b41dcebd"
+  },
+  "tokenAmountToMint": 1000000000000000000000,
+  "tokenAmountToTransfer": 100000000000000000,
+  "feeType": "native",
+  "remoteChains": {
+    "11155111": 84532,
+    "84532": 11155111
   }
 }
 ```
+
+**远端 token/pool 映射（来自部署日志）**
+- Sepolia -> Base: `remoteToken` 0x2be47261554ce80f6f2cC7490B072506eE20ca46，`remotePool` 0xf499E1Fc5978fa1BC848c49c158eF2dB4B941FBA
+- Base -> Sepolia: `remoteToken` 0xAF8E5D63c45925a201bDd824c3452CF77D92bFF8，`remotePool` 0xc33F9B759f4f3b410DC4F1D4d6493619C1d1f1bF
 
 ## 🧪 验证和测试
 
@@ -284,7 +355,11 @@ forge script script/ccip/MintTokens.s.sol \
   --broadcast
 ```
 
-铸造 1000 CCT 到部署者地址。
+**执行输出**: 向 `0xBF2A4454226E8296825d3eC06d08D6c0b41dcebd` 铸造 `1000000000000000000000`（1000 CCT）；Tx: `0x134ce4c811c60e2d2f0fc81b4db026551fc844cc2104f54441051bb5cba072c4`，余额校验返回 1000 CCT。
+
+**技术说明**
+- 金额来自 `tokenAmountToMint`，可在 `config.json` 修改。
+- 脚本会等待确认并打印新余额，确保后续跨链有足够余额。
 
 ---
 
@@ -299,25 +374,35 @@ forge script script/ccip/TransferTokens.s.sol \
 
 从 Sepolia 跨 0.1 CCT 到 Base Sepolia。
 
+**执行输出（节选）**
+- 预估费用: 75566589760305 wei (native)
+- Message ID: `0x2c1bdc69b65d9c71e3e520340413041b327ee35f8f513dc32fd4770e15c4c442`
+- 交易: 0xce6eedf6b392884f71ae260c228ef9440c8e455892b4dfa13d834abf54f2aa57（预估费用）; 0x629dfe614302969ad3c44a6292eb5b25cec3e30cf605342064377eaf02163d5e（发送消息）
+- Explorer: https://ccip.chain.link/msg/2c1bdc69b65d9c71e3e520340413041b327ee35f8f513dc32fd4770e15c4c442
+
+**技术说明**
+- 默认跨链金额由 `tokenAmountToTransfer` 控制（当前 0.1 CCT）。
+- CCIP 会先从源链池 Burn，对端池 Mint；跨链最终状态以 Explorer 为准，完成后再查询余额。
+
 ---
 
 ### 查询余额
 
 ```bash
 # Sepolia 余额
-cast call 0xDC1D17004a2A724d5aa9f6B428C56814aBD156D9 \
+cast call 0xAF8E5D63c45925a201bDd824c3452CF77D92bFF8 \
   "balanceOf(address)(uint256)" \
   YOUR_ADDRESS \
   --rpc-url $SEPOLIA_RPC_URL
 
 # Base Sepolia 余额
-cast call 0x431306040c181E768C4301a7bfD4fC6a770E833F \
+cast call 0x2be47261554ce80f6f2cC7490B072506eE20ca46 \
   "balanceOf(address)(uint256)" \
   YOUR_ADDRESS \
   --rpc-url $BASE_SEPOLIA_RPC_URL
 ```
 
----
+--- 
 
 ### 后台监控脚本
 
@@ -326,15 +411,20 @@ cast call 0x431306040c181E768C4301a7bfD4fC6a770E833F \
 bash script/ccip/CheckCrossChainStatus.sh
 ```
 
-每 30 秒检查一次 Base Sepolia 余额，最多 20 分钟。
+**执行输出（节选）**
+- 第一次使用旧 token 地址时返回 `integer expression expected`（余额为空字符串导致比较失败）。
+- 更新为 Base token `0x2be47261554ce80f6f2cC7490B072506eE20ca46` 后，多次轮询 (#1-#14) 余额仍为 0 CCT。
+
+**技术说明**
+- 脚本每 30 秒查询一次 Base 余额，请确保脚本内的 `TOKEN_ADDRESS`/`RECIPIENT` 更新为最新地址并等待 Explorer 显示已完成后再退出。
 
 ---
 
 ### 在 CCIP Explorer 追踪
 
-访问: https://ccip.chain.link/msg/YOUR_MESSAGE_ID
+访问: https://ccip.chain.link/msg/YOUR_MESSAGE_ID （本次记录可直接查看: https://ccip.chain.link/msg/2c1bdc69b65d9c71e3e520340413041b327ee35f8f513dc32fd4770e15c4c442）
 
-实时查看跨链状态。
+实时查看跨链状态与各阶段确认。
 
 ## 🔧 自定义指南
 
